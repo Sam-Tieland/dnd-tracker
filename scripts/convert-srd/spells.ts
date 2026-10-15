@@ -4,16 +4,17 @@ import type { SpellDef } from '../../src/content/schema';
 import { field, splitSections, withoutFields } from './markdown';
 
 const HEADER = /^_(?:Level ([1-9]) ([A-Za-z]+)|([A-Za-z]+) Cantrip) \((.+)\)_$/;
-const PROPERTY_LABELS = ['Casting Time', 'Range', 'Components', 'Duration'];
+// The SRD markdown writes "**Component:**" (singular) for 12 spells, so both labels are read and removed.
+const PROPERTY_LABELS = ['Casting Time', 'Range', 'Components', 'Component', 'Duration'];
 
 function cantripInfo(text: string): SpellDef['cantrip'] {
-  const damage = /(\d+d\d+) ([A-Z][a-z]+) damage/.exec(text);
+  const damage = /(\d+d\d+) (?:([A-Z][a-z]+) damage|damage of a type you choose)/.exec(text);
   if (!damage) return undefined;
   const save = /(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma) saving throw/.exec(text);
   const attackType = /spell attack/i.test(text) ? 'attack' : save ? 'save' : undefined;
   return {
     damageDice: damage[1],
-    damageType: damage[2],
+    damageType: damage[2] ?? 'Choice',
     attackType,
     saveAbility: attackType === 'save' && save ? ABILITY_BY_NAME[save[1]] : undefined,
     scales: /_Cantrip Upgrade\._ The damage increases by \d+d\d+/.test(text),
@@ -51,7 +52,7 @@ export function convertSpells(md: string): SpellDef[] {
       castingTime,
       ritual: /Ritual/.test(castingTime),
       range: field(rest, 'Range') ?? '',
-      components: field(rest, 'Components') ?? '',
+      components: field(rest, 'Components') ?? field(rest, 'Component') ?? '',
       duration,
       concentration: duration.startsWith('Concentration'),
       text,

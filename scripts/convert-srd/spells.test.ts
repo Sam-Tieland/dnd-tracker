@@ -46,6 +46,21 @@ describe('convertSpells', () => {
     expect(spell('Eldritch Blast').cantrip).toMatchObject({ damageDice: '1d10', damageType: 'Force', attackType: 'attack', scales: false });
   });
 
+  it('reads components from the singular Component label too', () => {
+    const barkskin = spell('Barkskin');
+    expect(barkskin.components).toBe('V, S, M (a handful of bark)');
+    expect(barkskin.text).not.toContain('**Component:**');
+    expect(spells.filter((s) => s.components === '')).toEqual([]);
+    for (const s of spells) {
+      expect(s.text).not.toContain('**Component:**');
+      expect(s.text).not.toContain('**Components:**');
+    }
+  });
+
+  it('gives a chosen-type cantrip the damage type Choice', () => {
+    expect(spell('Sorcerous Burst').cantrip).toEqual({ damageDice: '1d8', damageType: 'Choice', attackType: 'attack', saveAbility: undefined, scales: true });
+  });
+
   it('keeps stat block headings inside the spell they belong to', () => {
     expect(spell('Find Steed').text).toContain('#### Traits');
     expect(spells.some((s) => s.name === 'Traits')).toBe(false);
