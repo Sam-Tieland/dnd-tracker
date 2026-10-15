@@ -43,7 +43,7 @@ export function kael(patch: CharacterPatch = {}): Character {
   return makeCharacter({
     ...patch,
     choices: {
-      abilityMethod: 'standard',
+      abilityMethod: 'manual',
       baseAbilities: { str: 15, dex: 13, con: 14, int: 14, wis: 10, cha: 8 },
       speciesId: 'srd:species:human',
       backgroundId: 'srd:background:soldier',
