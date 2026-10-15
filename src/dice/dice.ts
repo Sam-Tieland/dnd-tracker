@@ -27,6 +27,7 @@ const EXPRESSION = new RegExp(`^[+-]?${TERM}(?:[+-]${TERM})*$`);
 
 /** Parse expressions like "2d6+3", "d20", "1d8 + 1d6 - 2". Throws DiceError on anything else. */
 export function parseRoll(expression: string): ParsedRoll {
+  if (/\d\s+\d/.test(expression)) throw new DiceError(`Invalid dice expression: "${expression}"`);
   const compact = expression.replace(/\s+/g, '').toLowerCase();
   if (!EXPRESSION.test(compact)) throw new DiceError(`Invalid dice expression: "${expression}"`);
   const terms: DiceTerm[] = [];

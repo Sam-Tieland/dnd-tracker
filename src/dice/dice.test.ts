@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cryptoRng, DiceError, parseRoll, roll, rollD20, type Rng } from './dice';
+import { cryptoRng, DiceError, parseRoll, roll, rollD20, rollDie, type Rng } from './dice';
 
 /** An RNG that makes successive dice of `sides` show the given faces. */
 const faces = (sides: number, ...values: number[]): Rng => {
@@ -18,8 +18,17 @@ describe('parseRoll', () => {
     expect(parseRoll('1d4-1d4').terms[1]).toEqual({ count: 1, sides: 4, sign: -1 });
   });
 
-  it.each(['', 'abc', '2d', 'd0', '2d6++1', '101d6', '1000d6', '60d6+60d6', '1d1001'])('rejects "%s"', (expression) => {
+  it.each(['', 'abc', '2d', 'd0', '2d6++1', '101d6', '1000d6', '60d6+60d6', '1d1001', '2d6 3', '1 2', '2 0d6'])('rejects "%s"', (expression) => {
     expect(() => parseRoll(expression)).toThrow(DiceError);
+  });
+});
+
+describe('rollDie', () => {
+  it('maps the RNG edges onto the faces', () => {
+    expect(rollDie(6, () => 0)).toBe(1);
+    expect(rollDie(6, () => 0.999999)).toBe(6);
+    expect(rollDie(1000, () => 1 - 2 ** -32)).toBe(1000);
+    expect(rollDie(1000, () => 0)).toBe(1);
   });
 });
 
