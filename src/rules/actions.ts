@@ -5,8 +5,9 @@ const withState = (character: Character, patch: Partial<Character['state']>): Ch
   ...character,
   state: { ...character.state, ...patch },
 });
-const whole = (value: number) => Math.max(0, Math.floor(value));
-const NO_DEATH_SAVES = { successes: 0, failures: 0 };
+/** Whole, non-negative amounts; NaN and Infinity count as 0 so they never reach the character state. */
+const whole = (value: number) => (Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0);
+const noDeathSaves = () => ({ successes: 0, failures: 0 });
 
 /** Damage hits temporary hit points first; hit points never drop below 0. */
 export function applyDamage(character: Character, amount: number): Character {
@@ -21,7 +22,7 @@ export function applyDamage(character: Character, amount: number): Character {
 /** Healing up to the maximum; being above 0 hit points resets death saves. */
 export function applyHealing(character: Character, amount: number, sheet: DerivedSheet): Character {
   const hpCurrent = Math.min(sheet.hp.max, Math.max(0, character.state.hpCurrent) + whole(amount));
-  return withState(character, { hpCurrent, deathSaves: hpCurrent > 0 ? NO_DEATH_SAVES : character.state.deathSaves });
+  return withState(character, { hpCurrent, deathSaves: hpCurrent > 0 ? noDeathSaves() : character.state.deathSaves });
 }
 
 /** Temporary hit points don't stack: the new value replaces the old one. */
@@ -72,7 +73,7 @@ export function shortRest(character: Character, sheet: DerivedSheet, options: Sh
     resourcesUsed,
     pactSlotsUsed: 0,
     hpCurrent,
-    deathSaves: hpCurrent > 0 ? NO_DEATH_SAVES : character.state.deathSaves,
+    deathSaves: hpCurrent > 0 ? noDeathSaves() : character.state.deathSaves,
   });
 }
 
@@ -84,7 +85,7 @@ export function longRest(character: Character, sheet: DerivedSheet): Character {
     slotsUsed: {},
     pactSlotsUsed: 0,
     resourcesUsed: {},
-    deathSaves: NO_DEATH_SAVES,
+    deathSaves: noDeathSaves(),
     exhaustion: Math.max(0, character.state.exhaustion - 1),
     heroicInspiration: sheet.flags.includes('heroic-inspiration-on-long-rest') || character.state.heroicInspiration,
   });

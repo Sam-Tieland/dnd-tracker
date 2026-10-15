@@ -21,6 +21,10 @@ describe('hit points', () => {
     expect(applyDamage(atFull(), 2.7).state.hpCurrent).toBe(38);
   });
 
+  it('NaN damage is ignored instead of poisoning hit points', () => {
+    expect(applyDamage(atFull(), NaN).state.hpCurrent).toBe(40);
+  });
+
   it('healing stops at the maximum and resets death saves', () => {
     const down = kael({ state: { hpCurrent: 0, deathSaves: { successes: 1, failures: 2 } } });
     const healed = applyHealing(down, 50, sheetOf(down));
@@ -31,6 +35,11 @@ describe('hit points', () => {
   it('temporary hit points replace instead of stacking', () => {
     expect(setTempHp(setTempHp(atFull(), 10), 4).state.hpTemp).toBe(4);
     expect(setTempHp(atFull(), -3).state.hpTemp).toBe(0);
+  });
+
+  it('non-finite temporary hit points become 0', () => {
+    expect(setTempHp(atFull(), NaN).state.hpTemp).toBe(0);
+    expect(setTempHp(atFull(), Infinity).state.hpTemp).toBe(0);
   });
 
   it('death saves stay between 0 and 3', () => {
@@ -90,9 +99,24 @@ describe('rests', () => {
   });
 
   it('long rest restores everything, removes one Exhaustion level and grants Heroic Inspiration to humans', () => {
-    expect(longRest(tired, sheetOf(tired)).state).toMatchObject({
-      hpCurrent: 40, hpTemp: 0, hitDiceSpent: {}, slotsUsed: {}, pactSlotsUsed: 0, resourcesUsed: {}, exhaustion: 1, heroicInspiration: true,
-    });
+    const rested = longRest(tired, sheetOf(tired));
+    expect(rested.state).toMatchObject({ hpCurrent: 40, hpTemp: 0, pactSlotsUsed: 0, exhaustion: 1, heroicInspiration: true });
+    expect(rested.state.hitDiceSpent).toEqual({});
+    expect(rested.state.slotsUsed).toEqual({});
+    expect(rested.state.resourcesUsed).toEqual({});
+  });
+
+  it('long rest gives each character its own death saves object', () => {
+    const a = longRest(tired, sheetOf(tired));
+    const b = longRest(atFull(), sheetOf(atFull()));
+    expect(a.state.deathSaves).toEqual(b.state.deathSaves);
+    expect(a.state.deathSaves).not.toBe(b.state.deathSaves);
+  });
+
+  it('non-finite hit dice and hit points regained are ignored', () => {
+    const rested = shortRest(tired, sheetOf(tired), { hitDice: { d10: NaN }, hpRegained: NaN });
+    expect(rested.state.hitDiceSpent).toEqual({ d10: 1, d6: 0 });
+    expect(rested.state.hpCurrent).toBe(20);
   });
 
   it('long rest leaves Heroic Inspiration alone without Resourceful', () => {
