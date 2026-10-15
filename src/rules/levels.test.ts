@@ -39,6 +39,16 @@ describe('getClassLevels', () => {
     expect(warnings).toEqual([]);
   });
 
+  it('keeps first-taken order when the classes have unequal levels', () => {
+    const warnings: Warning[] = [];
+    const character = makeCharacter({ choices: { levels: [level('wizard'), level('fighter'), level('fighter'), level('fighter')] } });
+    expect(getClassLevels(character, registry, warnings)).toEqual([
+      { classId: 'srd:class:wizard', name: 'Wizard', level: 1, hitDie: 6 },
+      { classId: 'srd:class:fighter', name: 'Fighter', level: 3, hitDie: 10 },
+    ]);
+    expect(warnings).toEqual([]);
+  });
+
   it('skips unknown classes and subclasses with a single warning each', () => {
     const warnings: Warning[] = [];
     const character = makeCharacter({
