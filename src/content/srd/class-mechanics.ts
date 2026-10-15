@@ -1,0 +1,117 @@
+import type { ClassMechanics } from '../schema';
+
+const RANGER_SKILLS = ['animal-handling', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'stealth', 'survival'];
+const ROGUE_SKILLS = [
+  'acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'persuasion', 'sleight-of-hand', 'stealth',
+];
+
+/** Structured class traits, transcribed from the Core Traits tables and "As a Multiclass Character" in SRD 5.2.1. */
+export const CLASS_MECHANICS: Record<string, ClassMechanics> = {
+  'srd:class:barbarian': {
+    primaryAbilities: { mode: 'all', abilities: ['str'] },
+    savingThrows: ['str', 'con'],
+    armorTraining: ['light', 'medium', 'shield'],
+    weaponProficiencies: ['simple', 'martial'],
+    skillChoices: { count: 2, from: ['animal-handling', 'athletics', 'intimidation', 'nature', 'perception', 'survival'] },
+    multiclass: { armorTraining: ['shield'], weaponProficiencies: ['martial'] },
+  },
+  'srd:class:bard': {
+    primaryAbilities: { mode: 'all', abilities: ['cha'] },
+    savingThrows: ['dex', 'cha'],
+    armorTraining: ['light'],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 3, from: 'any' },
+    multiclass: { armorTraining: ['light'], weaponProficiencies: [], skillChoices: { count: 1, from: 'any' } },
+    spellcasting: { ability: 'cha', progression: 'full' },
+  },
+  'srd:class:cleric': {
+    primaryAbilities: { mode: 'all', abilities: ['wis'] },
+    savingThrows: ['wis', 'cha'],
+    armorTraining: ['light', 'medium', 'shield'],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 2, from: ['history', 'insight', 'medicine', 'persuasion', 'religion'] },
+    multiclass: { armorTraining: ['light', 'medium', 'shield'], weaponProficiencies: [] },
+    spellcasting: { ability: 'wis', progression: 'full' },
+  },
+  'srd:class:druid': {
+    primaryAbilities: { mode: 'all', abilities: ['wis'] },
+    savingThrows: ['int', 'wis'],
+    armorTraining: ['light', 'shield'],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 2, from: ['animal-handling', 'arcana', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'] },
+    multiclass: { armorTraining: ['light', 'shield'], weaponProficiencies: [] },
+    spellcasting: { ability: 'wis', progression: 'full' },
+  },
+  'srd:class:fighter': {
+    primaryAbilities: { mode: 'any', abilities: ['str', 'dex'] },
+    savingThrows: ['str', 'con'],
+    armorTraining: ['light', 'medium', 'heavy', 'shield'],
+    weaponProficiencies: ['simple', 'martial'],
+    skillChoices: {
+      count: 2,
+      from: ['acrobatics', 'animal-handling', 'athletics', 'history', 'insight', 'intimidation', 'persuasion', 'perception', 'survival'],
+    },
+    multiclass: { armorTraining: ['light', 'medium', 'shield'], weaponProficiencies: ['martial'] },
+  },
+  'srd:class:monk': {
+    primaryAbilities: { mode: 'all', abilities: ['dex', 'wis'] },
+    savingThrows: ['str', 'dex'],
+    armorTraining: [],
+    weaponProficiencies: ['simple', 'martial-light'],
+    skillChoices: { count: 2, from: ['acrobatics', 'athletics', 'history', 'insight', 'religion', 'stealth'] },
+    multiclass: { armorTraining: [], weaponProficiencies: [] },
+  },
+  'srd:class:paladin': {
+    primaryAbilities: { mode: 'all', abilities: ['str', 'cha'] },
+    savingThrows: ['wis', 'cha'],
+    armorTraining: ['light', 'medium', 'heavy', 'shield'],
+    weaponProficiencies: ['simple', 'martial'],
+    skillChoices: { count: 2, from: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'] },
+    multiclass: { armorTraining: ['light', 'medium', 'shield'], weaponProficiencies: ['martial'] },
+    spellcasting: { ability: 'cha', progression: 'half' },
+  },
+  'srd:class:ranger': {
+    primaryAbilities: { mode: 'all', abilities: ['dex', 'wis'] },
+    savingThrows: ['str', 'dex'],
+    armorTraining: ['light', 'medium', 'shield'],
+    weaponProficiencies: ['simple', 'martial'],
+    skillChoices: { count: 3, from: RANGER_SKILLS },
+    multiclass: { armorTraining: ['light', 'medium', 'shield'], weaponProficiencies: ['martial'], skillChoices: { count: 1, from: RANGER_SKILLS } },
+    spellcasting: { ability: 'wis', progression: 'half' },
+  },
+  'srd:class:rogue': {
+    primaryAbilities: { mode: 'all', abilities: ['dex'] },
+    savingThrows: ['dex', 'int'],
+    armorTraining: ['light'],
+    weaponProficiencies: ['simple', 'martial-finesse-or-light'],
+    skillChoices: { count: 4, from: ROGUE_SKILLS },
+    multiclass: { armorTraining: ['light'], weaponProficiencies: [], skillChoices: { count: 1, from: ROGUE_SKILLS } },
+  },
+  'srd:class:sorcerer': {
+    primaryAbilities: { mode: 'all', abilities: ['cha'] },
+    savingThrows: ['con', 'cha'],
+    armorTraining: [],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 2, from: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'] },
+    multiclass: { armorTraining: [], weaponProficiencies: [] },
+    spellcasting: { ability: 'cha', progression: 'full' },
+  },
+  'srd:class:warlock': {
+    primaryAbilities: { mode: 'all', abilities: ['cha'] },
+    savingThrows: ['wis', 'cha'],
+    armorTraining: ['light'],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 2, from: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'] },
+    multiclass: { armorTraining: ['light'], weaponProficiencies: [] },
+    spellcasting: { ability: 'cha', progression: 'pact' },
+  },
+  'srd:class:wizard': {
+    primaryAbilities: { mode: 'all', abilities: ['int'] },
+    savingThrows: ['int', 'wis'],
+    armorTraining: [],
+    weaponProficiencies: ['simple'],
+    skillChoices: { count: 2, from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'nature', 'religion'] },
+    multiclass: { armorTraining: [], weaponProficiencies: [] },
+    spellcasting: { ability: 'int', progression: 'full' },
+  },
+};
