@@ -21,7 +21,7 @@ describe('BonusTargetSchema', () => {
     'accepts %s',
     (target) => expect(BonusTargetSchema.safeParse(target).success).toBe(true),
   );
-  it.each(['ac:foo', 'save:xyz', 'ability', 'Skill:Stealth'])('rejects %s', (target) =>
+  it.each(['ac:foo', 'save:xyz', 'ability', 'Skill:Stealth', 'skill:foo'])('rejects %s', (target) =>
     expect(BonusTargetSchema.safeParse(target).success).toBe(false),
   );
 });
@@ -36,6 +36,17 @@ describe('EffectSchema', () => {
   it('rejects an unknown kind', () => {
     expect(EffectSchema.safeParse({ kind: 'teleport' }).success).toBe(false);
   });
+});
+
+describe('EffectSchema proficiency', () => {
+  const proficiency = (target: string) => ({ kind: 'proficiency', target });
+
+  it.each(['skill:stealth', 'save:dex', 'armor:shield', 'weapon:martial', 'tool:thieves-tools'])('accepts %s', (target) =>
+    expect(EffectSchema.safeParse(proficiency(target)).success).toBe(true),
+  );
+  it.each(['skill:foo', 'save:xyz', 'armor:foo'])('rejects %s', (target) =>
+    expect(EffectSchema.safeParse(proficiency(target)).success).toBe(false),
+  );
 });
 
 describe('ContentItemSchema', () => {

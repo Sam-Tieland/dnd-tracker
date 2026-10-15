@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ABILITIES, type Ability } from './constants';
+import { ABILITIES, SKILL_IDS, type Ability } from './constants';
 
 export const AbilitySchema = z.enum(ABILITIES);
 export const SourceSchema = z.enum(['srd', 'skeleton', 'user']);
@@ -27,8 +27,12 @@ export const FormulaSchema: z.ZodType<Formula> = z.lazy(() =>
   ]),
 );
 
-export const BONUS_TARGET =
-  /^(ac|initiative|speed|hpMax|spellAttack|spellDC|passivePerception|(attack|damage)(:[a-z0-9-]+)?|(ability|abilityMax|save):(str|dex|con|int|wis|cha)|skill:[a-z-]+)$/;
+const ABILITY_ALT = ABILITIES.join('|');
+const SKILL_ALT = SKILL_IDS.join('|');
+
+export const BONUS_TARGET = new RegExp(
+  `^(ac|initiative|speed|hpMax|spellAttack|spellDC|passivePerception|(attack|damage)(:[a-z0-9-]+)?|(ability|abilityMax|save):(${ABILITY_ALT})|skill:(${SKILL_ALT}))$`,
+);
 export const BonusTargetSchema = z.string().regex(BONUS_TARGET);
 
 export const ArmorTrainingSchema = z.enum(['light', 'medium', 'heavy', 'shield']);
@@ -38,6 +42,10 @@ export type WeaponProficiency = z.infer<typeof WeaponProficiencySchema>;
 export const ProgressionSchema = z.enum(['full', 'half', 'third', 'pact']);
 export type Progression = z.infer<typeof ProgressionSchema>;
 const RechargeSchema = z.enum(['short', 'long']);
+
+const PROFICIENCY_TARGET = new RegExp(
+  `^(skill:(${SKILL_ALT})|save:(${ABILITY_ALT})|armor:(${ArmorTrainingSchema.options.join('|')})|(weapon|tool):[a-z0-9-]+)$`,
+);
 
 export const EffectSchema = z.discriminatedUnion('kind', [
   z.strictObject({
@@ -56,7 +64,7 @@ export const EffectSchema = z.discriminatedUnion('kind', [
     value: FormulaSchema,
     when: z.enum(['armored', 'unarmored', 'notHeavyArmor']).optional(),
   }),
-  z.strictObject({ kind: z.literal('proficiency'), target: z.string().regex(/^(skill|save|armor|weapon|tool):[a-z0-9-]+$/) }),
+  z.strictObject({ kind: z.literal('proficiency'), target: z.string().regex(PROFICIENCY_TARGET) }),
   z.strictObject({ kind: z.literal('spellcasting'), classId: z.string(), ability: AbilitySchema, progression: ProgressionSchema }),
   z.strictObject({
     kind: z.literal('acFormula'),
