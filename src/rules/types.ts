@@ -51,6 +51,7 @@ export interface ArmorClassResult {
   value: number;
   source: string;
   armored: boolean;
+  /** A shield is wielded; its AC bonus only counts with Shield training. */
   shield: boolean;
 }
 export interface AttackResult {

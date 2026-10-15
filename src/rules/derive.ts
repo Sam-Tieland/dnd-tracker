@@ -10,6 +10,7 @@ import { parseColumnNumber, type FormulaContext } from './formula';
 import { getClassLevels, proficiencyBonus } from './levels';
 import { computeProficiencies } from './proficiencies';
 import type { DerivedSheet, Warning } from './types';
+import { unknownContent } from './warnings';
 
 /** Everything on the sheet that follows from the character's choices and state. Never throws on missing content. */
 export function deriveSheet(character: Character, registry: ContentRegistry): DerivedSheet {
@@ -39,6 +40,9 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   const d20Penalty = 2 * character.state.exhaustion;
   const { skills, passivePerception } = computeSkills(abilities, prof, pb, bonus, d20Penalty);
   const hpMax = computeHpMax(character, registry, abilities.con.mod, bonus);
+  for (const entry of character.inventory) {
+    if (entry.itemId && !registry.get(entry.itemId)) unknownContent(warnings, entry.itemId);
+  }
 
   return {
     totalLevel,
@@ -53,7 +57,7 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     d20Penalty,
     hp: { current: Math.min(Math.max(0, character.state.hpCurrent), hpMax), max: hpMax, temp: character.state.hpTemp },
     hitDice: computeHitDice(classLevels, character.state.hitDiceSpent),
-    ac: computeArmorClass(equipment, abilities, effects, bonus),
+    ac: computeArmorClass(equipment, abilities, effects, prof.armor, bonus),
     attacks: computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
     spellcasting: { classes: [], slots: [] },
     resources: [],

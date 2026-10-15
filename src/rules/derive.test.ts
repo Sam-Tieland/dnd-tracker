@@ -95,7 +95,8 @@ describe('deriveSheet: unarmored classes', () => {
   it('Monk: Unarmored Defense and Unarmored Movement only without armor and shield', () => {
     expect(monk().ac).toEqual({ value: 16, source: 'Unarmored Defense', armored: false, shield: false });
     expect(monk().speed).toBe(40);
-    expect(monk([item('s', 'srd:armor:shield')]).ac).toEqual({ value: 15, source: 'Unarmored', armored: false, shield: true });
+    // No Shield training: the shield is wielded (so Unarmored Defense is lost) but gives no AC.
+    expect(monk([item('s', 'srd:armor:shield')]).ac).toEqual({ value: 13, source: 'Unarmored', armored: false, shield: true });
     expect(monk([item('s', 'srd:armor:shield')]).speed).toBe(30);
     expect(monk().hp.max).toBe(38);
     expect(monk().saves.dex).toEqual({ bonus: 6, proficient: true });
@@ -158,6 +159,53 @@ describe('deriveSheet: special rules', () => {
     const dwarf = derive(makeCharacter({ choices: { speciesId: 'srd:species:dwarf', levels: levels('fighter', 1) } }));
     expect(dwarf.hp.max).toBe(11);
   });
+
+  it('a shield only gives its AC bonus with Shield training', () => {
+    const wizard = derive(makeCharacter({
+      choices: { baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 10, cha: 10 }, levels: levels('wizard', 1) },
+      inventory: [item('s', 'srd:armor:shield')],
+    }));
+    expect(wizard.ac).toEqual({ value: 12, source: 'Unarmored', armored: false, shield: true });
+  });
+
+  it('multiclassing adds only the multiclass proficiencies of the later classes', () => {
+    const sheet = derive(makeCharacter({ choices: { levels: [level('wizard'), level('fighter')] } }));
+    expect(sheet.armorTraining).toEqual(['light', 'medium', 'shield']);
+    expect(sheet.weaponProficiencies).toEqual(['simple', 'martial']);
+    expect(sheet.saves.int.proficient).toBe(true);
+    expect(sheet.saves.wis.proficient).toBe(true);
+    expect(sheet.saves.str.proficient).toBe(false);
+    expect(sheet.saves.con.proficient).toBe(false);
+  });
+
+  it('Rogue is proficient with martial Finesse or Light weapons only', () => {
+    const rogue = derive(makeCharacter({
+      choices: { baseAbilities: { str: 10, dex: 16, con: 10, int: 10, wis: 10, cha: 10 }, levels: levels('rogue', 1) },
+      inventory: [
+        item('a', 'srd:weapon:rapier'),
+        item('b', 'srd:weapon:hand-crossbow'),
+        item('c', 'srd:weapon:longsword'),
+        item('d', 'srd:weapon:longbow'),
+      ],
+    }));
+    expect(rogue.attacks.map((a) => [a.name, a.proficient])).toEqual([
+      ['Rapier', true],
+      ['Hand Crossbow', true],
+      ['Longsword', false],
+      ['Longbow', false],
+    ]);
+  });
+
+  it('armor class formulas do not stack: the highest one wins', () => {
+    const sheet = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 10, dex: 14, con: 16, int: 10, wis: 18, cha: 10 },
+        levels: [level('barbarian'), level('monk')],
+      },
+    }));
+    // Monk 10 + DEX 2 + WIS 4 = 16 beats Barbarian 10 + DEX 2 + CON 3 = 15.
+    expect(sheet.ac).toEqual({ value: 16, source: 'Unarmored Defense', armored: false, shield: false });
+  });
 });
 
 describe('deriveSheet: edge cases', () => {
@@ -189,14 +237,30 @@ describe('deriveSheet: edge cases', () => {
     });
     const sheet = derive(character);
     expect(sheet.totalLevel).toBe(0);
-    expect(sheet.warnings).toHaveLength(5);
+    expect(sheet.warnings).toHaveLength(6);
     expect(sheet.warnings).toEqual(
       expect.arrayContaining(
-        ['user:class:deleted', 'srd:species:atlantean', 'user:background:gone', 'user:feat:gone', 'user:feature:gone'].map((detail) => ({
-          code: 'unknown-content',
-          detail,
-        })),
+        [
+          'user:class:deleted',
+          'srd:species:atlantean',
+          'user:background:gone',
+          'user:feat:gone',
+          'user:feature:gone',
+          'user:weapon:gone',
+        ].map((detail) => ({ code: 'unknown-content', detail })),
       ),
     );
+  });
+
+  it('warns about unknown inventory items, equipped or not, but not about items that exist', () => {
+    const sheet = derive(makeCharacter({
+      inventory: [
+        item('a', 'user:item:gone', false),
+        item('b', 'srd:gear:backpack', false),
+        item('c', 'srd:weapon:longsword', false),
+        { id: 'd', customName: 'Lucky coin', qty: 1, equipped: false, attuned: false },
+      ],
+    }));
+    expect(sheet.warnings).toEqual([{ code: 'unknown-content', detail: 'user:item:gone' }]);
   });
 });

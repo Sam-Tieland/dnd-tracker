@@ -1,6 +1,6 @@
 import type { Ability } from '../content/constants';
 import type { ContentRegistry } from '../content/registry';
-import type { Effect, WeaponDef, WeaponProficiency } from '../content/schema';
+import type { ArmorTraining, Effect, WeaponDef, WeaponProficiency } from '../content/schema';
 import type { Character } from '../model/character';
 import type { BonusFn, Equipment } from './bonuses';
 import type { Proficiencies } from './proficiencies';
@@ -27,7 +27,14 @@ export function computeHitDice(classLevels: ClassLevel[], spent: Record<string, 
     .map(([die, total]) => ({ die, total, spent: Math.min(total, Math.max(0, spent[`d${die}`] ?? 0)) }));
 }
 
-export function computeArmorClass(equipment: Equipment, abilities: Abilities, effects: Effect[], bonus: BonusFn): ArmorClassResult {
+/** A shield only adds its AC with Shield training, but wielding one still blocks Unarmored Defense formulas. */
+export function computeArmorClass(
+  equipment: Equipment,
+  abilities: Abilities,
+  effects: Effect[],
+  armorTraining: Set<ArmorTraining>,
+  bonus: BonusFn,
+): ArmorClassResult {
   const dex = abilities.dex.mod;
   let value: number;
   let source: string;
@@ -48,7 +55,7 @@ export function computeArmorClass(equipment: Equipment, abilities: Abilities, ef
       }
     }
   }
-  if (equipment.shield) value += equipment.shield.baseAC;
+  if (equipment.shield && armorTraining.has('shield')) value += equipment.shield.baseAC;
   return { value: value + bonus('ac'), source, armored: !!equipment.armor, shield: !!equipment.shield };
 }
 
