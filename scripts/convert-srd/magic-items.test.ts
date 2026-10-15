@@ -16,6 +16,16 @@ describe('convertMagicItems', () => {
     expect(bag.text).toContain('500 pounds');
     expect(items.some((i) => i.attunement)).toBe(true);
   });
+
+  it('keeps stat blocks with the item that comes before them', () => {
+    const figurine = items.find((i) => i.name === 'Figurine of Wondrous Power')!;
+    expect(figurine.text).toContain('#### Giant Fly');
+    expect(figurine.text).toContain('Silver Raven');
+    // "Mysterious Deck" is the SRD 5.2.1 name of the Deck of Many Things.
+    const deck = items.find((i) => i.name === 'Mysterious Deck')!;
+    expect(deck.text).toContain('#### Avatar of Death');
+    expect(items.some((i) => i.name === 'Giant Fly' || i.name === 'Avatar of Death')).toBe(false);
+  });
 });
 
 describe('splitTopLevel', () => {
