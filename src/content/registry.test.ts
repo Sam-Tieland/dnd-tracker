@@ -23,6 +23,18 @@ describe('createRegistry', () => {
     expect(registry.get(skeletonFeature.id)).toMatchObject({ name: '' });
   });
 
+  it('keeps a user item of another type than its target as a standalone item', () => {
+    const wrongType: ContentItem = {
+      id: 'user:feat:xyz', type: 'feat', source: 'user', fills: skeletonFeature.id, name: 'Mismatched Feat',
+      category: 'general', repeatable: false, text: 'Not a feature', effects: [],
+    };
+    const registry = createRegistry([skeletonFeature], [wrongType]);
+    expect(registry.getOf('feat', 'user:feat:xyz')).toMatchObject({ id: 'user:feat:xyz', source: 'user', name: 'Mismatched Feat' });
+    expect(registry.get(skeletonFeature.id)).toEqual(skeletonFeature);
+    expect(registry.get(skeletonFeature.id)).toMatchObject({ name: '', source: 'skeleton' });
+    expect(registry.list('feature')).toHaveLength(1);
+  });
+
   it('filters by type', () => {
     const registry = createRegistry([skeletonFeature]);
     expect(registry.getOf('spell', skeletonFeature.id)).toBeUndefined();
