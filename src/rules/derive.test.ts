@@ -208,6 +208,33 @@ describe('deriveSheet: special rules', () => {
   });
 });
 
+describe('deriveSheet: level 20 capstones and Roving', () => {
+  const abilities = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+
+  it('Barbarian 20: Primal Champion raises Strength and Constitution by 4, to a maximum of 25', () => {
+    const sheet = derive(makeCharacter({ choices: { ...human, baseAbilities: { ...abilities, str: 20, con: 20 }, levels: levels('barbarian', 20) } }));
+    expect(sheet.abilities.str).toMatchObject({ score: 24, mod: 7, max: 25 });
+    expect(sheet.abilities.con).toMatchObject({ score: 24, mod: 7, max: 25 });
+    expect(sheet.abilities.dex).toMatchObject({ score: 10, max: 20 });
+    expect(sheet.warnings.filter((w) => w.code === 'ability-over-max')).toEqual([]);
+  });
+
+  it('Monk 20: Body and Mind raises Dexterity and Wisdom by 4, to a maximum of 25', () => {
+    const sheet = derive(makeCharacter({ choices: { ...human, baseAbilities: { ...abilities, dex: 20, wis: 18 }, levels: levels('monk', 20) } }));
+    expect(sheet.abilities.dex).toMatchObject({ score: 24, mod: 7, max: 25 });
+    expect(sheet.abilities.wis).toMatchObject({ score: 22, mod: 6, max: 25 });
+    expect(sheet.abilities.str).toMatchObject({ score: 10, max: 20 });
+    expect(sheet.warnings.filter((w) => w.code === 'ability-over-max')).toEqual([]);
+  });
+
+  it('Ranger 6: Roving adds 10 feet of Speed unless wearing Heavy armor', () => {
+    const ranger = (inventory: ReturnType<typeof item>[] = []) =>
+      derive(makeCharacter({ choices: { ...human, baseAbilities: { ...abilities, str: 13 }, levels: levels('ranger', 6) }, inventory }));
+    expect(ranger().speed).toBe(40);
+    expect(ranger([item('c', 'srd:armor:chain-mail')]).speed).toBe(30);
+  });
+});
+
 describe('deriveSheet: edge cases', () => {
   it('works for a freshly created character', () => {
     expect(derive(makeCharacter())).toMatchObject({
@@ -338,6 +365,33 @@ describe('deriveSheet: spellcasting and resources', () => {
     ]);
     expect(sheet.hp.max).toBe(38);
     expect(sheet.warnings).toEqual([]);
+  });
+
+  it('a cantrip from a class without spellcasting is listed without to-hit or save DC, and warns', () => {
+    const fighter = derive(makeCharacter({
+      choices: { levels: levels('fighter', 1), spells: [{ classId: 'srd:class:fighter', spellId: 'srd:spell:fire-bolt', prepared: true }] },
+    }));
+    const attack = fighter.attacks.find((a) => a.id === 'srd:spell:fire-bolt');
+    expect(attack).toMatchObject({ kind: 'cantrip', name: 'Fire Bolt', damage: '1d10', damageType: 'Fire' });
+    expect(attack?.toHit).toBeUndefined();
+    expect(attack?.saveDC).toBeUndefined();
+    expect(fighter.warnings).toContainEqual({ code: 'cantrip-without-caster', detail: 'srd:spell:fire-bolt' });
+  });
+
+  it('a cantrip never borrows the stats of another casting class', () => {
+    const sheet = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 15, dex: 10, con: 14, int: 8, wis: 12, cha: 13 },
+        levels: [...levels('paladin', 2), ...levels('sorcerer', 3)],
+        spells: [
+          { classId: 'srd:class:sorcerer', spellId: 'srd:spell:fire-bolt', prepared: true },
+          { classId: 'srd:class:wizard', spellId: 'srd:spell:fire-bolt', prepared: true },
+        ],
+      },
+    }));
+    const fireBolts = sheet.attacks.filter((a) => a.id === 'srd:spell:fire-bolt');
+    expect(fireBolts.map((a) => a.toHit)).toEqual([4, undefined]);
+    expect(sheet.warnings).toContainEqual({ code: 'cantrip-without-caster', detail: 'srd:spell:fire-bolt' });
   });
 
   it('Warlock 3 / Sorcerer 2: pact magic separate from spell slots', () => {

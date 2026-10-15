@@ -11,18 +11,27 @@ const atFull = () => kael({ state: { hpCurrent: 40 } });
 
 describe('hit points', () => {
   it('damage takes temporary hit points first', () => {
-    const hurt = applyDamage(kael({ state: { hpCurrent: 40, hpTemp: 5 } }), 7);
+    const character = kael({ state: { hpCurrent: 40, hpTemp: 5 } });
+    const hurt = applyDamage(character, 7, sheetOf(character));
     expect([hurt.state.hpTemp, hurt.state.hpCurrent]).toEqual([0, 38]);
   });
 
   it('never drops below 0 and ignores negative or fractional damage', () => {
-    expect(applyDamage(atFull(), 99).state.hpCurrent).toBe(0);
-    expect(applyDamage(atFull(), -5).state.hpCurrent).toBe(40);
-    expect(applyDamage(atFull(), 2.7).state.hpCurrent).toBe(38);
+    const character = atFull();
+    const sheet = sheetOf(character);
+    expect(applyDamage(character, 99, sheet).state.hpCurrent).toBe(0);
+    expect(applyDamage(character, -5, sheet).state.hpCurrent).toBe(40);
+    expect(applyDamage(character, 2.7, sheet).state.hpCurrent).toBe(38);
   });
 
   it('NaN damage is ignored instead of poisoning hit points', () => {
-    expect(applyDamage(atFull(), NaN).state.hpCurrent).toBe(40);
+    const character = atFull();
+    expect(applyDamage(character, NaN, sheetOf(character)).state.hpCurrent).toBe(40);
+  });
+
+  it('damage starts from the hit points the sheet shows when the stored value is above the maximum', () => {
+    const stale = kael({ state: { hpCurrent: 99 } });
+    expect(applyDamage(stale, 7, sheetOf(stale)).state.hpCurrent).toBe(33);
   });
 
   it('healing stops at the maximum and resets death saves', () => {
@@ -53,7 +62,11 @@ describe('slots and resources', () => {
 
   it('clamps spell slots to the maximum', () => {
     expect(setSlotsUsed(character, 1, 5, sheet).state.slotsUsed).toEqual({ '1': 3 });
-    expect(setSlotsUsed(character, 2, 1, sheet).state.slotsUsed).toEqual({ '2': 0 });
+  });
+
+  it('leaves the character untouched for a slot level the sheet does not have', () => {
+    expect(setSlotsUsed(character, 2, 1, sheet)).toBe(character);
+    expect(setSlotsUsed(character, 10, 1, sheet)).toBe(character);
   });
 
   it('clamps pact slots (Kael has none)', () => {

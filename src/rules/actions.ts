@@ -9,13 +9,17 @@ const withState = (character: Character, patch: Partial<Character['state']>): Ch
 const whole = (value: number) => (Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0);
 const noDeathSaves = () => ({ successes: 0, failures: 0 });
 
-/** Damage hits temporary hit points first; hit points never drop below 0. */
-export function applyDamage(character: Character, amount: number): Character {
+/**
+ * Damage hits temporary hit points first; hit points never drop below 0. It starts from the hit points the sheet
+ * shows (stored value capped at the maximum), so stale hit points above the maximum don't hide the damage.
+ */
+export function applyDamage(character: Character, amount: number, sheet: DerivedSheet): Character {
   const damage = whole(amount);
   const fromTemp = Math.min(character.state.hpTemp, damage);
+  const shown = Math.min(Math.max(0, character.state.hpCurrent), sheet.hp.max);
   return withState(character, {
     hpTemp: character.state.hpTemp - fromTemp,
-    hpCurrent: Math.max(0, character.state.hpCurrent - (damage - fromTemp)),
+    hpCurrent: Math.max(0, shown - (damage - fromTemp)),
   });
 }
 
@@ -35,9 +39,11 @@ export function setDeathSaves(character: Character, successes: number, failures:
   return withState(character, { deathSaves: { successes: clamp(successes), failures: clamp(failures) } });
 }
 
+/** A slot level the sheet doesn't have leaves the character unchanged, so no invalid key is ever stored. */
 export function setSlotsUsed(character: Character, slotLevel: number, used: number, sheet: DerivedSheet): Character {
-  const max = sheet.spellcasting.slots.find((s) => s.level === slotLevel)?.max ?? 0;
-  return withState(character, { slotsUsed: { ...character.state.slotsUsed, [String(slotLevel)]: Math.min(max, whole(used)) } });
+  const slot = sheet.spellcasting.slots.find((s) => s.level === slotLevel);
+  if (!slot) return character;
+  return withState(character, { slotsUsed: { ...character.state.slotsUsed, [String(slotLevel)]: Math.min(slot.max, whole(used)) } });
 }
 
 export function setPactSlotsUsed(character: Character, used: number, sheet: DerivedSheet): Character {

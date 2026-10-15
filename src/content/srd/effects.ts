@@ -11,6 +11,12 @@ export const EFFECTS: Record<string, Effect[]> = {
     { kind: 'acFormula', name: 'Unarmored Defense', base: 10, abilities: ['dex', 'con'], allowShield: true },
   ],
   'srd:feature:barbarian:5:fast-movement': [{ kind: 'bonus', target: 'speed', value: 10, when: 'notHeavyArmor' }],
+  'srd:feature:barbarian:20:primal-champion': [
+    { kind: 'bonus', target: 'ability:str', value: 4 },
+    { kind: 'bonus', target: 'abilityMax:str', value: 5 },
+    { kind: 'bonus', target: 'ability:con', value: 4 },
+    { kind: 'bonus', target: 'abilityMax:con', value: 5 },
+  ],
   'srd:feature:bard:1:bardic-inspiration': [
     { kind: 'resource', key: 'bardic-inspiration', name: 'Bardic Inspiration', max: { mod: 'cha', min: 1 }, recharge: 'long' },
   ],
@@ -43,6 +49,12 @@ export const EFFECTS: Record<string, Effect[]> = {
   'srd:feature:monk:2:uncanny-metabolism': [
     { kind: 'resource', key: 'uncanny-metabolism', name: 'Uncanny Metabolism', max: 1, recharge: 'long' },
   ],
+  'srd:feature:monk:20:body-and-mind': [
+    { kind: 'bonus', target: 'ability:dex', value: 4 },
+    { kind: 'bonus', target: 'abilityMax:dex', value: 5 },
+    { kind: 'bonus', target: 'ability:wis', value: 4 },
+    { kind: 'bonus', target: 'abilityMax:wis', value: 5 },
+  ],
   'srd:feature:paladin:1:lay-on-hands': [
     { kind: 'resource', key: 'lay-on-hands', name: 'Lay On Hands', max: { level: 'srd:class:paladin', times: 5 }, recharge: 'long', pool: true },
   ],
@@ -52,6 +64,7 @@ export const EFFECTS: Record<string, Effect[]> = {
   'srd:feature:ranger:1:favored-enemy': [
     { kind: 'resource', key: 'favored-enemy', name: "Favored Enemy (Hunter's Mark)", max: column('ranger', 'favored-enemy'), recharge: 'long' },
   ],
+  'srd:feature:ranger:6:roving': [{ kind: 'bonus', target: 'speed', value: 10, when: 'notHeavyArmor' }],
   'srd:feature:sorcerer:1:innate-sorcery': [
     { kind: 'resource', key: 'innate-sorcery', name: 'Innate Sorcery', max: 2, recharge: 'long' },
   ],

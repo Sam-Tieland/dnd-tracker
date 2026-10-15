@@ -5,7 +5,7 @@ import type { Character } from '../model/character';
 import type { BonusFn } from './bonuses';
 import { parseColumnNumber } from './formula';
 import type { AbilityResult, AttackResult, CasterStats, ClassLevel, SpellcastingResult, Warning } from './types';
-import { unknownContent } from './warnings';
+import { unknownContent, warnOnce } from './warnings';
 
 /** SRD 5.2.1 "Multiclass Spellcaster: Spell Slots per Spell Level", rows = caster level 1–20. */
 export const MULTICLASS_SLOTS: readonly (readonly number[])[] = [
@@ -130,7 +130,9 @@ export function computeCantripAttacks(
       continue;
     }
     if (spell.level !== 0 || !spell.cantrip) continue;
-    const caster = spellcasting.classes.find((c) => c.classId === known.classId) ?? spellcasting.classes[0];
+    // A cantrip from a feat or a class without spellcasting has no caster stats: never borrow another class's.
+    const caster = spellcasting.classes.find((c) => c.classId === known.classId);
+    if (!caster) warnOnce(warnings, { code: 'cantrip-without-caster', detail: spell.id });
     const tier = spell.cantrip.scales ? 1 + [5, 11, 17].filter((l) => totalLevel >= l).length : 1;
     const dice = /^(\d+)d(\d+)$/.exec(spell.cantrip.damageDice);
     attacks.push({

@@ -38,7 +38,7 @@ export const CharacterSchema = z.strictObject({
     backgroundId: z.string().nullable(),
     backgroundAbilityBonuses: AbilityDeltaSchema,
     backgroundChoices: anyRecord,
-    levels: z.array(LevelChoiceSchema),
+    levels: z.array(LevelChoiceSchema).max(20),
     bonusFeatIds: z.array(z.string()),
     skillProficiencies: z.array(z.string()),
     expertise: z.array(z.string()),

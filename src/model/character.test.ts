@@ -58,4 +58,11 @@ describe('CharacterSchema', () => {
     expect(CharacterSchema.safeParse(withState({ hitDiceSpent: { x: 1 } })).success).toBe(false);
     expect(CharacterSchema.safeParse(withState({ slotsUsed: { '1': 2 }, hitDiceSpent: { d10: 1 } })).success).toBe(true);
   });
+
+  it('caps the number of levels at 20', () => {
+    const level = { classId: 'srd:class:fighter', hp: 'average' as const, featureChoices: {} };
+    const withLevels = (n: number) => ({ ...valid, choices: { ...valid.choices, levels: Array.from({ length: n }, () => level) } });
+    expect(CharacterSchema.safeParse(withLevels(20)).success).toBe(true);
+    expect(CharacterSchema.safeParse(withLevels(21)).success).toBe(false);
+  });
 });

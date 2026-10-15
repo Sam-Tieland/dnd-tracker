@@ -1,7 +1,7 @@
 import type { Ability, SkillId } from '../content/constants';
 import type { ArmorTraining, Effect, Progression, WeaponProficiency } from '../content/schema';
 
-export type WarningCode = 'unknown-content' | 'multiclass-prerequisite' | 'ability-over-max';
+export type WarningCode = 'unknown-content' | 'multiclass-prerequisite' | 'ability-over-max' | 'cantrip-without-caster';
 export interface Warning {
   code: WarningCode;
   detail: string;
