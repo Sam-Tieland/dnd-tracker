@@ -39,4 +39,23 @@ describe('CharacterSchema', () => {
     expect(CharacterSchema.safeParse({ ...valid, overrides: [{ id: 'o1', target: 'armor', value: 1, reason: '' }] }).success).toBe(false);
     expect(CharacterSchema.safeParse({ ...valid, unknown: true }).success).toBe(false);
   });
+
+  it('rejects malformed timestamps', () => {
+    expect(CharacterSchema.safeParse({ ...valid, createdAt: 'banana' }).success).toBe(false);
+    expect(CharacterSchema.safeParse({ ...valid, updatedAt: '' }).success).toBe(false);
+    expect(CharacterSchema.safeParse({ ...valid, notes: [{ id: 'n1', title: 't', body: 'b', updatedAt: 'banana' }] }).success).toBe(false);
+  });
+
+  it('accepts ISO timestamps from toISOString', () => {
+    expect(CharacterSchema.safeParse({ ...valid, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).success).toBe(true);
+  });
+
+  it('validates the keys of hitDiceSpent and slotsUsed', () => {
+    const withState = (state: object) => ({ ...valid, state: { ...valid.state, ...state } });
+    expect(CharacterSchema.safeParse(withState({ slotsUsed: { '10': 1 } })).success).toBe(false);
+    expect(CharacterSchema.safeParse(withState({ slotsUsed: { foo: 1 } })).success).toBe(false);
+    expect(CharacterSchema.safeParse(withState({ slotsUsed: { d7: 1 } })).success).toBe(false);
+    expect(CharacterSchema.safeParse(withState({ hitDiceSpent: { x: 1 } })).success).toBe(false);
+    expect(CharacterSchema.safeParse(withState({ slotsUsed: { '1': 2 }, hitDiceSpent: { d10: 1 } })).success).toBe(true);
+  });
 });

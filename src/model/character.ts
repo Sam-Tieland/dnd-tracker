@@ -21,8 +21,8 @@ export const LevelChoiceSchema = z.strictObject({
 export const CharacterSchema = z.strictObject({
   id: z.string().min(1),
   schemaVersion: z.literal(1),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
   name: z.string(),
   details: z.strictObject({
     alignment: z.string().optional(),
@@ -51,8 +51,8 @@ export const CharacterSchema = z.strictObject({
     hpCurrent: z.number().int(),
     hpTemp: count,
     deathSaves: z.strictObject({ successes: z.number().int().min(0).max(3), failures: z.number().int().min(0).max(3) }),
-    hitDiceSpent: z.record(z.string(), count),
-    slotsUsed: z.record(z.string(), count),
+    hitDiceSpent: z.record(z.string().regex(/^d\d+$/), count),
+    slotsUsed: z.record(z.string().regex(/^[1-9]$/), count),
     pactSlotsUsed: count,
     resourcesUsed: z.record(z.string(), count),
     conditions: z.array(z.string()),
@@ -71,7 +71,7 @@ export const CharacterSchema = z.strictObject({
     }),
   ),
   currency: z.strictObject({ cp: count, sp: count, ep: count, gp: count, pp: count }),
-  notes: z.array(z.strictObject({ id: z.string().min(1), title: z.string(), body: z.string(), updatedAt: z.string() })),
+  notes: z.array(z.strictObject({ id: z.string().min(1), title: z.string(), body: z.string(), updatedAt: z.iso.datetime() })),
   overrides: z.array(z.strictObject({ id: z.string().min(1), target: BonusTargetSchema, value: z.number().int(), reason: z.string() })),
 });
 
