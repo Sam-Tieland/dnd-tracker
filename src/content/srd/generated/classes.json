@@ -1,0 +1,4754 @@
+[
+  {
+    "id": "srd:class:barbarian",
+    "name": "Barbarian",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 12,
+    "coreTraits": {
+      "Primary Ability": "Strength",
+      "Hit Point Die": "D12 per Barbarian level",
+      "Saving Throw Proficiencies": "Strength and Constitution",
+      "Skill Proficiencies": "Choose 2: Animal Handling, Athletics, Intimidation, Nature, Perception, or Survival",
+      "Weapon Proficiencies": "Simple and Martial weapons",
+      "Armor Training": "Light and Medium armor and Shields",
+      "Starting Equipment": "Choose A or B: (A) Greataxe, 4 Handaxes, Explorer's Pack, and 15 GP; or (B) 75 GP"
+    },
+    "multiclassText": "• Gain the following traits from the Core Barbarian Traits table: Hit Point Die, proficiency with Martial weapons, and training with Shields.\n• Gain the Barbarian's level 1 features, which are listed in the Barbarian Features table.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:barbarian:1:rage",
+          "srd:feature:barbarian:1:unarmored-defense",
+          "srd:feature:barbarian:1:weapon-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "rages": "2",
+          "rage-damage": "+2",
+          "weapon-mastery": "2"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:barbarian:2:danger-sense",
+          "srd:feature:barbarian:2:reckless-attack"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "rages": "2",
+          "rage-damage": "+2",
+          "weapon-mastery": "2"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:barbarian:3:barbarian-subclass",
+          "srd:feature:barbarian:3:primal-knowledge"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "rages": "3",
+          "rage-damage": "+2",
+          "weapon-mastery": "2"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:barbarian:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "rages": "3",
+          "rage-damage": "+2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:barbarian:5:extra-attack",
+          "srd:feature:barbarian:5:fast-movement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "rages": "3",
+          "rage-damage": "+2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "rages": "4",
+          "rage-damage": "+2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:barbarian:7:feral-instinct",
+          "srd:feature:barbarian:7:instinctive-pounce"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "rages": "4",
+          "rage-damage": "+2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:barbarian:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "rages": "4",
+          "rage-damage": "+2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:barbarian:9:brutal-strike"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "rages": "4",
+          "rage-damage": "+3",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "rages": "4",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [
+          "srd:feature:barbarian:11:relentless-rage"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "rages": "4",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:barbarian:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "rages": "5",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [
+          "srd:feature:barbarian:13:improved-brutal-strike"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "rages": "5",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "rages": "5",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [
+          "srd:feature:barbarian:15:persistent-rage"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "rages": "5",
+          "rage-damage": "+3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:barbarian:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "rages": "5",
+          "rage-damage": "+4",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [
+          "srd:feature:barbarian:17:improved-brutal-strike"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "rages": "6",
+          "rage-damage": "+4",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:barbarian:18:indomitable-might"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "rages": "6",
+          "rage-damage": "+4",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:barbarian:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "rages": "6",
+          "rage-damage": "+4",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:barbarian:20:primal-champion"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "rages": "6",
+          "rage-damage": "+4",
+          "weapon-mastery": "4"
+        }
+      }
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      10,
+      14
+    ]
+  },
+  {
+    "id": "srd:class:bard",
+    "name": "Bard",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Charisma",
+      "Hit Point Die": "D8 per Bard level",
+      "Saving Throw Proficiencies": "Dexterity and Charisma",
+      "Skill Proficiencies": "Choose any 3 skills (see Playing the Game)",
+      "Weapon Proficiencies": "Simple weapons",
+      "Tool Proficiencies": "Choose 3 Musical Instruments (see Equipment)",
+      "Armor Training": "Light armor",
+      "Starting Equipment": "Choose A or B: (A) Leather Armor, 2 Daggers, Musical Instrument of your choice, Entertainer's Pack, and 19 GP; or (B) 90 GP"
+    },
+    "multiclassText": "• Gain the following traits from the Core Bard Traits table: Hit Point Die, proficiency in one skill of your choice, proficiency with one Musical Instrument of your choice, and training with Light armor.\n• Gain the Bard's level 1 features, which are listed in the Bard Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:bard:1:bardic-inspiration",
+          "srd:feature:bard:1:spellcasting"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "bardic-die": "D6",
+          "cantrips": "2",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:bard:2:expertise",
+          "srd:feature:bard:2:jack-of-all-trades"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "bardic-die": "D6",
+          "cantrips": "2",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:bard:3:bard-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "bardic-die": "D6",
+          "cantrips": "2",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:bard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "bardic-die": "D6",
+          "cantrips": "3",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:bard:5:font-of-inspiration"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "bardic-die": "D8",
+          "cantrips": "3",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "bardic-die": "D8",
+          "cantrips": "3",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:bard:7:countercharm"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "bardic-die": "D8",
+          "cantrips": "3",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:bard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "bardic-die": "D8",
+          "cantrips": "3",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:bard:2:expertise"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "bardic-die": "D8",
+          "cantrips": "3",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:bard:10:magical-secrets"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "bardic-die": "D10",
+          "cantrips": "4",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "bardic-die": "D10",
+          "cantrips": "4",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:bard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "bardic-die": "D10",
+          "cantrips": "4",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "bardic-die": "D10",
+          "cantrips": "4",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "bardic-die": "D10",
+          "cantrips": "4",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:bard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "19"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:bard:18:superior-inspiration"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "20"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:bard:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "21"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:bard:20:words-of-creation"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "bardic-die": "D12",
+          "cantrips": "4",
+          "prepared-spells": "22"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      14
+    ]
+  },
+  {
+    "id": "srd:class:cleric",
+    "name": "Cleric",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Wisdom",
+      "Hit Point Die": "D8 per Cleric level",
+      "Saving Throw Proficiencies": "Wisdom and Charisma",
+      "Skill Proficiencies": "Choose 2: History, Insight, Medicine, Persuasion, or Religion",
+      "Weapon Proficiencies": "Simple weapons",
+      "Armor Training": "Light and Medium armor and Shields",
+      "Starting Equipment": "Choose A or B: (A) Chain Shirt, Shield, Mace, Holy Symbol, Priest's Pack, and 7 GP; or (B) 110 GP"
+    },
+    "multiclassText": "- Gain the following traits from the Core Cleric Traits table: Hit Point Die and training with Light and Medium armor and Shields.\n- Gain the Cleric's level 1 features, which are listed in the Cleric Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:cleric:1:spellcasting",
+          "srd:feature:cleric:1:divine-order"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "—",
+          "cantrips": "3",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:cleric:2:channel-divinity"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "2",
+          "cantrips": "3",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:cleric:3:cleric-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "2",
+          "cantrips": "3",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:cleric:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "2",
+          "cantrips": "4",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:cleric:5:sear-undead"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "2",
+          "cantrips": "4",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "3",
+          "cantrips": "4",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:cleric:7:blessed-strikes"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "3",
+          "cantrips": "4",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:cleric:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "3",
+          "cantrips": "4",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "cantrips": "4",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:cleric:10:divine-intervention"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:cleric:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:cleric:14:improved-blessed-strikes"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:cleric:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "3",
+          "cantrips": "5",
+          "prepared-spells": "19"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "4",
+          "cantrips": "5",
+          "prepared-spells": "20"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:cleric:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "4",
+          "cantrips": "5",
+          "prepared-spells": "21"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:cleric:20:greater-divine-intervention"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "4",
+          "cantrips": "5",
+          "prepared-spells": "22"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      17
+    ]
+  },
+  {
+    "id": "srd:class:druid",
+    "name": "Druid",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Wisdom",
+      "Hit Point Die": "D8 per Druid level",
+      "Saving Throw Proficiencies": "Intelligence and Wisdom",
+      "Skill Proficiencies": "Choose 2: Animal Handling, Arcana, Insight, Medicine, Nature, Perception, Religion, or Survival",
+      "Weapon Proficiencies": "Simple weapons",
+      "Tool Proficiencies": "Herbalism Kit",
+      "Armor Training": "Light armor and Shields",
+      "Starting Equipment": "Choose A or B: (A) Leather Armor, Shield, Sickle, Druidic Focus (Quarterstaff), Explorer's Pack, Herbalism Kit, and 9 GP; or (B) 50 GP"
+    },
+    "multiclassText": "• Gain the following traits from the Core Druid Traits table: Hit Point Die and training with Light armor and Shields.\n• Gain the Druid's level 1 features, which are listed in the Druid Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:druid:1:spellcasting",
+          "srd:feature:druid:1:druidic",
+          "srd:feature:druid:1:primal-order"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "wild-shape": "—",
+          "cantrips": "2",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:druid:2:wild-shape",
+          "srd:feature:druid:2:wild-companion"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "wild-shape": "2",
+          "cantrips": "2",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:druid:3:druid-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "wild-shape": "2",
+          "cantrips": "2",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:druid:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "wild-shape": "2",
+          "cantrips": "3",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:druid:5:wild-resurgence"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "wild-shape": "2",
+          "cantrips": "3",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "wild-shape": "3",
+          "cantrips": "3",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:druid:7:elemental-fury"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "wild-shape": "3",
+          "cantrips": "3",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:druid:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "wild-shape": "3",
+          "cantrips": "3",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "wild-shape": "3",
+          "cantrips": "3",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:druid:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [
+          "srd:feature:druid:15:improved-elemental-fury"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:druid:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "wild-shape": "3",
+          "cantrips": "4",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "wild-shape": "4",
+          "cantrips": "4",
+          "prepared-spells": "19"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:druid:18:beast-spells"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "wild-shape": "4",
+          "cantrips": "4",
+          "prepared-spells": "20"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:druid:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "wild-shape": "4",
+          "cantrips": "4",
+          "prepared-spells": "21"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:druid:20:archdruid"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "wild-shape": "4",
+          "cantrips": "4",
+          "prepared-spells": "22"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      10,
+      14
+    ]
+  },
+  {
+    "id": "srd:class:fighter",
+    "name": "Fighter",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 10,
+    "coreTraits": {
+      "Primary Ability": "Strength or Dexterity",
+      "Hit Point Die": "D10 per Fighter level",
+      "Saving Throw Proficiencies": "Strength and Constitution",
+      "Skill Proficiencies": "Choose 2: Acrobatics, Animal Handling, Athletics, History, Insight, Intimidation, Persuasion, Perception, or Survival",
+      "Weapon Proficiencies": "Simple and Martial weapons",
+      "Armor Training": "Light, Medium, and Heavy armor and Shields",
+      "Starting Equipment": "Choose A, B, or C: (A) Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer's Pack, and 4 GP; (B) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer's Pack, and 11 GP; or (C) 155 GP"
+    },
+    "multiclassText": "- Gain the following traits from the Core Fighter Traits table: Hit Point Die, proficiency with Martial weapons, and training with Light and Medium armor and Shields.\n- Gain the Fighter's level 1 features, which are listed in the Fighter Features table.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:fighter:1:fighting-style",
+          "srd:feature:fighter:1:second-wind",
+          "srd:feature:fighter:1:weapon-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "second-wind": "2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:fighter:2:action-surge",
+          "srd:feature:fighter:2:tactical-mind"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "second-wind": "2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:fighter:3:fighter-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "second-wind": "2",
+          "weapon-mastery": "3"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:fighter:5:extra-attack",
+          "srd:feature:fighter:5:tactical-shift"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:fighter:9:indomitable",
+          "srd:feature:fighter:9:tactical-master"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "second-wind": "3",
+          "weapon-mastery": "4"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [
+          "srd:feature:fighter:11:two-extra-attacks"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [
+          "srd:feature:fighter:9:indomitable",
+          "srd:feature:fighter:13:studied-attacks"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "second-wind": "4",
+          "weapon-mastery": "5"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:fighter:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "second-wind": "4",
+          "weapon-mastery": "6"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [
+          "srd:feature:fighter:2:action-surge",
+          "srd:feature:fighter:9:indomitable"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "second-wind": "4",
+          "weapon-mastery": "6"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "second-wind": "4",
+          "weapon-mastery": "6"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:fighter:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "second-wind": "4",
+          "weapon-mastery": "6"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:fighter:20:three-extra-attacks"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "second-wind": "4",
+          "weapon-mastery": "6"
+        }
+      }
+    ],
+    "subclassLevels": [
+      3,
+      7,
+      10,
+      15,
+      18
+    ]
+  },
+  {
+    "id": "srd:class:monk",
+    "name": "Monk",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Dexterity and Wisdom",
+      "Hit Point Die": "D8 per Monk level",
+      "Saving Throw Proficiencies": "Strength and Dexterity",
+      "Skill Proficiencies": "Choose 2: Acrobatics, Athletics, History, Insight, Religion, or Stealth",
+      "Weapon Proficiencies": "Simple weapons and Martial weapons that have the Light property",
+      "Tool Proficiencies": "Choose one type of Artisan's Tools or Musical Instrument (see Equipment)",
+      "Armor Training": "None",
+      "Starting Equipment": "Choose A or B: (A) Spear, 5 Daggers, Artisan's Tools or Musical Instrument chosen for the tool proficiency above, Explorer's Pack, and 11 GP; or (B) 50 GP"
+    },
+    "multiclassText": "- Gain the Hit Point Die trait from the Core Monk Traits table.\n- Gain the Monk's level 1 features, which are listed in the Monk Features table.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:monk:1:martial-arts",
+          "srd:feature:monk:1:unarmored-defense"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "martial-arts": "1d6",
+          "focus-points": "—",
+          "unarmored-movement": "—"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:monk:2:monks-focus",
+          "srd:feature:monk:2:unarmored-movement",
+          "srd:feature:monk:2:uncanny-metabolism"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "martial-arts": "1d6",
+          "focus-points": "2",
+          "unarmored-movement": "+10 ft."
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:monk:3:deflect-attacks",
+          "srd:feature:monk:3:monk-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "martial-arts": "1d6",
+          "focus-points": "3",
+          "unarmored-movement": "+10 ft."
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:monk:4:ability-score-improvement",
+          "srd:feature:monk:4:slow-fall"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "martial-arts": "1d6",
+          "focus-points": "4",
+          "unarmored-movement": "+10 ft."
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:monk:5:extra-attack",
+          "srd:feature:monk:5:stunning-strike"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "martial-arts": "1d8",
+          "focus-points": "5",
+          "unarmored-movement": "+10 ft."
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [
+          "srd:feature:monk:6:empowered-strikes"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "martial-arts": "1d8",
+          "focus-points": "6",
+          "unarmored-movement": "+15 ft."
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:monk:7:evasion"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "martial-arts": "1d8",
+          "focus-points": "7",
+          "unarmored-movement": "+15 ft."
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:monk:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "martial-arts": "1d8",
+          "focus-points": "8",
+          "unarmored-movement": "+15 ft."
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:monk:9:acrobatic-movement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "martial-arts": "1d8",
+          "focus-points": "9",
+          "unarmored-movement": "+15 ft."
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:monk:10:heightened-focus",
+          "srd:feature:monk:10:self-restoration"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "martial-arts": "1d8",
+          "focus-points": "10",
+          "unarmored-movement": "+20 ft."
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "martial-arts": "1d10",
+          "focus-points": "11",
+          "unarmored-movement": "+20 ft."
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:monk:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "martial-arts": "1d10",
+          "focus-points": "12",
+          "unarmored-movement": "+20 ft."
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [
+          "srd:feature:monk:13:deflect-energy"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "martial-arts": "1d10",
+          "focus-points": "13",
+          "unarmored-movement": "+20 ft."
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:monk:14:disciplined-survivor"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "martial-arts": "1d10",
+          "focus-points": "14",
+          "unarmored-movement": "+25 ft."
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [
+          "srd:feature:monk:15:perfect-focus"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "martial-arts": "1d10",
+          "focus-points": "15",
+          "unarmored-movement": "+25 ft."
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:monk:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "martial-arts": "1d10",
+          "focus-points": "16",
+          "unarmored-movement": "+25 ft."
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "martial-arts": "1d12",
+          "focus-points": "17",
+          "unarmored-movement": "+25 ft."
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:monk:18:superior-defense"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "martial-arts": "1d12",
+          "focus-points": "18",
+          "unarmored-movement": "+30 ft."
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:monk:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "martial-arts": "1d12",
+          "focus-points": "19",
+          "unarmored-movement": "+30 ft."
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:monk:20:body-and-mind"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "martial-arts": "1d12",
+          "focus-points": "20",
+          "unarmored-movement": "+30 ft."
+        }
+      }
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      11,
+      17
+    ]
+  },
+  {
+    "id": "srd:class:paladin",
+    "name": "Paladin",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 10,
+    "coreTraits": {
+      "Primary Ability": "Strength and Charisma",
+      "Hit Point Die": "D10 per Paladin level",
+      "Saving Throw Proficiencies": "Wisdom and Charisma",
+      "Skill Proficiencies": "Choose 2: Athletics, Insight, Intimidation, Medicine, Persuasion, or Religion",
+      "Weapon Proficiencies": "Simple and Martial weapons",
+      "Armor Training": "Light, Medium, and Heavy armor and Shields",
+      "Starting Equipment": "Choose A or B: (A) Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest's Pack, and 9 GP; or (B) 150 GP"
+    },
+    "multiclassText": "• Gain the following traits from the Core Paladin Traits table: Hit Point Die, proficiency with Martial weapons, and training with Light and Medium armor and Shields.\n\n• Gain the Paladin's level 1 features, which are listed in the Paladin Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:paladin:1:lay-on-hands",
+          "srd:feature:paladin:1:spellcasting",
+          "srd:feature:paladin:1:weapon-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "—",
+          "prepared-spells": "2"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:paladin:2:fighting-style",
+          "srd:feature:paladin:2:paladins-smite"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "—",
+          "prepared-spells": "3"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:paladin:3:channel-divinity",
+          "srd:feature:paladin:3:paladin-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "2",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:paladin:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "channel-divinity": "2",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:paladin:5:extra-attack",
+          "srd:feature:paladin:5:faithful-steed"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "2",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [
+          "srd:feature:paladin:6:aura-of-protection"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "2",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "2",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:paladin:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "channel-divinity": "2",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:paladin:9:abjure-foes"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "2",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:paladin:10:aura-of-courage"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "2",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [
+          "srd:feature:paladin:11:radiant-strikes"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:paladin:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "channel-divinity": "3",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:paladin:14:restoring-touch"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:paladin:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "channel-divinity": "3",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "3",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:paladin:18:aura-expansion"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "3",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:paladin:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "3",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "channel-divinity": "3",
+          "prepared-spells": "15"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      7,
+      15,
+      20
+    ]
+  },
+  {
+    "id": "srd:class:ranger",
+    "name": "Ranger",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 10,
+    "coreTraits": {
+      "Primary Ability": "Dexterity and Wisdom",
+      "Hit Point Die": "D10 per Ranger level",
+      "Saving Throw Proficiencies": "Strength and Dexterity",
+      "Skill Proficiencies": "Choose 3: Animal Handling, Athletics, Insight, Investigation, Nature, Perception, Stealth, or Survival",
+      "Weapon Proficiencies": "Simple and Martial weapons",
+      "Armor Training": "Light and Medium armor and Shields",
+      "Starting Equipment": "Choose A or B: (A) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Druidic Focus (sprig of mistletoe), Explorer's Pack, and 7 GP; or (B) 150 GP"
+    },
+    "multiclassText": "- Gain the following traits from the Core Ranger Traits table: Hit Point Die, proficiency with Martial weapons, proficiency in one skill of your choice from the Ranger's skill list, and training with Light and Medium armor and Shields.\n- Gain the Ranger's level 1 features, which are listed in the Ranger Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:ranger:1:spellcasting",
+          "srd:feature:ranger:1:favored-enemy",
+          "srd:feature:ranger:1:weapon-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "favored-enemy": "2",
+          "prepared-spells": "2"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:ranger:2:deft-explorer",
+          "srd:feature:ranger:2:fighting-style"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "favored-enemy": "2",
+          "prepared-spells": "3"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:ranger:3:ranger-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "favored-enemy": "2",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:ranger:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "favored-enemy": "2",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:ranger:5:extra-attack"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "favored-enemy": "3",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [
+          "srd:feature:ranger:6:roving"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "favored-enemy": "3",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "favored-enemy": "3",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:ranger:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "favored-enemy": "3",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:ranger:9:expertise"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "favored-enemy": "4",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:ranger:10:tireless"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "favored-enemy": "4",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "favored-enemy": "4",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:ranger:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "favored-enemy": "4",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [
+          "srd:feature:ranger:13:relentless-hunter"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "favored-enemy": "5",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:ranger:14:natures-veil"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "favored-enemy": "5",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "favored-enemy": "5",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:ranger:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "favored-enemy": "5",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [
+          "srd:feature:ranger:17:precise-hunter"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "favored-enemy": "6",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:ranger:18:feral-senses"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "favored-enemy": "6",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:ranger:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "favored-enemy": "6",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:ranger:20:foe-slayer"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "favored-enemy": "6",
+          "prepared-spells": "15"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      7,
+      11,
+      15
+    ]
+  },
+  {
+    "id": "srd:class:rogue",
+    "name": "Rogue",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Dexterity",
+      "Hit Point Die": "D8 per Rogue level",
+      "Saving Throw Proficiencies": "Dexterity and Intelligence",
+      "Skill Proficiencies": "Choose 4: Acrobatics, Athletics, Deception, Insight, Intimidation, Investigation, Perception, Persuasion, Sleight of Hand, or Stealth",
+      "Weapon Proficiencies": "Simple weapons and Martial weapons that have the Finesse or Light property",
+      "Tool Proficiencies": "Thieves' Tools",
+      "Armor Training": "Light armor",
+      "Starting Equipment": "Choose A or B: (A) Leather Armor, 2 Daggers, Shortsword, Shortbow, 20 Arrows, Quiver, Thieves' Tools, Burglar's Pack, and 8 GP; or (B) 100 GP"
+    },
+    "multiclassText": "- Gain the following traits from the Core Rogue Traits table: Hit Point Die, proficiency in one skill of your choice from the Rogue's skill list, proficiency with Thieves' Tools, and training with Light armor.\n- Gain the Rogue's level 1 features, which are listed in the Rogue Features table.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:rogue:1:expertise",
+          "srd:feature:rogue:1:sneak-attack",
+          "srd:feature:rogue:1:thieves-cant",
+          "srd:feature:rogue:1:weapon-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sneak-attack": "1d6"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:rogue:2:cunning-action"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sneak-attack": "1d6"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:rogue:3:rogue-subclass",
+          "srd:feature:rogue:3:steady-aim"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sneak-attack": "2d6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:rogue:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sneak-attack": "2d6"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:rogue:5:cunning-strike",
+          "srd:feature:rogue:5:uncanny-dodge"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sneak-attack": "3d6"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [
+          "srd:feature:rogue:1:expertise"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sneak-attack": "3d6"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:rogue:7:evasion",
+          "srd:feature:rogue:7:reliable-talent"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sneak-attack": "4d6"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:rogue:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sneak-attack": "4d6"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sneak-attack": "5d6"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:rogue:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sneak-attack": "5d6"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [
+          "srd:feature:rogue:11:improved-cunning-strike"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sneak-attack": "6d6"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:rogue:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sneak-attack": "6d6"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sneak-attack": "7d6"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [
+          "srd:feature:rogue:14:devious-strikes"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sneak-attack": "7d6"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [
+          "srd:feature:rogue:15:slippery-mind"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sneak-attack": "8d6"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:rogue:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sneak-attack": "8d6"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sneak-attack": "9d6"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:rogue:18:elusive"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sneak-attack": "9d6"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:rogue:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sneak-attack": "10d6"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:rogue:20:stroke-of-luck"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sneak-attack": "10d6"
+        }
+      }
+    ],
+    "subclassLevels": [
+      3,
+      9,
+      13,
+      17
+    ]
+  },
+  {
+    "id": "srd:class:sorcerer",
+    "name": "Sorcerer",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 6,
+    "coreTraits": {
+      "Primary Ability": "Charisma",
+      "Hit Point Die": "D6 per Sorcerer level",
+      "Saving Throw Proficiencies": "Constitution and Charisma",
+      "Skill Proficiencies": "Choose 2: Arcana, Deception, Insight, Intimidation, Persuasion, or Religion",
+      "Weapon Proficiencies": "Simple weapons",
+      "Armor Training": "None",
+      "Starting Equipment": "Choose A or B: (A) Spear, 2 Daggers, Arcane Focus (crystal), Dungeoneer's Pack, and 28 GP; or (B) 50 GP"
+    },
+    "multiclassText": "- Gain the Hit Point Die from the Core Sorcerer Traits table.\n- Gain the Sorcerer's level 1 features, which are listed in the Sorcerer Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:sorcerer:1:spellcasting",
+          "srd:feature:sorcerer:1:innate-sorcery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sorcery-points": "—",
+          "cantrips": "4",
+          "prepared-spells": "2"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:sorcerer:2:font-of-magic",
+          "srd:feature:sorcerer:2:metamagic"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sorcery-points": "2",
+          "cantrips": "4",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:sorcerer:3:sorcerer-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sorcery-points": "3",
+          "cantrips": "4",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:sorcerer:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "sorcery-points": "4",
+          "cantrips": "5",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:sorcerer:5:sorcerous-restoration"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sorcery-points": "5",
+          "cantrips": "5",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sorcery-points": "6",
+          "cantrips": "5",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [
+          "srd:feature:sorcerer:7:sorcery-incarnate"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sorcery-points": "7",
+          "cantrips": "5",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:sorcerer:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "sorcery-points": "8",
+          "cantrips": "5",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sorcery-points": "9",
+          "cantrips": "5",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [
+          "srd:feature:sorcerer:2:metamagic"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sorcery-points": "10",
+          "cantrips": "6",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sorcery-points": "11",
+          "cantrips": "6",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:sorcerer:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "sorcery-points": "12",
+          "cantrips": "6",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sorcery-points": "13",
+          "cantrips": "6",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sorcery-points": "14",
+          "cantrips": "6",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sorcery-points": "15",
+          "cantrips": "6",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:sorcerer:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "sorcery-points": "16",
+          "cantrips": "6",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [
+          "srd:feature:sorcerer:2:metamagic"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sorcery-points": "17",
+          "cantrips": "6",
+          "prepared-spells": "19"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sorcery-points": "18",
+          "cantrips": "6",
+          "prepared-spells": "20"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:sorcerer:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sorcery-points": "19",
+          "cantrips": "6",
+          "prepared-spells": "21"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:sorcerer:20:arcane-apotheosis"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "sorcery-points": "20",
+          "cantrips": "6",
+          "prepared-spells": "22"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      14,
+      18
+    ]
+  },
+  {
+    "id": "srd:class:warlock",
+    "name": "Warlock",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 8,
+    "coreTraits": {
+      "Primary Ability": "Charisma",
+      "Hit Point Die": "D8 per Warlock level",
+      "Saving Throw Proficiencies": "Wisdom and Charisma",
+      "Skill Proficiencies": "Choose 2: Arcana, Deception, History, Intimidation, Investigation, Nature, or Religion",
+      "Weapon Proficiencies": "Simple weapons",
+      "Armor Training": "Light armor",
+      "Starting Equipment": "Choose A or B: (A) Leather Armor, Sickle, 2 Daggers, Arcane Focus (orb), Book (occult lore), Scholar's Pack, and 15 GP; or (B) 100 GP"
+    },
+    "multiclassText": "- Gain the following traits from the Core Warlock Traits table: Hit Point Die and training with Light armor.\n- Gain the Warlock's level 1 features, which are listed in the Warlock Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:warlock:1:eldritch-invocations",
+          "srd:feature:warlock:1:pact-magic"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "eldritch-invocations": "1",
+          "cantrips": "2",
+          "prepared-spells": "2",
+          "spell-slots": "1",
+          "slot-level": "1"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:warlock:2:magical-cunning"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "eldritch-invocations": "3",
+          "cantrips": "2",
+          "prepared-spells": "3",
+          "spell-slots": "2",
+          "slot-level": "1"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:warlock:3:warlock-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "eldritch-invocations": "3",
+          "cantrips": "2",
+          "prepared-spells": "4",
+          "spell-slots": "2",
+          "slot-level": "2"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:warlock:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "eldritch-invocations": "3",
+          "cantrips": "3",
+          "prepared-spells": "5",
+          "spell-slots": "2",
+          "slot-level": "2"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "eldritch-invocations": "5",
+          "cantrips": "3",
+          "prepared-spells": "6",
+          "spell-slots": "2",
+          "slot-level": "3"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "eldritch-invocations": "5",
+          "cantrips": "3",
+          "prepared-spells": "7",
+          "spell-slots": "2",
+          "slot-level": "3"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "eldritch-invocations": "6",
+          "cantrips": "3",
+          "prepared-spells": "8",
+          "spell-slots": "2",
+          "slot-level": "4"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:warlock:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "eldritch-invocations": "6",
+          "cantrips": "3",
+          "prepared-spells": "9",
+          "spell-slots": "2",
+          "slot-level": "4"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [
+          "srd:feature:warlock:9:contact-patron"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "eldritch-invocations": "7",
+          "cantrips": "3",
+          "prepared-spells": "10",
+          "spell-slots": "2",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "eldritch-invocations": "7",
+          "cantrips": "4",
+          "prepared-spells": "10",
+          "spell-slots": "2",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [
+          "srd:feature:warlock:11:mystic-arcanum"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "eldritch-invocations": "7",
+          "cantrips": "4",
+          "prepared-spells": "11",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:warlock:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "eldritch-invocations": "8",
+          "cantrips": "4",
+          "prepared-spells": "11",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [
+          "srd:feature:warlock:11:mystic-arcanum"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "eldritch-invocations": "8",
+          "cantrips": "4",
+          "prepared-spells": "12",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "eldritch-invocations": "8",
+          "cantrips": "4",
+          "prepared-spells": "12",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [
+          "srd:feature:warlock:11:mystic-arcanum"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "eldritch-invocations": "9",
+          "cantrips": "4",
+          "prepared-spells": "13",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:warlock:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "eldritch-invocations": "9",
+          "cantrips": "4",
+          "prepared-spells": "13",
+          "spell-slots": "3",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [
+          "srd:feature:warlock:11:mystic-arcanum"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "eldritch-invocations": "9",
+          "cantrips": "4",
+          "prepared-spells": "14",
+          "spell-slots": "4",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "eldritch-invocations": "10",
+          "cantrips": "4",
+          "prepared-spells": "14",
+          "spell-slots": "4",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:warlock:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "eldritch-invocations": "10",
+          "cantrips": "4",
+          "prepared-spells": "15",
+          "spell-slots": "4",
+          "slot-level": "5"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:warlock:20:eldritch-master"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "eldritch-invocations": "10",
+          "cantrips": "4",
+          "prepared-spells": "15",
+          "spell-slots": "4",
+          "slot-level": "5"
+        }
+      }
+    ],
+    "pactSlotsByLevel": [
+      {
+        "slots": 1,
+        "slotLevel": 1
+      },
+      {
+        "slots": 2,
+        "slotLevel": 1
+      },
+      {
+        "slots": 2,
+        "slotLevel": 2
+      },
+      {
+        "slots": 2,
+        "slotLevel": 2
+      },
+      {
+        "slots": 2,
+        "slotLevel": 3
+      },
+      {
+        "slots": 2,
+        "slotLevel": 3
+      },
+      {
+        "slots": 2,
+        "slotLevel": 4
+      },
+      {
+        "slots": 2,
+        "slotLevel": 4
+      },
+      {
+        "slots": 2,
+        "slotLevel": 5
+      },
+      {
+        "slots": 2,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 3,
+        "slotLevel": 5
+      },
+      {
+        "slots": 4,
+        "slotLevel": 5
+      },
+      {
+        "slots": 4,
+        "slotLevel": 5
+      },
+      {
+        "slots": 4,
+        "slotLevel": 5
+      },
+      {
+        "slots": 4,
+        "slotLevel": 5
+      }
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      10,
+      14
+    ]
+  },
+  {
+    "id": "srd:class:wizard",
+    "name": "Wizard",
+    "source": "srd",
+    "type": "class",
+    "text": "",
+    "hitDie": 6,
+    "coreTraits": {
+      "Primary Ability": "Intelligence",
+      "Hit Point Die": "D6 per Wizard level",
+      "Saving Throw Proficiencies": "Intelligence and Wisdom",
+      "Skill Proficiencies": "Choose 2: Arcana, History, Insight, Investigation, Medicine, Nature, or Religion",
+      "Weapon Proficiencies": "Simple weapons",
+      "Armor Training": "None",
+      "Starting Equipment": "Choose A or B: (A) 2 Daggers, Arcane Focus (Quarterstaff), Robe, Spellbook, Scholar's Pack, and 5 GP; or (B) 55 GP"
+    },
+    "multiclassText": "• Gain the Hit Point Die from the Core Wizard Traits table.\n• Gain the Wizard's level 1 features, which are listed in the Wizard Features table. See the multiclassing rules in \"Character Creation\" to determine your available spell slots.",
+    "levels": [
+      {
+        "level": 1,
+        "featureIds": [
+          "srd:feature:wizard:1:spellcasting",
+          "srd:feature:wizard:1:ritual-adept",
+          "srd:feature:wizard:1:arcane-recovery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "cantrips": "3",
+          "prepared-spells": "4"
+        }
+      },
+      {
+        "level": 2,
+        "featureIds": [
+          "srd:feature:wizard:2:scholar"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "cantrips": "3",
+          "prepared-spells": "5"
+        }
+      },
+      {
+        "level": 3,
+        "featureIds": [
+          "srd:feature:wizard:3:wizard-subclass"
+        ],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "cantrips": "3",
+          "prepared-spells": "6"
+        }
+      },
+      {
+        "level": 4,
+        "featureIds": [
+          "srd:feature:wizard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+2",
+          "cantrips": "4",
+          "prepared-spells": "7"
+        }
+      },
+      {
+        "level": 5,
+        "featureIds": [
+          "srd:feature:wizard:5:memorize-spell"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "cantrips": "4",
+          "prepared-spells": "9"
+        }
+      },
+      {
+        "level": 6,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "cantrips": "4",
+          "prepared-spells": "10"
+        }
+      },
+      {
+        "level": 7,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "cantrips": "4",
+          "prepared-spells": "11"
+        }
+      },
+      {
+        "level": 8,
+        "featureIds": [
+          "srd:feature:wizard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+3",
+          "cantrips": "4",
+          "prepared-spells": "12"
+        }
+      },
+      {
+        "level": 9,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "cantrips": "4",
+          "prepared-spells": "14"
+        }
+      },
+      {
+        "level": 10,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "cantrips": "5",
+          "prepared-spells": "15"
+        }
+      },
+      {
+        "level": 11,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "cantrips": "5",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 12,
+        "featureIds": [
+          "srd:feature:wizard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+4",
+          "cantrips": "5",
+          "prepared-spells": "16"
+        }
+      },
+      {
+        "level": 13,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "cantrips": "5",
+          "prepared-spells": "17"
+        }
+      },
+      {
+        "level": 14,
+        "featureIds": [],
+        "subclassFeature": true,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "cantrips": "5",
+          "prepared-spells": "18"
+        }
+      },
+      {
+        "level": 15,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "cantrips": "5",
+          "prepared-spells": "19"
+        }
+      },
+      {
+        "level": 16,
+        "featureIds": [
+          "srd:feature:wizard:4:ability-score-improvement"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+5",
+          "cantrips": "5",
+          "prepared-spells": "21"
+        }
+      },
+      {
+        "level": 17,
+        "featureIds": [],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "cantrips": "5",
+          "prepared-spells": "22"
+        }
+      },
+      {
+        "level": 18,
+        "featureIds": [
+          "srd:feature:wizard:18:spell-mastery"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "cantrips": "5",
+          "prepared-spells": "23"
+        }
+      },
+      {
+        "level": 19,
+        "featureIds": [
+          "srd:feature:wizard:19:epic-boon"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "cantrips": "5",
+          "prepared-spells": "24"
+        }
+      },
+      {
+        "level": 20,
+        "featureIds": [
+          "srd:feature:wizard:20:signature-spells"
+        ],
+        "subclassFeature": false,
+        "columns": {
+          "proficiency-bonus": "+6",
+          "cantrips": "5",
+          "prepared-spells": "25"
+        }
+      }
+    ],
+    "slotsByLevel": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ]
+    ],
+    "subclassLevels": [
+      3,
+      6,
+      10,
+      14
+    ]
+  }
+]

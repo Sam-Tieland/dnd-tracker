@@ -1,0 +1,143 @@
+[
+  {
+    "id": "srd:species:dragonborn",
+    "name": "Dragonborn",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Dragonborn, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 5–7 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:dragonborn:draconic-ancestry",
+      "srd:feature:dragonborn:breath-weapon",
+      "srd:feature:dragonborn:damage-resistance",
+      "srd:feature:dragonborn:darkvision",
+      "srd:feature:dragonborn:draconic-flight"
+    ]
+  },
+  {
+    "id": "srd:species:dwarf",
+    "name": "Dwarf",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Dwarf, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 4–5 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:dwarf:darkvision",
+      "srd:feature:dwarf:dwarven-resilience",
+      "srd:feature:dwarf:dwarven-toughness",
+      "srd:feature:dwarf:stonecunning"
+    ]
+  },
+  {
+    "id": "srd:species:elf",
+    "name": "Elf",
+    "source": "srd",
+    "type": "species",
+    "text": "As an Elf, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 5–6 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:elf:darkvision",
+      "srd:feature:elf:elven-lineage",
+      "srd:feature:elf:fey-ancestry",
+      "srd:feature:elf:keen-senses",
+      "srd:feature:elf:trance"
+    ]
+  },
+  {
+    "id": "srd:species:gnome",
+    "name": "Gnome",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Gnome, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Small (about 3–4 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:gnome:darkvision",
+      "srd:feature:gnome:gnomish-cunning",
+      "srd:feature:gnome:gnomish-lineage"
+    ]
+  },
+  {
+    "id": "srd:species:goliath",
+    "name": "Goliath",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Goliath, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 7–8 feet tall)",
+    "speed": 35,
+    "traitIds": [
+      "srd:feature:goliath:giant-ancestry",
+      "srd:feature:goliath:large-form",
+      "srd:feature:goliath:powerful-build"
+    ]
+  },
+  {
+    "id": "srd:species:halfling",
+    "name": "Halfling",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Halfling, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Small (about 2–3 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:halfling:brave",
+      "srd:feature:halfling:halfling-nimbleness",
+      "srd:feature:halfling:luck",
+      "srd:feature:halfling:naturally-stealthy"
+    ]
+  },
+  {
+    "id": "srd:species:human",
+    "name": "Human",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Human, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 4–7 feet tall) or Small (about 2–4 feet tall), chosen when you select this species",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:human:resourceful",
+      "srd:feature:human:skillful",
+      "srd:feature:human:versatile"
+    ]
+  },
+  {
+    "id": "srd:species:orc",
+    "name": "Orc",
+    "source": "srd",
+    "type": "species",
+    "text": "As an Orc, you have these special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 6–7 feet tall)",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:orc:adrenaline-rush",
+      "srd:feature:orc:darkvision",
+      "srd:feature:orc:relentless-endurance"
+    ]
+  },
+  {
+    "id": "srd:species:tiefling",
+    "name": "Tiefling",
+    "source": "srd",
+    "type": "species",
+    "text": "As a Tiefling, you have the following special traits.",
+    "creatureType": "Humanoid",
+    "size": "Medium (about 4–7 feet tall) or Small (about 3–4 feet tall), chosen when you select this species",
+    "speed": 30,
+    "traitIds": [
+      "srd:feature:tiefling:darkvision",
+      "srd:feature:tiefling:fiendish-legacy",
+      "srd:feature:tiefling:otherworldly-presence"
+    ]
+  }
+]

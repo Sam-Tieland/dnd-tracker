@@ -1,0 +1,80 @@
+[
+  {
+    "id": "srd:background:acolyte",
+    "name": "Acolyte",
+    "source": "srd",
+    "type": "background",
+    "text": "",
+    "abilityOptions": [
+      "int",
+      "wis",
+      "cha"
+    ],
+    "featId": "srd:feat:magic-initiate",
+    "featNote": "Cleric",
+    "skillProficiencies": [
+      "insight",
+      "religion"
+    ],
+    "toolText": "Calligrapher's Supplies",
+    "equipmentText": "_Choose A or B:_ (A) Calligrapher's Supplies, Book (prayers), Holy Symbol, Parchment (10 sheets), Robe, 8 GP; or (B) 50 GP"
+  },
+  {
+    "id": "srd:background:criminal",
+    "name": "Criminal",
+    "source": "srd",
+    "type": "background",
+    "text": "",
+    "abilityOptions": [
+      "dex",
+      "con",
+      "int"
+    ],
+    "featId": "srd:feat:alert",
+    "skillProficiencies": [
+      "sleight-of-hand",
+      "stealth"
+    ],
+    "toolText": "Thieves' Tools",
+    "equipmentText": "_Choose A or B:_ (A) 2 Daggers, Thieves' Tools, Crowbar, 2 Pouches, Traveler's Clothes, 16 GP; or (B) 50 GP"
+  },
+  {
+    "id": "srd:background:sage",
+    "name": "Sage",
+    "source": "srd",
+    "type": "background",
+    "text": "",
+    "abilityOptions": [
+      "con",
+      "int",
+      "wis"
+    ],
+    "featId": "srd:feat:magic-initiate",
+    "featNote": "Wizard",
+    "skillProficiencies": [
+      "arcana",
+      "history"
+    ],
+    "toolText": "Calligrapher's Supplies",
+    "equipmentText": "_Choose A or B:_ (A) Quarterstaff, Calligrapher's Supplies, Book (history), Parchment (8 sheets), Robe, 8 GP; or (B) 50 GP"
+  },
+  {
+    "id": "srd:background:soldier",
+    "name": "Soldier",
+    "source": "srd",
+    "type": "background",
+    "text": "",
+    "abilityOptions": [
+      "str",
+      "dex",
+      "con"
+    ],
+    "featId": "srd:feat:savage-attacker",
+    "skillProficiencies": [
+      "athletics",
+      "intimidation"
+    ],
+    "toolText": "_Choose one kind of_ Gaming Set (see \"Equipment\")",
+    "equipmentText": "_Choose A or B:_ (A) Spear, Shortbow, 20 Arrows, Gaming Set (same as above), Healer's Kit, Quiver, Traveler's Clothes, 14 GP; or (B) 50 GP"
+  }
+]
