@@ -8,7 +8,10 @@ import { computeArmorClass, computeHitDice, computeHpMax, computeSpeed, computeW
 import { collectFeatures } from './features';
 import { parseColumnNumber, type FormulaContext } from './formula';
 import { getClassLevels, proficiencyBonus } from './levels';
+import { multiclassWarnings } from './multiclass';
 import { computeProficiencies } from './proficiencies';
+import { computeResources } from './resources';
+import { computeCantripAttacks, computeSpellcasting, spellcastingSources } from './spellcasting';
 import type { DerivedSheet, Warning } from './types';
 import { unknownContent } from './warnings';
 
@@ -43,6 +46,13 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   for (const entry of character.inventory) {
     if (entry.itemId && !registry.get(entry.itemId)) unknownContent(warnings, entry.itemId);
   }
+  const sources = spellcastingSources(classLevels, registry, effects);
+  const spellcasting = computeSpellcasting(character, registry, sources, abilities, pb, bonus, d20Penalty);
+  const attacks = [
+    ...computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
+    ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings),
+  ];
+  multiclassWarnings(classLevels, registry, abilities, warnings);
 
   return {
     totalLevel,
@@ -58,9 +68,9 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     hp: { current: Math.min(Math.max(0, character.state.hpCurrent), hpMax), max: hpMax, temp: character.state.hpTemp },
     hitDice: computeHitDice(classLevels, character.state.hitDiceSpent),
     ac: computeArmorClass(equipment, abilities, effects, prof.armor, bonus),
-    attacks: computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
-    spellcasting: { classes: [], slots: [] },
-    resources: [],
+    attacks,
+    spellcasting,
+    resources: computeResources(effects, ctx, character.state.resourcesUsed),
     features,
     armorTraining: [...prof.armor],
     weaponProficiencies: [...prof.weapons],

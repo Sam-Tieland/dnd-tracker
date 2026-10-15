@@ -264,3 +264,125 @@ describe('deriveSheet: edge cases', () => {
     expect(sheet.warnings).toEqual([{ code: 'unknown-content', detail: 'user:item:gone' }]);
   });
 });
+
+describe('deriveSheet: spellcasting and resources', () => {
+  it('Kael: wizard spellcasting, fighter and wizard resources, scaling cantrip', () => {
+    const sheet = derive(kael({ choices: { spells: [{ classId: 'srd:class:wizard', spellId: 'srd:spell:fire-bolt', prepared: true }] } }));
+    expect(sheet.spellcasting).toEqual({
+      classes: [{ classId: 'srd:class:wizard', name: 'Wizard', ability: 'int', progression: 'full', attack: 5, dc: 13, preparedMax: 5, cantripsMax: 3 }],
+      slots: [{ level: 1, max: 3, used: 0 }],
+      pact: undefined,
+    });
+    expect(sheet.resources).toEqual([
+      { key: 'second-wind', name: 'Second Wind', max: 2, used: 0, recharge: 'long', shortRestRegain: 1, pool: false },
+      { key: 'action-surge', name: 'Action Surge', max: 1, used: 0, recharge: 'short', shortRestRegain: 0, pool: false },
+      { key: 'arcane-recovery', name: 'Arcane Recovery', max: 1, used: 0, recharge: 'long', shortRestRegain: 0, pool: false },
+    ]);
+    expect(sheet.attacks.find((a) => a.kind === 'cantrip')).toEqual({
+      id: 'srd:spell:fire-bolt', kind: 'cantrip', name: 'Fire Bolt', toHit: 5, saveDC: undefined, saveAbility: undefined,
+      damage: '2d10', damageType: 'Fire', properties: [], proficient: true,
+    });
+  });
+
+  it('save cantrips use the spell save DC', () => {
+    const cleric = derive(makeCharacter({
+      choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 }, levels: levels('cleric', 1), spells: [{ classId: 'srd:class:cleric', spellId: 'srd:spell:sacred-flame', prepared: true }] },
+    }));
+    expect(cleric.attacks[0]).toMatchObject({ name: 'Sacred Flame', saveDC: 13, saveAbility: 'dex', toHit: undefined, damage: '1d8' });
+  });
+
+  it('Paladin 2 / Sorcerer 3: multiclass slots and both casting classes', () => {
+    const sheet = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 15, dex: 10, con: 14, int: 8, wis: 12, cha: 13 },
+        levels: [...levels('paladin', 2), ...levels('sorcerer', 3)],
+      },
+    }));
+    expect(sheet.spellcasting.slots.map((s) => s.max)).toEqual([4, 3]);
+    expect(sheet.spellcasting.classes).toEqual([
+      { classId: 'srd:class:paladin', name: 'Paladin', ability: 'cha', progression: 'half', attack: 4, dc: 12, preparedMax: 3, cantripsMax: undefined },
+      { classId: 'srd:class:sorcerer', name: 'Sorcerer', ability: 'cha', progression: 'full', attack: 4, dc: 12, preparedMax: 6, cantripsMax: 4 },
+    ]);
+    expect(sheet.resources.map((r) => [r.key, r.max, r.pool])).toEqual([
+      ['lay-on-hands', 10, true],
+      ['innate-sorcery', 2, false],
+      ['sorcery-points', 3, true],
+    ]);
+    expect(sheet.hp.max).toBe(38);
+    expect(sheet.warnings).toEqual([]);
+  });
+
+  it('Warlock 3 / Sorcerer 2: pact magic separate from spell slots', () => {
+    const sheet = derive(makeCharacter({
+      choices: { baseAbilities: { str: 8, dex: 14, con: 14, int: 10, wis: 10, cha: 16 }, levels: [...levels('warlock', 3), ...levels('sorcerer', 2)] },
+    }));
+    expect(sheet.spellcasting.slots).toEqual([{ level: 1, max: 3, used: 0 }]);
+    expect(sheet.spellcasting.pact).toEqual({ slots: 2, slotLevel: 2, used: 0 });
+    expect(sheet.resources.map((r) => [r.key, r.max])).toEqual([
+      ['magical-cunning', 1],
+      ['innate-sorcery', 2],
+      ['sorcery-points', 2],
+    ]);
+  });
+
+  it('Eldritch Knight 7 (skeleton): third-caster slots and placeholder features', () => {
+    const sheet = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 16, dex: 12, con: 14, int: 14, wis: 10, cha: 8 },
+        levels: [level('fighter'), level('fighter'), level('fighter', { subclassId: 'skeleton:subclass:eldritch-knight' }), ...levels('fighter', 4)],
+      },
+    }));
+    expect(sheet.spellcasting.slots.map((s) => s.max)).toEqual([4, 2]);
+    expect(sheet.spellcasting.classes).toEqual([
+      { classId: 'srd:class:fighter', name: 'Fighter', ability: 'int', progression: 'third', attack: 5, dc: 13, preparedMax: undefined, cantripsMax: undefined },
+    ]);
+    const placeholders = sheet.features.filter((f) => f.placeholder);
+    expect(placeholders.map((f) => [f.level, f.origin, f.ownerName])).toEqual([
+      [3, 'subclass', 'Eldritch Knight'],
+      [7, 'subclass', 'Eldritch Knight'],
+    ]);
+    expect(sheet.resources.map((r) => [r.key, r.max])).toEqual([
+      ['second-wind', 3],
+      ['action-surge', 1],
+    ]);
+    expect(sheet.warnings).toEqual([]);
+  });
+
+  it('Font of Inspiration changes Bardic Inspiration to a short rest', () => {
+    const bard = derive(makeCharacter({ choices: { baseAbilities: { str: 8, dex: 14, con: 12, int: 10, wis: 10, cha: 16 }, levels: levels('bard', 5) } }));
+    expect(bard.resources.find((r) => r.key === 'bardic-inspiration')).toMatchObject({ max: 3, recharge: 'short' });
+  });
+
+  it('Draconic Sorcery adds hit points and its own unarmored AC', () => {
+    const sorcerer = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 8, dex: 14, con: 10, int: 10, wis: 10, cha: 16 },
+        levels: [level('sorcerer'), level('sorcerer'), level('sorcerer', { subclassId: 'srd:subclass:draconic-sorcery' })],
+      },
+    }));
+    expect(sorcerer.hp.max).toBe(17);
+    expect(sorcerer.ac).toMatchObject({ value: 15, source: 'Draconic Resilience' });
+  });
+
+  it('warns about unmet multiclass prerequisites for every class', () => {
+    const lowInt = derive(makeCharacter({ choices: { baseAbilities: { str: 15, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, levels: [level('fighter'), level('wizard')] } }));
+    expect(lowInt.warnings).toEqual([{ code: 'multiclass-prerequisite', detail: 'srd:class:wizard' }]);
+    const monk = derive(makeCharacter({ choices: { baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 12, cha: 10 }, levels: [level('monk'), level('fighter')] } }));
+    expect(monk.warnings).toEqual([{ code: 'multiclass-prerequisite', detail: 'srd:class:monk' }]);
+    const single = derive(makeCharacter({ choices: { levels: levels('wizard', 2) } }));
+    expect(single.warnings).toEqual([]);
+  });
+
+  it('clamps state that is above the current maximum', () => {
+    const sheet = derive(kael({ state: { slotsUsed: { '1': 9 }, resourcesUsed: { 'second-wind': 7 }, hitDiceSpent: { d10: 8 }, hpCurrent: 99 } }));
+    expect(sheet.spellcasting.slots[0].used).toBe(3);
+    expect(sheet.resources.find((r) => r.key === 'second-wind')!.used).toBe(2);
+    expect(sheet.hitDice[0].spent).toBe(3);
+    expect(sheet.hp.current).toBe(40);
+  });
+
+  it('warns about unknown spells', () => {
+    const sheet = derive(kael({ choices: { spells: [{ classId: 'srd:class:wizard', spellId: 'srd:spell:nope', prepared: true }] } }));
+    expect(sheet.warnings).toEqual([{ code: 'unknown-content', detail: 'srd:spell:nope' }]);
+  });
+});
