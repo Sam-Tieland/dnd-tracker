@@ -51,6 +51,7 @@ describe('toInt', () => {
     ['—', 0],
     ['30 feet', 30],
     ['-1', -1],
+    ['\u22124', -4],
     [undefined, 0],
   ])('%s -> %s', (input, expected) => {
     expect(toInt(input)).toBe(expected);

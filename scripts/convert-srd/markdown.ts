@@ -51,8 +51,11 @@ export function withoutFields(md: string, labels: string[]): string {
     .trim();
 }
 
-/** First integer in the text ("+2" -> 2, "30 feet" -> 30); 0 when there is none ("—"). */
+/**
+ * First integer in the text ("+2" -> 2, "30 feet" -> 30); 0 when there is none ("—").
+ * A minus sign, ASCII hyphen or U+2212 (the SRD uses U+2212), makes it negative ("\u22124" -> -4).
+ */
 export function toInt(text: string | undefined): number {
-  const match = /-?\d+/.exec(text ?? '');
-  return match ? Number(match[0]) : 0;
+  const match = /[-\u2212]?\d+/.exec(text ?? '');
+  return match ? Number(match[0].replace('\u2212', '-')) : 0;
 }
