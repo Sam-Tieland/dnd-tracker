@@ -291,6 +291,34 @@ describe('deriveSheet: spellcasting and resources', () => {
     expect(cleric.attacks[0]).toMatchObject({ name: 'Sacred Flame', saveDC: 13, saveAbility: 'dex', toHit: undefined, damage: '1d8' });
   });
 
+  it.each<[number, string]>([
+    [4, '1d10'],
+    [10, '2d10'],
+    [11, '3d10'],
+    [16, '3d10'],
+    [17, '4d10'],
+  ])('a scaling cantrip (Fire Bolt) at character level %i deals %s', (characterLevel, damage) => {
+    const wizard = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 10, dex: 10, con: 10, int: 16, wis: 10, cha: 10 },
+        levels: levels('wizard', characterLevel),
+        spells: [{ classId: 'srd:class:wizard', spellId: 'srd:spell:fire-bolt', prepared: true }],
+      },
+    }));
+    expect(wizard.attacks.find((a) => a.id === 'srd:spell:fire-bolt')?.damage).toBe(damage);
+  });
+
+  it('a cantrip that does not scale in dice (Eldritch Blast) keeps its damage dice at higher levels', () => {
+    const warlock = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 16 },
+        levels: levels('warlock', 5),
+        spells: [{ classId: 'srd:class:warlock', spellId: 'srd:spell:eldritch-blast', prepared: true }],
+      },
+    }));
+    expect(warlock.attacks.find((a) => a.id === 'srd:spell:eldritch-blast')).toMatchObject({ kind: 'cantrip', name: 'Eldritch Blast', damage: '1d10', damageType: 'Force' });
+  });
+
   it('Paladin 2 / Sorcerer 3: multiclass slots and both casting classes', () => {
     const sheet = derive(makeCharacter({
       choices: {
