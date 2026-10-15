@@ -68,7 +68,8 @@ export const EFFECTS: Record<string, Effect[]> = {
     { kind: 'resource', key: 'arcane-recovery', name: 'Arcane Recovery', max: 1, recharge: 'long' },
   ],
   'srd:feature:circle-of-the-land:6:natural-recovery': [
-    { kind: 'resource', key: 'natural-recovery', name: 'Natural Recovery', max: 1, recharge: 'long' },
+    { kind: 'resource', key: 'natural-recovery-spell', name: 'Natural Recovery (spell)', max: 1, recharge: 'long' },
+    { kind: 'resource', key: 'natural-recovery-slots', name: 'Natural Recovery (slots)', max: 1, recharge: 'long' },
   ],
   'srd:feature:warrior-of-the-open-hand:6:wholeness-of-body': [
     { kind: 'resource', key: 'wholeness-of-body', name: 'Wholeness of Body', max: { mod: 'wis', min: 1 }, recharge: 'long' },

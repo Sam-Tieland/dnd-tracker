@@ -165,4 +165,31 @@ describe('EFFECTS', () => {
     const keys = Object.values(EFFECTS).flat().flatMap((e) => (e.kind === 'resource' ? [e.key] : []));
     expect(new Set(keys).size).toBe(keys.length);
   });
+
+  it('effect values follow the feature text', () => {
+    for (const [id, effects] of Object.entries(EFFECTS)) {
+      const text = texts.get(id) ?? '';
+      for (const effect of effects) {
+        const label = `${id} (${effect.kind})`;
+        if (effect.kind === 'resource') {
+          const regainsOnShortRest = /regain one (?:expended use|of its expended uses) when you finish a Short Rest/.test(text);
+          expect(effect.shortRestRegain !== undefined, `${label}: shortRestRegain`).toBe(regainsOnShortRest);
+          expect(effect.recharge === 'short', `${label}: recharge`).toBe(/Short or Long Rest/.test(text));
+          if (typeof effect.max === 'object' && 'pb' in effect.max) {
+            expect(text, `${label}: max uses Proficiency Bonus`).toContain('Proficiency Bonus');
+          }
+          if (typeof effect.max === 'object' && 'mod' in effect.max) {
+            expect(text, `${label}: max uses ability modifier`).toContain(`${NAME_OF[effect.max.mod]} modifier`);
+          }
+        } else if (effect.kind === 'acFormula') {
+          expect(effect.allowShield, `${label}: allowShield`).toBe(!/wielding a Shield/.test(text));
+          const names = /plus your (\w+) and (\w+) modifiers/.exec(text)?.slice(1, 3);
+          expect(effect.abilities.map((a) => NAME_OF[a]), `${label}: abilities`).toEqual(names);
+        } else if (effect.kind === 'bonus' && effect.when !== undefined) {
+          const condition = { unarmored: /armor or wielding a Shield/, notHeavyArmor: /Heavy armor/, armored: /wearing Light, Medium, or Heavy armor/ }[effect.when];
+          expect(text, `${label}: when ${effect.when}`).toMatch(condition);
+        }
+      }
+    }
+  });
 });
