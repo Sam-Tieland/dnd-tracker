@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { kael } from '../../rules/testing/fixtures';
@@ -56,5 +56,44 @@ describe('character form', () => {
     await user.clear(str);
     await user.type(str, '15');
     expect(screen.getByText('9 of 27 points')).toBeTruthy();
+  });
+
+  it('keeps a rolled hit point value within the hit die', async () => {
+    const { db } = renderApp('#/new');
+    const user = userEvent.setup();
+    await user.selectOptions(await screen.findByLabelText('Class'), 'srd:class:fighter');
+    await user.click(screen.getByRole('button', { name: 'Add level' }));
+    await user.click(screen.getByRole('button', { name: 'Add level' }));
+    await user.selectOptions(screen.getByLabelText('HP 2'), 'rolled');
+    const rolled = screen.getByLabelText('Rolled HP');
+    await user.clear(rolled);
+    await user.type(rolled, '300');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(async () => expect((await loadCharacters(db)).characters).toHaveLength(1));
+    const [saved] = (await loadCharacters(db)).characters;
+    expect(saved.choices.levels[1].hp).toBe(10);
+  });
+
+  it('saves the languages as typed, also when the field is never left', async () => {
+    const { db } = renderApp('#/new');
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText('Languages (comma-separated)'), 'Common, Dwarvish');
+    // fireEvent does not move focus, so no blur happens before the save, like a tap on a phone
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(async () => expect((await loadCharacters(db)).characters).toHaveLength(1));
+    const [saved] = (await loadCharacters(db)).characters;
+    expect(saved.choices.languages).toEqual(['Common', 'Dwarvish']);
+  });
+
+  it('keeps the comma visible while typing a list and saves the tools without it', async () => {
+    const { db } = renderApp('#/new');
+    const user = userEvent.setup();
+    const tools = (await screen.findByLabelText('Tools (comma-separated)')) as HTMLInputElement;
+    await user.type(tools, 'Dice set, ');
+    expect(tools.value).toBe('Dice set, ');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(async () => expect((await loadCharacters(db)).characters).toHaveLength(1));
+    const [saved] = (await loadCharacters(db)).characters;
+    expect(saved.choices.toolProficiencies).toEqual(['Dice set']);
   });
 });

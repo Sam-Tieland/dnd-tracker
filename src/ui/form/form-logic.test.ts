@@ -65,6 +65,17 @@ describe('levels', () => {
     expect(setLevelHp(c, 1, 'average').choices.levels[1].hp).toBe('average');
   });
 
+  it('rolled hit points stay within the hit die when the die is given', () => {
+    const c = makeCharacter({ choices: { levels: levels('fighter', 2) } });
+    expect(setLevelHp(c, 1, 300, 8).choices.levels[1].hp).toBe(8);
+    expect(setLevelHp(c, 1, 1e300, 8).choices.levels[1].hp).toBe(8);
+    expect(setLevelHp(c, 1, 0, 8).choices.levels[1].hp).toBe(1);
+    expect(setLevelHp(c, 1, 5, 8).choices.levels[1].hp).toBe(5);
+    expect(setLevelHp(c, 1, 300).choices.levels[1].hp).toBe(300);
+    expect(setLevelHp(c, 1, 'average', 8).choices.levels[1].hp).toBe('average');
+    expect(setLevelHp(c, 1, NaN, 8)).toBe(c);
+  });
+
   it('the Ability Score Improvement feat gives +2 to one score or +1 to two', () => {
     expect(readVendor('feats.md')).toContain('Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1.');
     const c = makeCharacter({ choices: { levels: levels('fighter', 4) } });

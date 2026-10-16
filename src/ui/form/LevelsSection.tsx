@@ -65,7 +65,7 @@ export function LevelsSection({ character, sheet, onChange }: SectionProps) {
                     <option value="rolled">{t('form.hpRolled')}</option>
                   </select>
                   {level.hp !== 'average' && (
-                    <NumberInput aria-label={t('form.hpRolledValue')} min={1} max={cls?.hitDie} value={level.hp} onChange={(hp) => onChange(setLevelHp(character, index, hp))} />
+                    <NumberInput aria-label={t('form.hpRolledValue')} min={1} max={cls?.hitDie} value={level.hp} onChange={(hp) => onChange(setLevelHp(character, index, hp, cls?.hitDie))} />
                   )}
                 </span>
               )}

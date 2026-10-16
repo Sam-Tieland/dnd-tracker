@@ -72,10 +72,13 @@ export function removeLastLevel(character: Character): Character {
   return withChoices(character, { levels: character.choices.levels.slice(0, -1) });
 }
 
-/** Average, or a rolled whole number of at least 1; a non-number changes nothing. */
-export function setLevelHp(character: Character, index: number, hp: 'average' | number): Character {
+/** Average, or a rolled whole number from 1 up to the hit die (when given); a non-number changes nothing. */
+export function setLevelHp(character: Character, index: number, hp: 'average' | number, maxDie?: number): Character {
   if (hp !== 'average' && !Number.isFinite(hp)) return character;
-  return mapLevel(character, index, (level) => ({ ...level, hp: hp === 'average' ? 'average' : Math.max(1, Math.round(hp)) }));
+  return mapLevel(character, index, (level) => ({
+    ...level,
+    hp: hp === 'average' ? 'average' : Math.min(maxDie ?? Infinity, Math.max(1, Math.round(hp))),
+  }));
 }
 
 /** A feat on this level; any other feat than Ability Score Improvement drops the ASI scores. */
