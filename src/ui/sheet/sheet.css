@@ -43,3 +43,18 @@ body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bo
 .spell-row { display: flex; gap: 0.5rem; align-items: flex-start; }
 .spell-row details { flex: 1; }
 .spell-row summary { min-height: var(--tap); display: flex; align-items: center; gap: 0.4rem; cursor: pointer; flex-wrap: wrap; }
+.add-item { display: grid; gap: 0.4rem; margin-bottom: 1rem; }
+.matches { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.25rem; }
+.matches button { width: 100%; justify-content: flex-start; }
+.inventory { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+.inventory th, .inventory td { padding: 0.25rem 0.4rem; text-align: left; border-bottom: 1px solid var(--border); }
+.inventory input[type='number'] { width: 5rem; }
+.coins label { display: inline-flex; flex-direction: column; gap: 0.2rem; }
+.coins input { width: 6rem; }
+.feature { border-bottom: 1px solid var(--border); padding: 0.25rem 0; }
+.feature summary { min-height: var(--tap); display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; cursor: pointer; }
+.feature-name { font-weight: 600; }
+.breakdown { display: grid; gap: 0.4rem; }
+.breakdown dt { font-weight: 600; }
+.breakdown dd { margin: 0; color: var(--muted); }
+.overrides { list-style: none; padding: 0; }

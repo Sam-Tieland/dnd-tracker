@@ -58,3 +58,41 @@ describe('spells tab', () => {
     );
   });
 });
+
+describe('inventory tab', () => {
+  it('adds an SRD item and an own item, equips armor and never stores an empty quantity', async () => {
+    const { db, user } = await openKael({ inventory: [] });
+    expect(screen.getByTestId('ac').textContent).toBe('11');
+    await user.click(screen.getByRole('tab', { name: 'Inventory' }));
+    await user.type(screen.getByLabelText('Search items or type a name'), 'chain mail');
+    await user.click(screen.getByRole('button', { name: 'Chain Mail (Armor)' }));
+    await user.click(screen.getByLabelText('Chain Mail equipped'));
+    expect(screen.getByTestId('ac').textContent).toBe('17');
+    await user.type(screen.getByLabelText('Search items or type a name'), 'Lucky coin');
+    await user.click(screen.getByRole('button', { name: 'Add "Lucky coin" as your own item' }));
+    const qty = screen.getByLabelText('Quantity of Lucky coin');
+    await user.clear(qty);
+    await user.tab();
+    expect((qty as HTMLInputElement).value).toBe('1');
+    await waitFor(async () =>
+      expect((await loadCharacter(db, 'test'))?.inventory.map((i) => [i.customName ?? i.itemId, i.qty, i.equipped])).toEqual([
+        ['srd:armor:chain-mail', 1, true],
+        ['Lucky coin', 1, false],
+      ]),
+    );
+  });
+});
+
+describe('features tab', () => {
+  it('groups features with SRD text and adds an override that changes the AC', async () => {
+    const { user } = await openKael();
+    await user.click(screen.getByRole('tab', { name: 'Features' }));
+    expect(screen.getByRole('heading', { name: 'Champion' })).toBeTruthy();
+    expect(screen.getByText('Second Wind')).toBeTruthy();
+    await user.selectOptions(screen.getByLabelText('Number'), 'ac');
+    await user.type(screen.getByLabelText('Reason'), 'Ring of Protection');
+    await user.click(screen.getByRole('button', { name: 'Add override' }));
+    expect(screen.getByTestId('ac').textContent).toBe('20');
+    expect(screen.getByText(/\+1 Ring of Protection \(override\)/)).toBeTruthy();
+  });
+});
