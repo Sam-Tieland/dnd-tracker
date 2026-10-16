@@ -174,10 +174,12 @@ export function longRest(character: Character, sheet: DerivedSheet): Character {
 
 /**
  * After the choices changed (the form was saved): a character that had no levels starts at full hit points; otherwise
- * the current hit points rise by as much as the maximum rose, and never exceed the new maximum.
+ * the current hit points rise by as much as the maximum rose, and never exceed the new maximum. SRD "Death Saving
+ * Throws": both counts reset to zero when the character regains any Hit Points, so death saves reset above 0 and are
+ * kept at 0.
  */
 export function syncHitPoints(character: Character, before: DerivedSheet, after: DerivedSheet): Character {
   const hpCurrent =
     before.totalLevel === 0 ? after.hp.max : Math.min(after.hp.max, before.hp.current + Math.max(0, after.hp.max - before.hp.max));
-  return withState(character, { hpCurrent });
+  return withState(character, { hpCurrent, deathSaves: hpCurrent > 0 ? noDeathSaves() : character.state.deathSaves });
 }

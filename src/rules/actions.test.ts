@@ -277,4 +277,23 @@ describe('syncHitPoints', () => {
     const down = kael({ state: { hpCurrent: 38 }, choices: { levels: kael().choices.levels.slice(0, 4) } });
     expect(syncHitPoints(down, sheetOf(full), sheetOf(down)).state.hpCurrent).toBe(34);
   });
+
+  it('a dying character who gains hit points is no longer dying: death saves reset', () => {
+    const before = kael({ state: { hpCurrent: 0, deathSaves: { successes: 1, failures: 2 } } });
+    const up = kael({
+      state: { hpCurrent: 0, deathSaves: { successes: 1, failures: 2 } },
+      choices: { levels: [...kael().choices.levels, level('fighter')] },
+    });
+    const synced = syncHitPoints(up, sheetOf(before), sheetOf(up));
+    expect(synced.state.hpCurrent).toBeGreaterThan(0);
+    expect(synced.state.deathSaves).toEqual({ successes: 0, failures: 0 });
+  });
+
+  it('a character that stays at 0 hit points keeps its death saves', () => {
+    const before = kael({ state: { hpCurrent: 0, deathSaves: { successes: 1, failures: 2 } } });
+    const same = kael({ state: { hpCurrent: 0, deathSaves: { successes: 1, failures: 2 } } });
+    const synced = syncHitPoints(same, sheetOf(before), sheetOf(same));
+    expect(synced.state.hpCurrent).toBe(0);
+    expect(synced.state.deathSaves).toEqual({ successes: 1, failures: 2 });
+  });
 });
