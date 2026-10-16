@@ -65,4 +65,18 @@ describe('CharacterSchema', () => {
     expect(CharacterSchema.safeParse(withLevels(20)).success).toBe(true);
     expect(CharacterSchema.safeParse(withLevels(21)).success).toBe(false);
   });
+
+  it('inventory and override ids fit bonus targets such as attack:<id>', () => {
+    const withItem = (id: string) => ({ ...valid, inventory: [{ id, qty: 1, equipped: false, attuned: false }] });
+    expect(CharacterSchema.safeParse(withItem('6f1d2c3b-0a4e-4b5f-8a6d-7e8f9a0b1c2d')).success).toBe(true);
+    expect(CharacterSchema.safeParse(withItem('Item 1')).success).toBe(false);
+    expect(CharacterSchema.safeParse({ ...valid, overrides: [{ id: 'O:1', target: 'ac', value: 1, reason: '' }] }).success).toBe(false);
+  });
+
+  it('a spell from a feat carries its own spellcasting ability', () => {
+    const withSpell = (entry: object) => ({ ...valid, choices: { ...valid.choices, spells: [entry] } });
+    const guidance = { classId: 'srd:class:cleric', spellId: 'srd:spell:guidance', prepared: true };
+    expect(CharacterSchema.safeParse(withSpell({ ...guidance, ability: 'wis' })).success).toBe(true);
+    expect(CharacterSchema.safeParse(withSpell({ ...guidance, ability: 'luck' })).success).toBe(false);
+  });
 });

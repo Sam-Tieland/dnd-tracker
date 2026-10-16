@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BonusTargetSchema } from '../content/schema';
+import { AbilitySchema, BonusTargetSchema } from '../content/schema';
 
 const score = z.number().int().min(1).max(30);
 const AbilityScoresSchema = z.strictObject({ str: score, dex: score, con: score, int: score, wis: score, cha: score });
@@ -7,6 +7,9 @@ const delta = z.number().int().optional();
 const AbilityDeltaSchema = z.strictObject({ str: delta, dex: delta, con: delta, int: delta, wis: delta, cha: delta });
 const count = z.number().int().min(0);
 const anyRecord = z.record(z.string(), z.unknown());
+
+/** Inventory and override ids end up in bonus targets such as attack:<id>, so they use the same characters. */
+const entryId = z.string().regex(/^[a-z0-9-]+$/);
 
 export const LevelChoiceSchema = z.strictObject({
   classId: z.string().min(1),
@@ -45,7 +48,8 @@ export const CharacterSchema = z.strictObject({
     languages: z.array(z.string()),
     toolProficiencies: z.array(z.string()),
     featureOptions: z.array(z.string()),
-    spells: z.array(z.strictObject({ classId: z.string(), spellId: z.string(), prepared: z.boolean() })),
+    /** `ability` is set for spells from a feat such as Magic Initiate; `classId` is then the spell list. */
+    spells: z.array(z.strictObject({ classId: z.string(), spellId: z.string(), prepared: z.boolean(), ability: AbilitySchema.optional() })),
   }),
   state: z.strictObject({
     hpCurrent: z.number().int(),
@@ -61,7 +65,7 @@ export const CharacterSchema = z.strictObject({
   }),
   inventory: z.array(
     z.strictObject({
-      id: z.string().min(1),
+      id: entryId,
       itemId: z.string().optional(),
       customName: z.string().optional(),
       qty: count,
@@ -72,7 +76,7 @@ export const CharacterSchema = z.strictObject({
   ),
   currency: z.strictObject({ cp: count, sp: count, ep: count, gp: count, pp: count }),
   notes: z.array(z.strictObject({ id: z.string().min(1), title: z.string(), body: z.string(), updatedAt: z.iso.datetime() })),
-  overrides: z.array(z.strictObject({ id: z.string().min(1), target: BonusTargetSchema, value: z.number().int(), reason: z.string() })),
+  overrides: z.array(z.strictObject({ id: entryId, target: BonusTargetSchema, value: z.number().int(), reason: z.string() })),
 });
 
 export type Character = z.infer<typeof CharacterSchema>;

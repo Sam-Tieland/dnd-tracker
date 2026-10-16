@@ -307,7 +307,7 @@ describe('deriveSheet: spellcasting and resources', () => {
       { key: 'arcane-recovery', name: 'Arcane Recovery', max: 1, used: 0, recharge: 'long', shortRestRegain: 0, pool: false },
     ]);
     expect(sheet.attacks.find((a) => a.kind === 'cantrip')).toEqual({
-      id: 'srd:spell:fire-bolt', kind: 'cantrip', name: 'Fire Bolt', toHit: 5, saveDC: undefined, saveAbility: undefined,
+      id: 'srd:spell:fire-bolt@srd:class:wizard', kind: 'cantrip', name: 'Fire Bolt', toHit: 5, saveDC: undefined, saveAbility: undefined,
       damage: '2d10', damageType: 'Fire', properties: [], proficient: true,
     });
   });
@@ -333,7 +333,7 @@ describe('deriveSheet: spellcasting and resources', () => {
         spells: [{ classId: 'srd:class:wizard', spellId: 'srd:spell:fire-bolt', prepared: true }],
       },
     }));
-    expect(wizard.attacks.find((a) => a.id === 'srd:spell:fire-bolt')?.damage).toBe(damage);
+    expect(wizard.attacks.find((a) => a.name === 'Fire Bolt')?.damage).toBe(damage);
   });
 
   it('a cantrip that does not scale in dice (Eldritch Blast) keeps its damage dice at higher levels', () => {
@@ -344,7 +344,7 @@ describe('deriveSheet: spellcasting and resources', () => {
         spells: [{ classId: 'srd:class:warlock', spellId: 'srd:spell:eldritch-blast', prepared: true }],
       },
     }));
-    expect(warlock.attacks.find((a) => a.id === 'srd:spell:eldritch-blast')).toMatchObject({ kind: 'cantrip', name: 'Eldritch Blast', damage: '1d10', damageType: 'Force' });
+    expect(warlock.attacks.find((a) => a.name === 'Eldritch Blast')).toMatchObject({ kind: 'cantrip', name: 'Eldritch Blast', damage: '1d10', damageType: 'Force' });
   });
 
   it('Paladin 2 / Sorcerer 3: multiclass slots and both casting classes', () => {
@@ -372,7 +372,7 @@ describe('deriveSheet: spellcasting and resources', () => {
     const fighter = derive(makeCharacter({
       choices: { levels: levels('fighter', 1), spells: [{ classId: 'srd:class:fighter', spellId: 'srd:spell:fire-bolt', prepared: true }] },
     }));
-    const attack = fighter.attacks.find((a) => a.id === 'srd:spell:fire-bolt');
+    const attack = fighter.attacks.find((a) => a.name === 'Fire Bolt');
     expect(attack).toMatchObject({ kind: 'cantrip', name: 'Fire Bolt', damage: '1d10', damageType: 'Fire' });
     expect(attack?.toHit).toBeUndefined();
     expect(attack?.saveDC).toBeUndefined();
@@ -390,7 +390,8 @@ describe('deriveSheet: spellcasting and resources', () => {
         ],
       },
     }));
-    const fireBolts = sheet.attacks.filter((a) => a.id === 'srd:spell:fire-bolt');
+    const fireBolts = sheet.attacks.filter((a) => a.name === 'Fire Bolt');
+    expect(fireBolts.map((a) => a.id)).toEqual(['srd:spell:fire-bolt@srd:class:sorcerer', 'srd:spell:fire-bolt@srd:class:wizard']);
     expect(fireBolts.map((a) => a.toHit)).toEqual([4, undefined]);
     expect(sheet.warnings).toContainEqual({ code: 'cantrip-without-caster', detail: 'srd:spell:fire-bolt' });
   });
@@ -485,5 +486,59 @@ describe('deriveSheet: conditions and armor training', () => {
     const wizard = derive(makeCharacter({ choices: { levels: levels('wizard', 1) }, inventory: [item('a', 'srd:armor:chain-mail')] }));
     expect(wizard.warnings).toContainEqual({ code: 'armor-untrained', detail: 'srd:armor:chain-mail' });
     expect(derive(kael()).warnings).toEqual([]);
+  });
+});
+
+describe('deriveSheet: choices that change numbers', () => {
+  const cleric = (options: string[], wis = 14) =>
+    makeCharacter({ choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis, cha: 10 }, levels: levels('cleric', 1), featureOptions: options } });
+
+  it('Divine Order Protector: Martial weapons and Heavy armor', () => {
+    const sheet = derive(cleric(['srd:feature:cleric:1:divine-order:protector']));
+    expect(sheet.weaponProficiencies).toContain('martial');
+    expect(sheet.armorTraining).toContain('heavy');
+    expect(sheet.features.find((f) => f.origin === 'option')).toMatchObject({ name: 'Protector', ownerName: 'Divine Order' });
+  });
+
+  it('Divine Order Thaumaturge: Wisdom modifier, minimum +1, on Arcana and Religion', () => {
+    const wise = derive(cleric(['srd:feature:cleric:1:divine-order:thaumaturge'], 14));
+    expect([wise.skills.arcana.bonus, wise.skills.religion.bonus, wise.skills.history.bonus]).toEqual([2, 2, 0]);
+    expect(derive(cleric(['srd:feature:cleric:1:divine-order:thaumaturge'], 8)).skills.arcana.bonus).toBe(1);
+  });
+
+  it('Primal Order Warden and Magician', () => {
+    const base = { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 12, cha: 10 }, levels: levels('druid', 1) };
+    const warden = derive(makeCharacter({ choices: { ...base, featureOptions: ['srd:feature:druid:1:primal-order:warden'] } }));
+    expect(warden.armorTraining).toContain('medium');
+    expect(warden.weaponProficiencies).toContain('martial');
+    const magician = derive(makeCharacter({ choices: { ...base, featureOptions: ['srd:feature:druid:1:primal-order:magician'] } }));
+    expect(magician.skills.nature.bonus).toBe(1);
+  });
+
+  it('Wood Elf: Speed 35', () => {
+    const elf = (options: string[]) => derive(makeCharacter({ choices: { speciesId: 'srd:species:elf', featureOptions: options } }));
+    expect(elf([]).speed).toBe(30);
+    expect(elf(['srd:feature:elf:elven-lineage:wood-elf']).speed).toBe(35);
+  });
+
+  it('an option only counts while its parent feature is active', () => {
+    const wizard = derive(makeCharacter({
+      choices: { levels: levels('wizard', 1), featureOptions: ['srd:feature:cleric:1:divine-order:protector', 'srd:feature:metamagic:careful-spell'] },
+    }));
+    expect(wizard.weaponProficiencies).not.toContain('martial');
+    expect(wizard.features.some((f) => f.origin === 'option')).toBe(false);
+    expect(wizard.warnings).toEqual([]);
+  });
+
+  it('Magic Initiate: a cantrip uses the ability chosen for the feat, without a casting class', () => {
+    const fighter = derive(makeCharacter({
+      choices: {
+        baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 },
+        levels: levels('fighter', 1),
+        spells: [{ classId: 'srd:class:cleric', spellId: 'srd:spell:sacred-flame', prepared: true, ability: 'wis' }],
+      },
+    }));
+    expect(fighter.attacks.find((a) => a.kind === 'cantrip')).toMatchObject({ id: 'srd:spell:sacred-flame@srd:class:cleric', saveDC: 13, saveAbility: 'dex' });
+    expect(fighter.warnings).toEqual([]);
   });
 });

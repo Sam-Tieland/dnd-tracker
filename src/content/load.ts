@@ -16,11 +16,19 @@ import speciesJson from './srd/generated/species.json';
 import spellsJson from './srd/generated/spells.json';
 import subclassesJson from './srd/generated/subclasses.json';
 import weaponsJson from './srd/generated/weapons.json';
+import { OPTION_FEATURES, OPTION_GROUP_PARENTS } from './srd/options';
 
 const asList = <T>(data: unknown): T[] => data as T[];
 
 function withEffects<T extends { id: string; effects: Effect[] }>(items: T[]): T[] {
   return items.map((item) => (EFFECTS[item.id] ? { ...item, effects: EFFECTS[item.id] } : item));
+}
+
+function withOptionParents(items: FeatureDef[]): FeatureDef[] {
+  return items.map((item) => {
+    const parent = item.optionGroup ? OPTION_GROUP_PARENTS[item.optionGroup] : undefined;
+    return parent ? { ...item, optionOf: parent } : item;
+  });
 }
 
 let cache: ContentItem[] | undefined;
@@ -38,7 +46,8 @@ export function loadBuiltinContent(): ContentItem[] {
     ...classes,
     ...asList<SubclassDef>(subclassesJson),
     ...skeletons.subclasses,
-    ...withEffects(asList<FeatureDef>(featuresJson)),
+    ...withEffects(withOptionParents(asList<FeatureDef>(featuresJson))),
+    ...OPTION_FEATURES,
     ...skeletons.features,
     ...asList<SpeciesDef>(speciesJson),
     ...asList<BackgroundDef>(backgroundsJson),

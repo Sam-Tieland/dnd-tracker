@@ -92,6 +92,8 @@ export const FeatureSchema = z.strictObject({
   effects: z.array(EffectSchema),
   marker: z.enum(['subclass', 'asi', 'epicBoon']).optional(),
   optionGroup: z.string().optional(),
+  /** The feature this option belongs to; the option only counts while that feature is active. */
+  optionOf: z.string().optional(),
 });
 
 export const LevelRowSchema = z.strictObject({

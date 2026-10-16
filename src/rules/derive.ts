@@ -11,7 +11,7 @@ import { getClassLevels, proficiencyBonus } from './levels';
 import { multiclassWarnings } from './multiclass';
 import { computeProficiencies } from './proficiencies';
 import { computeResources } from './resources';
-import { computeCantripAttacks, computeSpellcasting, spellcastingSources } from './spellcasting';
+import { computeCantripAttacks, computeSpellcasting, makeSpellStats, spellcastingSources } from './spellcasting';
 import type { DerivedSheet, Warning } from './types';
 import { unknownContent, warnOnce } from './warnings';
 
@@ -51,10 +51,11 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     if (entry.itemId && !registry.get(entry.itemId)) unknownContent(warnings, entry.itemId);
   }
   const sources = spellcastingSources(classLevels, registry, effects);
-  const spellcasting = computeSpellcasting(character, registry, sources, abilities, pb, bonus, d20Penalty);
+  const stats = makeSpellStats(abilities, pb, bonus, d20Penalty);
+  const spellcasting = computeSpellcasting(character, registry, sources, stats);
   const attacks = [
     ...computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
-    ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings),
+    ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings, stats),
   ];
   multiclassWarnings(classLevels, registry, abilities, warnings);
 

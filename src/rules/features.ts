@@ -60,7 +60,12 @@ export function collectFeatures(character: Character, registry: ContentRegistry,
     if (species) for (const id of species.traitIds) add(id, 'species', species.name);
     else unknownContent(warnings, speciesId);
   }
-  for (const id of featureOptions) add(id, 'option');
+  for (const id of featureOptions) {
+    // An option only counts while its parent feature is active (Divine Order needs a Cleric level).
+    const parentId = registry.getOf('feature', id)?.optionOf;
+    if (parentId !== undefined && !seen.has(parentId)) continue;
+    add(id, 'option', parentId !== undefined ? registry.getOf('feature', parentId)?.name : undefined);
+  }
 
   for (const feat of collectFeats(character, registry, warnings)) {
     if (seen.has(feat.id)) continue;

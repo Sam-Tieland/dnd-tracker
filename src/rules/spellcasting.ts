@@ -78,27 +78,27 @@ export function casterLevel(sources: CasterSource[]): number {
   }, 0);
 }
 
-export function computeSpellcasting(
-  character: Character,
-  registry: ContentRegistry,
-  sources: CasterSource[],
-  abilities: Record<Ability, AbilityResult>,
-  pb: number,
-  bonus: BonusFn,
-  d20Penalty: number,
-): SpellcastingResult {
+export type SpellStatsFn = (ability: Ability) => { attack: number; dc: number };
+
+/** Spell attack bonus and save DC for a spellcasting ability: PB + modifier, and 8 + PB + modifier. */
+export function makeSpellStats(abilities: Record<Ability, AbilityResult>, pb: number, bonus: BonusFn, d20Penalty: number): SpellStatsFn {
+  return (ability) => {
+    const mod = abilities[ability].mod;
+    return { attack: pb + mod + bonus('spellAttack') - d20Penalty, dc: 8 + pb + mod + bonus('spellDC') };
+  };
+}
+
+export function computeSpellcasting(character: Character, registry: ContentRegistry, sources: CasterSource[], stats: SpellStatsFn): SpellcastingResult {
   const classes: CasterStats[] = sources.map((source) => {
     const cls = registry.getOf('class', source.classId);
     const row = cls?.levels[source.classLevel - 1];
     const column = (key: string) => (row?.columns[key] !== undefined ? parseColumnNumber(row.columns[key]) : undefined);
-    const mod = abilities[source.ability].mod;
     return {
       classId: source.classId,
       name: cls?.name ?? source.classId,
       ability: source.ability,
       progression: source.progression,
-      attack: pb + mod + bonus('spellAttack') - d20Penalty,
-      dc: 8 + pb + mod + bonus('spellDC'),
+      ...stats(source.ability),
       preparedMax: column('prepared-spells'),
       cantripsMax: column('cantrips'),
     };
@@ -121,6 +121,7 @@ export function computeCantripAttacks(
   spellcasting: SpellcastingResult,
   totalLevel: number,
   warnings: Warning[],
+  stats: SpellStatsFn,
 ): AttackResult[] {
   const attacks: AttackResult[] = [];
   for (const known of character.choices.spells) {
@@ -130,17 +131,18 @@ export function computeCantripAttacks(
       continue;
     }
     if (spell.level !== 0 || !spell.cantrip) continue;
-    // A cantrip from a feat or a class without spellcasting has no caster stats: never borrow another class's.
-    const caster = spellcasting.classes.find((c) => c.classId === known.classId);
-    if (!caster) warnOnce(warnings, { code: 'cantrip-without-caster', detail: spell.id });
+    // A spell from a feat (Magic Initiate) has its own ability; a class spell uses that class's caster stats and never
+    // borrows another class's.
+    const own = known.ability ? stats(known.ability) : spellcasting.classes.find((c) => c.classId === known.classId);
+    if (!own) warnOnce(warnings, { code: 'cantrip-without-caster', detail: spell.id });
     const tier = spell.cantrip.scales ? 1 + [5, 11, 17].filter((l) => totalLevel >= l).length : 1;
     const dice = /^(\d+)d(\d+)$/.exec(spell.cantrip.damageDice);
     attacks.push({
-      id: spell.id,
+      id: `${spell.id}@${known.classId}`,
       kind: 'cantrip',
       name: spell.name,
-      toHit: spell.cantrip.attackType === 'attack' ? caster?.attack : undefined,
-      saveDC: spell.cantrip.attackType === 'save' ? caster?.dc : undefined,
+      toHit: spell.cantrip.attackType === 'attack' ? own?.attack : undefined,
+      saveDC: spell.cantrip.attackType === 'save' ? own?.dc : undefined,
       saveAbility: spell.cantrip.saveAbility,
       damage: dice ? `${Number(dice[1]) * tier}d${dice[2]}` : spell.cantrip.damageDice,
       damageType: spell.cantrip.damageType,
