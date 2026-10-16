@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cryptoRng, DiceError, parseRoll, roll, rollD20, rollDie, type Rng } from './dice';
+import { readVendor } from '../../scripts/convert-srd/vendor';
+import { cryptoRng, DiceError, parseRoll, roll, rollAbilityScore, rollD20, rollDie, type Rng } from './dice';
 
 /** An RNG that makes successive dice of `sides` show the given faces. */
 const faces = (sides: number, ...values: number[]): Rng => {
@@ -68,5 +69,13 @@ describe('rollD20', () => {
   it('flags natural 20 and natural 1', () => {
     expect(rollD20(2, 'normal', faces(20, 20))).toMatchObject({ natural20: true, natural1: false, total: 22 });
     expect(rollD20(2, 'normal', faces(20, 1))).toMatchObject({ natural20: false, natural1: true, total: 3 });
+  });
+});
+
+describe('rollAbilityScore', () => {
+  it('rolls four d6 and adds the highest three (SRD Random Generation)', () => {
+    expect(readVendor('character-creation.md')).toContain('Roll four d6s and record the total of the highest three dice.');
+    expect(rollAbilityScore(faces(6, 1, 4, 6, 3))).toBe(13);
+    expect(rollAbilityScore(faces(6, 6, 6, 6, 6))).toBe(18);
   });
 });

@@ -4,6 +4,7 @@ import type { TrackerDb } from '../storage/db';
 import { Section } from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { AppDataProvider, useAppData } from './data';
+import { CharacterForm } from './form/CharacterForm';
 import { CharacterList } from './list/CharacterList';
 import { hrefFor, useRoute } from './router';
 import { CreditsScreen } from './settings/CreditsScreen';
@@ -40,6 +41,10 @@ function Screen() {
       return <SettingsScreen />;
     case 'credits':
       return <CreditsScreen />;
+    case 'new':
+      return <CharacterForm />;
+    case 'edit':
+      return <CharacterForm id={route.id} />;
     default:
       return <CharacterList />;
   }

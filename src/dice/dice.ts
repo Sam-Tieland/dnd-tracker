@@ -93,3 +93,9 @@ export function rollD20(bonus: number, mode: D20Mode = 'normal', rng: Rng = cryp
   const kept = mode === 'advantage' ? Math.max(...rolls) : mode === 'disadvantage' ? Math.min(...rolls) : rolls[0];
   return { rolls, kept, bonus, total: kept + bonus, natural20: kept === 20, natural1: kept === 1 };
 }
+
+/** SRD Character Creation, Random Generation: roll four d6 and add the highest three. */
+export function rollAbilityScore(rng: Rng = cryptoRng): number {
+  const dice = [rollDie(6, rng), rollDie(6, rng), rollDie(6, rng), rollDie(6, rng)].sort((a, b) => a - b);
+  return dice[1] + dice[2] + dice[3];
+}

@@ -1,0 +1,9 @@
+.ability-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+.ability-input { display: flex; flex-direction: column; gap: 0.25rem; }
+.ability-label { font-weight: 700; }
+.level-list { padding-left: 1.5rem; display: grid; gap: 0.5rem; }
+.level-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+fieldset { border: 1px solid var(--border); border-radius: var(--radius); margin: 0 0 0.75rem; padding: 0.5rem 0.75rem; }
+fieldset label, label.option { display: inline-flex; align-items: center; gap: 0.4rem; min-height: var(--tap); margin-right: 1rem; }
+.skill-table { border-collapse: collapse; width: 100%; max-width: 520px; }
+.skill-table td, .skill-table th { padding: 0.15rem 0.5rem; text-align: left; }
