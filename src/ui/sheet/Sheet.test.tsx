@@ -83,7 +83,21 @@ describe('sheet', () => {
     const { db, user, unmount } = await openKael();
     await damage(user, '4');
     unmount();
-    await waitFor(async () => expect((await loadCharacter(db, 'test'))?.state.hpCurrent).toBe(36));
+    // The save queue waits 400 ms; leaving the sheet must not wait for that, so look before it could have fired.
+    await waitFor(async () => expect((await loadCharacter(db, 'test'))?.state.hpCurrent).toBe(36), { timeout: 300, interval: 10 });
+  });
+
+  it('keeps a change that is made right before tapping Edit, also when the form saves', async () => {
+    const { db, user } = await openKael();
+    await damage(user, '7');
+    // No waiting: the 400 ms save has not fired yet when the form opens and reads the character.
+    await user.click(screen.getByRole('link', { name: 'Edit' }));
+    const name = await screen.findByLabelText('Name');
+    await user.clear(name);
+    await user.type(name, 'Kael the Bold');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(window.location.hash).toBe('#/c/test'));
+    await waitFor(async () => expect(await loadCharacter(db, 'test')).toMatchObject({ name: 'Kael the Bold', state: { hpCurrent: 33 } }));
   });
 
   it('saves a change straight away when the page is hidden or closed', async () => {

@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast';
 import { WarningList } from '../components/WarningList';
 import { useAppData } from '../data';
 import { hrefFor, navigate } from '../router';
+import { whenSaved } from '../sheet/session';
 import { AbilitySection } from './AbilitySection';
 import { DetailsSection } from './DetailsSection';
 import { finishForm } from './form-logic';
@@ -28,18 +29,21 @@ export function CharacterForm({ id }: { id?: string }) {
   useEffect(() => {
     if (!id) return;
     let alive = true;
-    loadCharacter(db, id).then(
-      (character) => {
-        if (!alive) return;
-        if (character) {
-          setOriginal(character);
-          setDraft(character);
-        } else setMissing(true);
-      },
-      () => {
-        if (alive) setMissing(true);
-      },
-    );
+    // The sheet saves in the background when it is left; read the character only after that has finished.
+    whenSaved()
+      .then(() => loadCharacter(db, id))
+      .then(
+        (character) => {
+          if (!alive) return;
+          if (character) {
+            setOriginal(character);
+            setDraft(character);
+          } else setMissing(true);
+        },
+        () => {
+          if (alive) setMissing(true);
+        },
+      );
     return () => {
       alive = false;
     };

@@ -4,7 +4,7 @@ import type { Character } from '../../model/character';
 import { deriveSheet } from '../../rules/derive';
 import type { DerivedSheet } from '../../rules/types';
 import { loadCharacter, saveCharacter } from '../../storage/characters';
-import { createSaveQueue } from '../../storage/save-queue';
+import { createSaveQueue, type SaveQueue } from '../../storage/save-queue';
 import { useToast } from '../components/Toast';
 import { useAppData } from '../data';
 import { UndoStack } from './undo';
@@ -28,6 +28,36 @@ const stacks = new Map<string, UndoStack<Character['state']>>();
 /** Forgets every undo stack; only the tests need this, to start each test with an empty history. */
 export function resetUndoStacks(): void {
   stacks.clear();
+}
+
+/** Flushes that have started and not finished yet, so a screen that reads the character next can wait for them. */
+const pendingFlushes = new Set<Promise<void>>();
+const WHEN_SAVED_LIMIT_MS = 2000;
+
+/**
+ * Starts saving what is pending and remembers the flush for `whenSaved`. Callers never await it: the save queue writes
+ * one at a time, and one stuck write must not stall the page that is being left.
+ */
+export function startFlush(queue: Pick<SaveQueue<unknown>, 'flush'>): void {
+  const flush = queue.flush();
+  pendingFlushes.add(flush);
+  const forget = () => void pendingFlushes.delete(flush);
+  void flush.then(forget, forget);
+}
+
+/**
+ * Resolves when every flush that has started has finished, and at the latest after 2 seconds, so a write that never
+ * finishes cannot block the next screen. Leaving the sheet saves in the background; a screen that loads the character
+ * right after (the edit form) waits for this first, or it would read the character as it was before the last change.
+ */
+export function whenSaved(): Promise<void> {
+  if (pendingFlushes.size === 0) return Promise.resolve();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const limit = new Promise<void>((resolve) => {
+    timer = setTimeout(resolve, WHEN_SAVED_LIMIT_MS);
+  });
+  const finished = Promise.allSettled([...pendingFlushes]).then(() => undefined);
+  return Promise.race([finished, limit]).finally(() => clearTimeout(timer));
 }
 
 export function useCharacterSession(id: string): SessionState {
@@ -80,7 +110,7 @@ export function useCharacterSession(id: string): SessionState {
 
   // Review Focus 1: leaving the sheet, closing the page or hiding the app saves right away. The flush is never awaited here.
   useEffect(() => {
-    const flush = () => void queue.flush();
+    const flush = () => startFlush(queue);
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') flush();
     };
