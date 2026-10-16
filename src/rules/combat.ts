@@ -1,4 +1,4 @@
-import type { Ability } from '../content/constants';
+import { SPEED_ZERO_CONDITIONS, type Ability } from '../content/constants';
 import type { ContentRegistry } from '../content/registry';
 import type { ArmorTraining, Effect, WeaponDef, WeaponProficiency } from '../content/schema';
 import type { Character } from '../model/character';
@@ -60,6 +60,8 @@ export function computeArmorClass(
 }
 
 export function computeSpeed(character: Character, registry: ContentRegistry, abilities: Abilities, equipment: Equipment, bonus: BonusFn): number {
+  // SRD Rules Glossary: Grappled, Paralyzed, Petrified, Restrained and Unconscious set Speed to 0.
+  if (character.state.conditions.some((c) => (SPEED_ZERO_CONDITIONS as readonly string[]).includes(c))) return 0;
   const { speciesId } = character.choices;
   const species = speciesId ? registry.getOf('species', speciesId) : undefined;
   let speed = (species?.speed ?? 30) + bonus('speed');

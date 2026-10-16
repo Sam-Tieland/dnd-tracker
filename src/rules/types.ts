@@ -1,7 +1,11 @@
 import type { Ability, SkillId } from '../content/constants';
 import type { ArmorTraining, Effect, Progression, WeaponProficiency } from '../content/schema';
 
-export type WarningCode = 'unknown-content' | 'multiclass-prerequisite' | 'ability-over-max' | 'cantrip-without-caster';
+export const WARNING_CODES = ['unknown-content', 'multiclass-prerequisite', 'ability-over-max', 'cantrip-without-caster', 'armor-untrained'] as const;
+export type WarningCode = (typeof WARNING_CODES)[number];
+
+/** SRD "Dropping to 0 Hit Points": alive, dying (making Death Saving Throws), Stable, or dead. */
+export type LifeState = 'alive' | 'dying' | 'stable' | 'dead';
 export interface Warning {
   code: WarningCode;
   detail: string;

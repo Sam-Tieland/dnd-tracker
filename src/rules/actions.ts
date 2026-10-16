@@ -1,5 +1,5 @@
 import type { Character } from '../model/character';
-import type { DerivedSheet } from './types';
+import type { DerivedSheet, LifeState } from './types';
 
 const withState = (character: Character, patch: Partial<Character['state']>): Character => ({
   ...character,
@@ -10,17 +10,44 @@ const whole = (value: number) => (Number.isFinite(value) ? Math.max(0, Math.floo
 const noDeathSaves = () => ({ successes: 0, failures: 0 });
 
 /**
+ * SRD "Dropping to 0 Hit Points": three failures, or Exhaustion level 6, is death. Three successes is Stable; the app
+ * keeps that as successes = 3 until the character regains hit points. Without levels there are no hit points yet.
+ */
+export function lifeState(character: Character, sheet: DerivedSheet): LifeState {
+  const { deathSaves, exhaustion } = character.state;
+  if (deathSaves.failures >= 3 || exhaustion >= 6) return 'dead';
+  if (sheet.hp.current > 0 || sheet.hp.max === 0) return 'alive';
+  return deathSaves.successes >= 3 ? 'stable' : 'dying';
+}
+
+export interface DamageOptions {
+  /** The damage comes from a Critical Hit: two death save failures at 0 hit points. */
+  critical?: boolean;
+}
+
+/**
  * Damage hits temporary hit points first; hit points never drop below 0. It starts from the hit points the sheet
  * shows (stored value capped at the maximum), so stale hit points above the maximum don't hide the damage.
+ * SRD "Damage at 0 Hit Points": one death save failure (two from a critical hit), and death when the damage equals or
+ * exceeds the hit point maximum; a Stable character starts over. SRD "Massive Damage": dropping to 0 with a remainder
+ * that equals or exceeds the maximum is death too.
  */
-export function applyDamage(character: Character, amount: number, sheet: DerivedSheet): Character {
+export function applyDamage(character: Character, amount: number, sheet: DerivedSheet, options: DamageOptions = {}): Character {
   const damage = whole(amount);
   const fromTemp = Math.min(character.state.hpTemp, damage);
+  const toHp = damage - fromTemp;
   const shown = Math.min(Math.max(0, character.state.hpCurrent), sheet.hp.max);
-  return withState(character, {
-    hpTemp: character.state.hpTemp - fromTemp,
-    hpCurrent: Math.max(0, shown - (damage - fromTemp)),
-  });
+  const max = sheet.hp.max;
+  let { deathSaves } = character.state;
+  if (toHp > 0 && max > 0) {
+    if (shown === 0) {
+      const failures = toHp >= max ? 3 : deathSaves.failures + (options.critical ? 2 : 1);
+      deathSaves = { successes: deathSaves.successes >= 3 ? 0 : deathSaves.successes, failures: Math.min(3, failures) };
+    } else if (toHp - shown >= max) {
+      deathSaves = { successes: 0, failures: 3 };
+    }
+  }
+  return withState(character, { hpTemp: character.state.hpTemp - fromTemp, hpCurrent: Math.max(0, shown - toHp), deathSaves });
 }
 
 /** Healing up to the maximum; being above 0 hit points resets death saves. */
@@ -37,6 +64,34 @@ export function setTempHp(character: Character, value: number): Character {
 export function setDeathSaves(character: Character, successes: number, failures: number): Character {
   const clamp = (n: number) => Math.min(3, whole(n));
   return withState(character, { deathSaves: { successes: clamp(successes), failures: clamp(failures) } });
+}
+
+/**
+ * SRD "Death Saving Throws": a 1 counts as two failures, a 20 regains 1 Hit Point, otherwise 10 or higher succeeds.
+ * Exhaustion lowers the roll like any D20 Test. The third success makes the character Stable. Only a dying character rolls.
+ */
+export function recordDeathSave(character: Character, natural: number, sheet: DerivedSheet): Character {
+  if (lifeState(character, sheet) !== 'dying') return character;
+  if (natural >= 20) return applyHealing(character, 1, sheet);
+  const { successes, failures } = character.state.deathSaves;
+  if (natural > 1 && natural - sheet.d20Penalty >= 10) {
+    const next = successes + 1;
+    return withState(character, { deathSaves: next >= 3 ? { successes: 3, failures: 0 } : { successes: next, failures } });
+  }
+  return withState(character, { deathSaves: { successes, failures: Math.min(3, failures + (natural <= 1 ? 2 : 1)) } });
+}
+
+export function setConditions(character: Character, conditions: readonly string[]): Character {
+  return withState(character, { conditions: [...new Set(conditions)] });
+}
+
+/** Exhaustion levels 0–6 (SRD Rules Glossary). */
+export function setExhaustion(character: Character, level: number): Character {
+  return withState(character, { exhaustion: Math.min(6, whole(level)) });
+}
+
+export function setHeroicInspiration(character: Character, on: boolean): Character {
+  return withState(character, { heroicInspiration: on });
 }
 
 /** A slot level the sheet doesn't have leaves the character unchanged, so no invalid key is ever stored. */
@@ -56,34 +111,54 @@ export function setResourceUsed(character: Character, key: string, used: number,
   return withState(character, { resourcesUsed: { ...character.state.resourcesUsed, [key]: Math.min(resource.max, whole(used)) } });
 }
 
-export interface ShortRestOptions {
-  /** Hit dice to spend per die size, e.g. { d10: 2 }. */
-  hitDice: Record<string, number>;
-  /** Hit points regained from the spent dice, already rolled by the caller (die + CON, minimum 1 per die). */
-  hpRegained: number;
+/** SRD "Short Rest" and "Long Rest": you need at least 1 Hit Point to start one. */
+export function canRest(sheet: DerivedSheet): boolean {
+  return sheet.hp.current >= 1;
 }
 
+export interface HitDieRoll {
+  /** Die size, e.g. 10 for a d10. */
+  die: number;
+  /** The number rolled on that die. */
+  roll: number;
+}
+
+export interface ShortRestOptions {
+  /** One entry per Hit Point Die spent, in the order rolled. Rolls for dice that are not left are ignored. */
+  rolls: HitDieRoll[];
+}
+
+/**
+ * SRD "Short Rest": each spent Hit Point Die heals its roll + Constitution modifier (minimum 1), only for dice that
+ * were left. Short-rest resources and Pact Magic slots recharge. Needs at least 1 Hit Point.
+ */
 export function shortRest(character: Character, sheet: DerivedSheet, options: ShortRestOptions): Character {
-  const hitDiceSpent: Record<string, number> = {};
-  for (const hd of sheet.hitDice) {
-    const key = `d${hd.die}`;
-    hitDiceSpent[key] = hd.spent + Math.min(whole(options.hitDice[key] ?? 0), hd.total - hd.spent);
+  if (!canRest(sheet)) return character;
+  const left = new Map(sheet.hitDice.map((hd) => [hd.die, hd.total - hd.spent]));
+  const hitDiceSpent: Record<string, number> = Object.fromEntries(sheet.hitDice.map((hd) => [`d${hd.die}`, hd.spent]));
+  let regained = 0;
+  for (const { die, roll } of options.rolls) {
+    const remaining = left.get(die) ?? 0;
+    if (remaining <= 0 || !Number.isFinite(roll)) continue;
+    left.set(die, remaining - 1);
+    hitDiceSpent[`d${die}`] += 1;
+    regained += Math.max(1, Math.min(die, Math.max(1, Math.floor(roll))) + sheet.abilities.con.mod);
   }
   const resourcesUsed: Record<string, number> = {};
   for (const resource of sheet.resources) {
     resourcesUsed[resource.key] = resource.recharge === 'short' ? 0 : Math.max(0, resource.used - resource.shortRestRegain);
   }
-  const hpCurrent = Math.min(sheet.hp.max, sheet.hp.current + whole(options.hpRegained));
   return withState(character, {
     hitDiceSpent,
     resourcesUsed,
     pactSlotsUsed: 0,
-    hpCurrent,
-    deathSaves: hpCurrent > 0 ? noDeathSaves() : character.state.deathSaves,
+    hpCurrent: Math.min(sheet.hp.max, sheet.hp.current + regained),
+    deathSaves: noDeathSaves(),
   });
 }
 
 export function longRest(character: Character, sheet: DerivedSheet): Character {
+  if (!canRest(sheet)) return character;
   return withState(character, {
     hpCurrent: sheet.hp.max,
     hpTemp: 0,
@@ -95,4 +170,14 @@ export function longRest(character: Character, sheet: DerivedSheet): Character {
     exhaustion: Math.max(0, character.state.exhaustion - 1),
     heroicInspiration: sheet.flags.includes('heroic-inspiration-on-long-rest') || character.state.heroicInspiration,
   });
+}
+
+/**
+ * After the choices changed (the form was saved): a character that had no levels starts at full hit points; otherwise
+ * the current hit points rise by as much as the maximum rose, and never exceed the new maximum.
+ */
+export function syncHitPoints(character: Character, before: DerivedSheet, after: DerivedSheet): Character {
+  const hpCurrent =
+    before.totalLevel === 0 ? after.hp.max : Math.min(after.hp.max, before.hp.current + Math.max(0, after.hp.max - before.hp.max));
+  return withState(character, { hpCurrent });
 }

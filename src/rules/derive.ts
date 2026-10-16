@@ -13,7 +13,7 @@ import { computeProficiencies } from './proficiencies';
 import { computeResources } from './resources';
 import { computeCantripAttacks, computeSpellcasting, spellcastingSources } from './spellcasting';
 import type { DerivedSheet, Warning } from './types';
-import { unknownContent } from './warnings';
+import { unknownContent, warnOnce } from './warnings';
 
 /** Everything on the sheet that follows from the character's choices and state. Never throws on missing content. */
 export function deriveSheet(character: Character, registry: ContentRegistry): DerivedSheet {
@@ -40,6 +40,10 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   const equipment = equippedArmor(character, registry);
   const bonus = makeBonus(effects, character.overrides, ctx, equipment);
   const prof = computeProficiencies(character, registry, classLevels, effects);
+  // SRD Armor Training: without training, Disadvantage on Strength and Dexterity D20 Tests and no spellcasting.
+  if (equipment.armor && !prof.armor.has(equipment.armor.category)) {
+    warnOnce(warnings, { code: 'armor-untrained', detail: equipment.armor.id });
+  }
   const d20Penalty = 2 * character.state.exhaustion;
   const { skills, passivePerception } = computeSkills(abilities, prof, pb, bonus, d20Penalty);
   const hpMax = computeHpMax(character, registry, abilities.con.mod, bonus);

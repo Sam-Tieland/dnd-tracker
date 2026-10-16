@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readVendor } from '../../scripts/convert-srd/vendor';
 import { deriveSheet } from './derive';
 import { item, kael, level, levels, makeCharacter, registry } from './testing/fixtures';
 
@@ -466,5 +467,23 @@ describe('deriveSheet: spellcasting and resources', () => {
   it('warns about unknown spells', () => {
     const sheet = derive(kael({ choices: { spells: [{ classId: 'srd:class:wizard', spellId: 'srd:spell:nope', prepared: true }] } }));
     expect(sheet.warnings).toEqual([{ code: 'unknown-content', detail: 'srd:spell:nope' }]);
+  });
+});
+
+describe('deriveSheet: conditions and armor training', () => {
+  it('Grappled, Paralyzed, Petrified, Restrained and Unconscious set Speed to 0', () => {
+    for (const condition of ['grappled', 'paralyzed', 'petrified', 'restrained', 'unconscious']) {
+      expect(derive(kael({ state: { conditions: [condition] } })).speed, condition).toBe(0);
+    }
+    expect(derive(kael({ state: { conditions: ['prone', 'poisoned'] } })).speed).toBe(30);
+  });
+
+  it('armor without training gives a warning', () => {
+    expect(readVendor('equipment.md')).toContain(
+      "If you wear Light, Medium, or Heavy armor and lack training with it, you have Disadvantage on any D20 Test that involves Strength or Dexterity, and you can't cast spells.",
+    );
+    const wizard = derive(makeCharacter({ choices: { levels: levels('wizard', 1) }, inventory: [item('a', 'srd:armor:chain-mail')] }));
+    expect(wizard.warnings).toContainEqual({ code: 'armor-untrained', detail: 'srd:armor:chain-mail' });
+    expect(derive(kael()).warnings).toEqual([]);
   });
 });
