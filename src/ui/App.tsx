@@ -1,10 +1,13 @@
 import { useEffect, type ReactNode } from 'react';
-import { detectLanguage, I18nProvider, useI18n } from '../i18n/i18n';
+import { detectLanguage, I18nProvider } from '../i18n/i18n';
 import type { TrackerDb } from '../storage/db';
 import { Section } from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { AppDataProvider, useAppData } from './data';
+import { CharacterList } from './list/CharacterList';
 import { hrefFor, useRoute } from './router';
+import { CreditsScreen } from './settings/CreditsScreen';
+import { SettingsScreen } from './settings/SettingsScreen';
 import { applyTheme } from './theme';
 import './styles.css';
 
@@ -30,14 +33,23 @@ export function Providers({ db, children }: { db: TrackerDb; children: ReactNode
   );
 }
 
+function Screen() {
+  const route = useRoute();
+  switch (route.name) {
+    case 'settings':
+      return <SettingsScreen />;
+    case 'credits':
+      return <CreditsScreen />;
+    default:
+      return <CharacterList />;
+  }
+}
+
 function Screens() {
   const route = useRoute();
-  const { t } = useI18n();
   return (
     <Section key={hrefFor(route)}>
-      <main className="screen">
-        <h1>{t('app.title')}</h1>
-      </main>
+      <Screen />
     </Section>
   );
 }

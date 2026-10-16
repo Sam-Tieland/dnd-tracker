@@ -5,9 +5,9 @@ import { Section } from './components/ErrorBoundary';
 import { renderApp, renderWithProviders, testDb } from './testing/render';
 
 describe('app shell', () => {
-  it('loads the data and shows the app', async () => {
+  it('loads the data and starts on the character list', async () => {
     renderApp('#/');
-    expect(await screen.findByRole('heading', { name: 'D&D Character Tracker' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Characters' })).toBeTruthy();
   });
 
   it('shows a message instead of loading forever when the storage cannot be read', async () => {
@@ -24,7 +24,7 @@ describe('app shell', () => {
     const db = testDb();
     const put = vi.spyOn(db.settings, 'put').mockRejectedValue(new Error('quota'));
     renderApp('#/', db);
-    expect(await screen.findByRole('heading', { name: 'D&D Character Tracker' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Characters' })).toBeTruthy();
     await waitFor(() => expect(put).toHaveBeenCalled());
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(screen.queryByRole('alert')).toBeNull();
