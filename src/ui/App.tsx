@@ -10,6 +10,7 @@ import { CharacterList } from './list/CharacterList';
 import { hrefFor, useRoute } from './router';
 import { CreditsScreen } from './settings/CreditsScreen';
 import { SettingsScreen } from './settings/SettingsScreen';
+import { Sheet } from './sheet/Sheet';
 import { applyTheme } from './theme';
 import './styles.css';
 
@@ -48,6 +49,8 @@ function Screen() {
       return <CharacterForm />;
     case 'edit':
       return <CharacterForm id={route.id} />;
+    case 'sheet':
+      return <Sheet id={route.id} />;
     default:
       return <CharacterList />;
   }

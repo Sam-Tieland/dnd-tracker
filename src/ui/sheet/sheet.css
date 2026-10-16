@@ -1,0 +1,32 @@
+.sheet { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.top-bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--border); padding: calc(0.5rem + env(safe-area-inset-top)) 1rem 0.5rem; display: grid; gap: 0.4rem; }
+.top-row { justify-content: space-between; }
+.identity { flex: 1; min-width: 0; }
+.identity h1 { margin: 0; font-size: 1.2rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hp-control { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.hp-value { font-size: 1.6rem; font-weight: 700; min-width: 5ch; }
+.hp-control input { width: 6rem; }
+button.big { min-width: 5.5rem; font-weight: 700; }
+.stat { display: inline-flex; flex-direction: column; align-items: center; min-width: 4.5rem; padding: 0.2rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.stat span { font-size: 0.75rem; color: var(--muted); }
+.death-saves { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; padding: 0.4rem 0.75rem; border-radius: var(--radius); background: var(--surface-2); }
+.death-saves.dead { border: 2px solid var(--danger); }
+.chip { border-radius: 999px; }
+.sheet-body { flex: 1; display: grid; grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); gap: 1rem; padding: 1rem; max-width: 1400px; width: 100%; margin: 0 auto; }
+.sheet-main { min-width: 0; }
+.tabs { display: flex; gap: 0.25rem; overflow-x: auto; margin-bottom: 0.75rem; }
+.abilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+.ability { flex-direction: column; min-height: 4.5rem; }
+.check-list { list-style: none; padding: 0; margin: 0 0 1rem; }
+.check-list button { width: 100%; justify-content: flex-start; border: none; background: transparent; }
+.check-name { flex: 1; text-align: left; }
+.dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; border: 2px solid var(--muted); flex: none; }
+.dot.on { background: var(--text); border-color: var(--text); }
+.dot.double { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text); }
+.note { display: grid; gap: 0.5rem; }
+.rules-text { white-space: pre-line; }
+/* The dice panel is docked at the bottom of the sheet (53px high when closed); messages stand just above it, not over it. */
+body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bottom)); }
+@media (max-width: 900px) {
+  .sheet-body { grid-template-columns: minmax(0, 1fr); padding: 0.5rem; }
+}
