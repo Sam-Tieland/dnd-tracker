@@ -4,6 +4,7 @@ import type { TrackerDb } from '../storage/db';
 import { Section } from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { AppDataProvider, useAppData } from './data';
+import { DiceProvider } from './dice/DiceContext';
 import { CharacterForm } from './form/CharacterForm';
 import { CharacterList } from './list/CharacterList';
 import { hrefFor, useRoute } from './router';
@@ -21,7 +22,9 @@ function ShellProviders({ children }: { children: ReactNode }) {
   }, [lang]);
   return (
     <I18nProvider lang={lang}>
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <DiceProvider>{children}</DiceProvider>
+      </ToastProvider>
     </I18nProvider>
   );
 }

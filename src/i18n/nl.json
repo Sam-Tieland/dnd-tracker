@@ -70,5 +70,14 @@
   "form.appearance": "Uiterlijk",
   "form.personality": "Persoonlijkheid",
   "form.backstory": "Achtergrondverhaal",
-  "sheet.missing": "Dit character bestaat niet (meer)."
+  "sheet.missing": "Dit character bestaat niet (meer).",
+  "dice.title": "Dobbelstenen",
+  "dice.open": "Dobbelstenen openen",
+  "dice.mode": "Rolmodus",
+  "dice.normal": "Normaal",
+  "dice.critical": "Kritiek",
+  "dice.expression": "Worp",
+  "dice.roll": "Rollen",
+  "dice.invalid": "Kan \"{expression}\" niet rollen",
+  "dice.history": "Laatste worpen"
 }

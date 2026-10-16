@@ -70,5 +70,14 @@
   "form.appearance": "Appearance",
   "form.personality": "Personality",
   "form.backstory": "Backstory",
-  "sheet.missing": "This character does not exist (anymore)."
+  "sheet.missing": "This character does not exist (anymore).",
+  "dice.title": "Dice",
+  "dice.open": "Open dice",
+  "dice.mode": "Roll mode",
+  "dice.normal": "Normal",
+  "dice.critical": "Critical",
+  "dice.expression": "Dice notation",
+  "dice.roll": "Roll",
+  "dice.invalid": "Cannot roll \"{expression}\"",
+  "dice.history": "Last rolls"
 }

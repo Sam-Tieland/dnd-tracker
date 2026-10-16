@@ -1,0 +1,7 @@
+.dice-panel { position: sticky; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding: 0.25rem 1rem calc(0.25rem + env(safe-area-inset-bottom)); }
+.dice-latest { width: 100%; justify-content: flex-start; border: none; background: transparent; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dice-latest strong { font-size: 1.3rem; }
+.dice-body { display: grid; gap: 0.5rem; padding: 0.5rem 0; max-height: 45vh; overflow: auto; }
+.dice-history { margin: 0; padding-left: 1.5rem; }
+.nat20 { color: var(--ok); }
+.nat1 { color: var(--danger); }

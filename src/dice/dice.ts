@@ -22,6 +22,7 @@ export interface ParsedRoll {
 
 const MAX_DICE = 100;
 const MAX_SIDES = 1000;
+const MAX_MODIFIER = 1000;
 const TERM = '(?:\\d*d\\d+|\\d+)';
 const EXPRESSION = new RegExp(`^[+-]?${TERM}(?:[+-]${TERM})*$`);
 
@@ -46,6 +47,7 @@ export function parseRoll(expression: string): ParsedRoll {
     terms.push({ count, sides, sign });
   }
   if (terms.reduce((total, term) => total + term.count, 0) > MAX_DICE) throw new DiceError(`Too many dice in "${expression}"`);
+  if (Math.abs(modifier) > MAX_MODIFIER) throw new DiceError(`Modifier too large in "${expression}"`);
   return { terms, modifier };
 }
 

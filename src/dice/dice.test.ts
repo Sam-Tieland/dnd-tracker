@@ -19,7 +19,11 @@ describe('parseRoll', () => {
     expect(parseRoll('1d4-1d4').terms[1]).toEqual({ count: 1, sides: 4, sign: -1 });
   });
 
-  it.each(['', 'abc', '2d', 'd0', '2d6++1', '101d6', '1000d6', '60d6+60d6', '1d1001', '2d6 3', '1 2', '2 0d6'])('rejects "%s"', (expression) => {
+  it('accepts a modifier up to 1000', () => {
+    expect(parseRoll('1d6+1000').modifier).toBe(1000);
+  });
+
+  it.each(['', 'abc', '2d', 'd0', '2d6++1', '101d6', '1000d6', '60d6+60d6', '1d1001', '1d6+1001', '1d6-1001', '2d6 3', '1 2', '2 0d6'])('rejects "%s"', (expression) => {
     expect(() => parseRoll(expression)).toThrow(DiceError);
   });
 });
