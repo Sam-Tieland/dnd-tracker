@@ -1,0 +1,21 @@
+{
+  "app.title": "D&D Character Tracker",
+  "common.save": "Opslaan",
+  "common.cancel": "Annuleren",
+  "common.close": "Sluiten",
+  "common.delete": "Verwijderen",
+  "common.none": "Geen",
+  "common.unnamed": "Naamloos",
+  "nav.back": "Terug",
+  "nav.settings": "Instellingen",
+  "error.section": "Er ging iets mis in dit onderdeel. De rest van de app blijft werken.",
+  "error.export": "Alle data exporteren",
+  "export.done": "Export klaar.",
+  "export.failed": "Exporteren mislukt: {reason}",
+  "save.failed": "Opslaan mislukt: {reason}. Exporteer je data voor de zekerheid.",
+  "warning.unknown-content": "Onbekend: {name}",
+  "warning.multiclass-prerequisite": "Multiclass-vereiste niet gehaald voor {name}: 13 in de primary ability.",
+  "warning.ability-over-max": "{name} komt boven het maximum uit; het maximum telt.",
+  "warning.cantrip-without-caster": "{name} hoort bij geen class met Spellcasting: geen attack bonus of save DC.",
+  "warning.armor-untrained": "Geen training voor {name}: Disadvantage op D20 Tests met Strength en Dexterity, en geen spellcasting."
+}

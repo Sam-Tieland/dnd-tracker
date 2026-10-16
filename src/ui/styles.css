@@ -1,0 +1,95 @@
+:root {
+  --bg: #f7f4ee;
+  --surface: #ffffff;
+  --surface-2: #efeae0;
+  --text: #1f1c17;
+  --muted: #6a6358;
+  --border: #d6cfc1;
+  --accent: #8b1e1e;
+  --accent-text: #ffffff;
+  --danger: #b3261e;
+  --ok: #2e6b30;
+  --warning: #8a5a00;
+  --focus: #1f5fbf;
+  --radius: 10px;
+  --tap: 44px;
+  color-scheme: light;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.4;
+}
+
+:root[data-theme='dark'] {
+  --bg: #16140f;
+  --surface: #221f19;
+  --surface-2: #2c2820;
+  --text: #f1ece2;
+  --muted: #a89f90;
+  --border: #4a443a;
+  --accent: #d0574e;
+  --accent-text: #16140f;
+  --danger: #f08a80;
+  --ok: #8fcf8f;
+  --warning: #f0c060;
+  --focus: #8ab4ff;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #16140f;
+    --surface: #221f19;
+    --surface-2: #2c2820;
+    --text: #f1ece2;
+    --muted: #a89f90;
+    --border: #4a443a;
+    --accent: #d0574e;
+    --accent-text: #16140f;
+    --danger: #f08a80;
+    --ok: #8fcf8f;
+    --warning: #f0c060;
+    --focus: #8ab4ff;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
+h1, h2 { margin: 0 0 0.5rem; }
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.1rem; }
+
+button, .button, input, select, textarea { font: inherit; font-size: 16px; color: inherit; }
+button, .button {
+  min-height: var(--tap); min-width: var(--tap); padding: 0 0.8rem;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
+  text-decoration: none; cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: default; }
+button.primary, .button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button.danger { color: var(--danger); }
+button[aria-pressed='true'], button[aria-selected='true'] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+input, select, textarea { min-height: var(--tap); padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); max-width: 100%; }
+input[type='checkbox'], input[type='radio'] { min-height: auto; width: 1.4rem; height: 1.4rem; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.screen { max-width: 1100px; margin: 0 auto; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom)); }
+.screen-header { display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; }
+.row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+.muted { color: var(--muted); }
+.warning { color: var(--warning); }
+.warnings { list-style: none; padding: 0.5rem 0.75rem; margin: 0.5rem 0; border-left: 4px solid var(--warning); background: var(--surface-2); border-radius: var(--radius); }
+.notice { padding: 0.75rem; border-radius: var(--radius); background: var(--surface-2); margin-bottom: 1rem; }
+.loading { padding: 2rem; text-align: center; }
+
+.dialog-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 45%); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 20; }
+.dialog { background: var(--surface); border-radius: var(--radius); padding: 1rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; }
+.dialog-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; flex-wrap: wrap; }
+
+.toast-region { position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom)); display: flex; justify-content: center; pointer-events: none; z-index: 30; }
+.toast { pointer-events: auto; display: flex; gap: 0.5rem; align-items: center; background: var(--text); color: var(--bg); padding: 0.25rem 0.25rem 0.25rem 1rem; border-radius: var(--radius); box-shadow: 0 4px 16px rgb(0 0 0 / 25%); }
+.toast button { background: transparent; color: inherit; border-color: transparent; }
+.toast-error { background: var(--danger); color: #fff; }
+.error-box { border: 2px solid var(--danger); border-radius: var(--radius); padding: 1rem; background: var(--surface); }

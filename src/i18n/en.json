@@ -1,0 +1,21 @@
+{
+  "app.title": "D&D Character Tracker",
+  "common.save": "Save",
+  "common.cancel": "Cancel",
+  "common.close": "Close",
+  "common.delete": "Delete",
+  "common.none": "None",
+  "common.unnamed": "Unnamed",
+  "nav.back": "Back",
+  "nav.settings": "Settings",
+  "error.section": "Something went wrong in this part. The rest of the app keeps working.",
+  "error.export": "Export all data",
+  "export.done": "Export ready.",
+  "export.failed": "Export failed: {reason}",
+  "save.failed": "Saving failed: {reason}. Export your data to be safe.",
+  "warning.unknown-content": "Unknown: {name}",
+  "warning.multiclass-prerequisite": "Multiclass prerequisite not met for {name}: 13 in its primary ability.",
+  "warning.ability-over-max": "{name} is above its maximum; the maximum counts.",
+  "warning.cantrip-without-caster": "{name} belongs to no class with Spellcasting: no attack bonus or save DC.",
+  "warning.armor-untrained": "No training with {name}: Disadvantage on Strength and Dexterity D20 Tests, and no spellcasting."
+}

@@ -1,9 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from './App';
+import { openDb } from './storage/db';
+import { App } from './ui/App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App db={openDb()} />
   </StrictMode>,
 );
