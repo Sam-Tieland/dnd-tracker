@@ -12,6 +12,7 @@
   "error.export": "Alle data exporteren",
   "export.done": "Export klaar.",
   "export.failed": "Exporteren mislukt: {reason}",
+  "export.partial": "Export klaar, maar {count} character(s) konden niet worden gelezen en zitten er niet in.",
   "save.failed": "Opslaan mislukt: {reason}. Exporteer je data voor de zekerheid.",
   "warning.unknown-content": "Onbekend: {name}",
   "warning.multiclass-prerequisite": "Multiclass-vereiste niet gehaald voor {name}: 13 in de primary ability.",

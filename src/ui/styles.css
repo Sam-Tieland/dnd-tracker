@@ -70,7 +70,9 @@ button.primary, .button.primary { background: var(--accent); color: var(--accent
 button.danger { color: var(--danger); }
 button[aria-pressed='true'], button[aria-selected='true'] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 input, select, textarea { min-height: var(--tap); padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); max-width: 100%; }
-input[type='checkbox'], input[type='radio'] { min-height: auto; width: 1.4rem; height: 1.4rem; }
+/* Checkboxes and radios are tap targets too (at least 44x44), also when they stand alone in a table cell or row. */
+input[type='checkbox'], input[type='radio'] { width: var(--tap); height: var(--tap); min-width: var(--tap); min-height: var(--tap); margin: 0; padding: 0; flex: none; accent-color: var(--accent); }
+label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display: inline-flex; align-items: center; gap: 0.5rem; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 .screen { max-width: 1100px; margin: 0 auto; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom)); }

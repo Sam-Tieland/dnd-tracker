@@ -23,16 +23,22 @@ const AppDataContext = createContext<AppData | null>(null);
 export function AppDataProvider({ db, children }: { db: TrackerDb; children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>();
   const [content, setContent] = useState<UserContentResult>();
+  const [failed, setFailed] = useState(false);
   const latest = useRef<Settings>(undefined);
 
   useEffect(() => {
     let alive = true;
-    void Promise.all([loadSettings(db), loadUserContent(db)]).then(([loadedSettings, loadedContent]) => {
-      if (!alive) return;
-      latest.current = loadedSettings;
-      setSettings(loadedSettings);
-      setContent(loadedContent);
-    });
+    void Promise.all([loadSettings(db), loadUserContent(db)]).then(
+      ([loadedSettings, loadedContent]) => {
+        if (!alive) return;
+        latest.current = loadedSettings;
+        setSettings(loadedSettings);
+        setContent(loadedContent);
+      },
+      () => {
+        if (alive) setFailed(true);
+      },
+    );
     return () => {
       alive = false;
     };
@@ -51,7 +57,10 @@ export function AppDataProvider({ db, children }: { db: TrackerDb; children: Rea
 
   useEffect(() => {
     if (settings && !settings.persistRequested) {
-      void requestPersistence(navigator.storage).then(() => updateSettings({ persistRequested: true }));
+      // A failing save only means the request is repeated on the next start.
+      void requestPersistence(navigator.storage)
+        .then(() => updateSettings({ persistRequested: true }))
+        .catch(() => undefined);
     }
   }, [settings, updateSettings]);
 
@@ -63,6 +72,14 @@ export function AppDataProvider({ db, children }: { db: TrackerDb; children: Rea
         : null,
     [db, registry, content, settings, updateSettings],
   );
+  // This sits above the I18nProvider (the language is a setting), so the message is fixed and bilingual.
+  if (failed) {
+    return (
+      <p className="loading" role="alert">
+        Kan de opslag niet openen. · Could not open storage. Herlaad de pagina. · Reload the page.
+      </p>
+    );
+  }
   if (!value) return <p className="loading" role="status">…</p>;
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
 }

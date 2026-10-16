@@ -10,7 +10,13 @@ export type Route =
 
 /** Hash routes work on GitHub Pages without a 404 page: #/, #/new, #/settings, #/credits, #/c/<id>, #/c/<id>/edit. */
 export function parseHash(hash: string): Route {
-  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+  let parts: string[];
+  try {
+    parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+  } catch {
+    // A malformed escape such as "%" or "%E0%A4%A" (typed or pasted by hand) is just an unknown address.
+    return { name: 'list' };
+  }
   if (parts[0] === 'new') return { name: 'new' };
   if (parts[0] === 'settings') return { name: 'settings' };
   if (parts[0] === 'credits') return { name: 'credits' };

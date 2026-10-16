@@ -18,4 +18,10 @@ describe('router', () => {
     expect(parseHash('#/nowhere')).toEqual({ name: 'list' });
     expect(parseHash('#/c/')).toEqual({ name: 'list' });
   });
+
+  it('sends a hash with a malformed escape to the list instead of throwing', () => {
+    expect(parseHash('#/c/100%')).toEqual({ name: 'list' });
+    expect(parseHash('#/c/%E0%A4%A')).toEqual({ name: 'list' });
+    expect(parseHash('#/c/%E0%A4%A/edit')).toEqual({ name: 'list' });
+  });
 });
