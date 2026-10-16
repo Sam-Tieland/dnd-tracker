@@ -28,6 +28,7 @@
   "list.deleteTitle": "Delete character",
   "list.deleteConfirm": "Delete {name}? This cannot be undone.",
   "list.broken": "{name} cannot be loaded: {error}",
+  "list.loadFailed": "The characters could not be loaded: {error}",
   "backup.reminder": "It has been more than 14 days since your last export.",
   "backup.now": "Export all data",
   "settings.title": "Settings",

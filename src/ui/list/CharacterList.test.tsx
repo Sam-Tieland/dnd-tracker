@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { kael } from '../../rules/testing/fixtures';
 import { loadCharacters, saveCharacter } from '../../storage/characters';
 import { DEFAULT_SETTINGS, saveSettings } from '../../storage/settings';
@@ -50,5 +50,40 @@ describe('character list', () => {
     await saveSettings(db, { ...DEFAULT_SETTINGS, lastExportAt: '2026-01-02T00:00:00.000Z' });
     renderApp('#/', db);
     expect(await screen.findByText('It has been more than 14 days since your last export.')).toBeTruthy();
+  });
+
+  it('says so when the characters cannot be read, and keeps the export and settings reachable', async () => {
+    const db = testDb();
+    vi.spyOn(db.characters, 'toArray').mockRejectedValue(new Error('blocked'));
+    renderApp('#/', db);
+    expect((await screen.findByRole('alert')).textContent).toBe('The characters could not be loaded: blocked');
+    expect(screen.getByRole('button', { name: 'Export all data' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Settings' }).getAttribute('href')).toBe('#/settings');
+  });
+
+  it('keeps the character and says so when it cannot be deleted', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael());
+    vi.spyOn(db.characters, 'delete').mockRejectedValue(new Error('blocked'));
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('dialog').querySelector('button.danger')!);
+    expect(await screen.findByText(/Saving failed: blocked/)).toBeTruthy();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('link', { name: /Test/ })).toBeTruthy();
+  });
+
+  it('shows the error box when the list cannot be read again after a delete', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael());
+    const readOnce = db.characters.toArray.bind(db.characters);
+    vi.spyOn(db.characters, 'toArray').mockImplementationOnce(readOnce).mockRejectedValue(new Error('blocked'));
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('dialog').querySelector('button.danger')!);
+    expect((await screen.findByRole('alert')).textContent).toBe('The characters could not be loaded: blocked');
+    expect(screen.queryByRole('link', { name: /Test/ })).toBeNull();
   });
 });

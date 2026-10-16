@@ -5,24 +5,63 @@ import { deriveSheet } from '../../rules/derive';
 import { backupDue } from '../../storage/backup';
 import { deleteCharacter, loadCharacters, type LoadedCharacters } from '../../storage/characters';
 import { Dialog } from '../components/Dialog';
+import { useToast } from '../components/Toast';
 import { useAppData } from '../data';
 import { classSummary } from '../format';
 import { hrefFor } from '../router';
 import { useExport } from '../use-export';
 import './list.css';
 
+/** The message of a failed read or write, as the error box and the toast show it. */
+const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
+
 /** Spec §8: the start screen, one card per character. */
 export function CharacterList() {
   const { db, registry, settings } = useAppData();
   const { t } = useI18n();
+  const toast = useToast();
   const { exportCharacter, exportBackup } = useExport();
   const [loaded, setLoaded] = useState<LoadedCharacters>();
+  const [loadError, setLoadError] = useState<string>();
   const [toDelete, setToDelete] = useState<{ id: string; name: string }>();
 
-  const reload = useCallback(() => loadCharacters(db).then(setLoaded), [db]);
+  /** A failed read is shown with the export button (spec §15), never as an empty screen or an unhandled rejection. */
+  const reload = useCallback(
+    () =>
+      loadCharacters(db).then(
+        (result) => {
+          setLoaded(result);
+          setLoadError(undefined);
+        },
+        (error: unknown) => setLoadError(messageOf(error)),
+      ),
+    [db],
+  );
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  const header = (
+    <header className="screen-header">
+      <h1>{t('list.title')}</h1>
+      <a className="button" href={hrefFor({ name: 'settings' })}>
+        {t('nav.settings')}
+      </a>
+    </header>
+  );
+  if (loadError !== undefined) {
+    return (
+      <main className="screen">
+        {header}
+        <p role="alert">{t('list.loadFailed', { error: loadError })}</p>
+        <p>
+          <button type="button" onClick={() => void exportBackup()}>
+            {t('backup.now')}
+          </button>
+        </p>
+      </main>
+    );
+  }
   if (!loaded) return null;
 
   const oldest = loaded.characters.reduce<string | null>((min, c) => (min === null || c.createdAt < min ? c.createdAt : min), null);
@@ -31,12 +70,7 @@ export function CharacterList() {
 
   return (
     <main className="screen">
-      <header className="screen-header">
-        <h1>{t('list.title')}</h1>
-        <a className="button" href={hrefFor({ name: 'settings' })}>
-          {t('nav.settings')}
-        </a>
-      </header>
+      {header}
       {remind && (
         <div className="notice" role="status">
           <span>{t('backup.reminder')}</span>{' '}
@@ -90,7 +124,13 @@ export function CharacterList() {
               type="button"
               className="danger"
               onClick={async () => {
-                await deleteCharacter(db, toDelete.id);
+                try {
+                  await deleteCharacter(db, toDelete.id);
+                } catch (error) {
+                  setToDelete(undefined);
+                  toast({ message: t('save.failed', { reason: messageOf(error) }), error: true });
+                  return;
+                }
                 setToDelete(undefined);
                 await reload();
               }}

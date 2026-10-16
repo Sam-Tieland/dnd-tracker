@@ -28,6 +28,7 @@
   "list.deleteTitle": "Character verwijderen",
   "list.deleteConfirm": "{name} verwijderen? Dit kan niet ongedaan worden gemaakt.",
   "list.broken": "{name} kan niet worden geladen: {error}",
+  "list.loadFailed": "De characters konden niet worden geladen: {error}",
   "backup.reminder": "Je hebt al meer dan 14 dagen niet geëxporteerd.",
   "backup.now": "Alle data exporteren",
   "settings.title": "Instellingen",
