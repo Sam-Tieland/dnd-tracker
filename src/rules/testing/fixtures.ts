@@ -2,7 +2,16 @@ import { loadBuiltinContent } from '../../content/load';
 import { createRegistry } from '../../content/registry';
 import { createCharacter, type Character, type InventoryItem, type LevelChoice } from '../../model/character';
 
-export const registry = createRegistry(loadBuiltinContent());
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) deepFreeze(child);
+  }
+  return value;
+}
+
+/** Built-in content is frozen in tests, so a rule that changes content by accident fails loudly. */
+export const registry = createRegistry(deepFreeze(loadBuiltinContent()));
 
 /** A level in a class; short names get the srd prefix ("fighter" -> "srd:class:fighter"). */
 export function level(classId: string, extra: Partial<LevelChoice> = {}): LevelChoice {
