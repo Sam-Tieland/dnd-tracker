@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "typecheck": "tsc",
     "test": "vitest run",
-    "convert:srd": "tsx scripts/convert-srd/index.ts"
+    "convert:srd": "tsx scripts/convert-srd/index.ts",
+    "icons": "tsx scripts/make-icons.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "dexie": "^4.4.6",
@@ -21,6 +23,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
@@ -33,6 +36,7 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"
   }
 }

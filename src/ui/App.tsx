@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { detectLanguage, I18nProvider } from '../i18n/i18n';
 import type { TrackerDb } from '../storage/db';
+import { UpdatePrompt } from './UpdatePrompt';
 import { Section } from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { AppDataProvider, useAppData } from './data';
@@ -68,6 +69,7 @@ function Screens() {
 export function App({ db }: { db: TrackerDb }) {
   return (
     <Providers db={db}>
+      <UpdatePrompt />
       <Screens />
     </Providers>
   );

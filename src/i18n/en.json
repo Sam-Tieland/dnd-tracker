@@ -172,5 +172,7 @@
   "overrides.reason": "Reason",
   "overrides.reasonPlaceholder": "e.g. Ring of Protection",
   "overrides.add": "Add override",
-  "overrides.remove": "Remove override {name}"
+  "overrides.remove": "Remove override {name}",
+  "update.available": "A new version is available.",
+  "update.reload": "Reload"
 }

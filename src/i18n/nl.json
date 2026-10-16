@@ -172,5 +172,7 @@
   "overrides.reason": "Reden",
   "overrides.reasonPlaceholder": "bijv. Ring of Protection",
   "overrides.add": "Aanpassing toevoegen",
-  "overrides.remove": "Aanpassing {name} verwijderen"
+  "overrides.remove": "Aanpassing {name} verwijderen",
+  "update.available": "Nieuwe versie beschikbaar.",
+  "update.reload": "Herladen"
 }

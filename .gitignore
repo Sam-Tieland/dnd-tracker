@@ -2,3 +2,5 @@ node_modules/
 dist/
 .superpowers/
 *.log
+test-results/
+playwright-report/
