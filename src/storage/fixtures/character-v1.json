@@ -1,0 +1,53 @@
+{
+  "id": "9b2f4c1e-0d3a-4f7b-9c55-1a2b3c4d5e6f",
+  "schemaVersion": 1,
+  "createdAt": "2026-10-16T10:00:00.000Z",
+  "updatedAt": "2026-10-16T12:30:00.000Z",
+  "name": "Kael",
+  "details": { "alignment": "Neutral Good", "backstory": "Former soldier." },
+  "choices": {
+    "abilityMethod": "standard",
+    "baseAbilities": { "str": 15, "dex": 13, "con": 14, "int": 12, "wis": 10, "cha": 8 },
+    "speciesId": "srd:species:human",
+    "speciesChoices": {},
+    "backgroundId": "srd:background:soldier",
+    "backgroundAbilityBonuses": { "str": 2, "con": 1 },
+    "backgroundChoices": {},
+    "levels": [
+      { "classId": "srd:class:fighter", "hp": "average", "featId": "srd:feat:defense", "featureChoices": {} },
+      { "classId": "srd:class:fighter", "hp": 7, "featureChoices": {} },
+      { "classId": "srd:class:fighter", "subclassId": "srd:subclass:champion", "hp": "average", "featureChoices": {} },
+      { "classId": "srd:class:wizard", "hp": "average", "featureChoices": {} }
+    ],
+    "bonusFeatIds": [],
+    "skillProficiencies": ["perception", "history"],
+    "expertise": [],
+    "languages": ["Common", "Dwarvish"],
+    "toolProficiencies": [],
+    "featureOptions": [],
+    "spells": [
+      { "classId": "srd:class:wizard", "spellId": "srd:spell:fire-bolt", "prepared": true },
+      { "classId": "srd:class:cleric", "spellId": "srd:spell:guidance", "prepared": true, "ability": "wis" }
+    ]
+  },
+  "state": {
+    "hpCurrent": 21,
+    "hpTemp": 0,
+    "deathSaves": { "successes": 0, "failures": 0 },
+    "hitDiceSpent": { "d10": 1 },
+    "slotsUsed": { "1": 1 },
+    "pactSlotsUsed": 0,
+    "resourcesUsed": { "second-wind": 1 },
+    "conditions": ["poisoned"],
+    "exhaustion": 0,
+    "heroicInspiration": true
+  },
+  "inventory": [
+    { "id": "6f1d2c3b-0a4e-4b5f-8a6d-7e8f9a0b1c2d", "itemId": "srd:armor:chain-mail", "qty": 1, "equipped": true, "attuned": false },
+    { "id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d", "itemId": "srd:weapon:longsword", "qty": 1, "equipped": true, "attuned": false, "notes": "Family heirloom" },
+    { "id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e", "customName": "Lucky coin", "qty": 1, "equipped": false, "attuned": false }
+  ],
+  "currency": { "cp": 0, "sp": 12, "ep": 0, "gp": 35, "pp": 0 },
+  "notes": [{ "id": "n1", "title": "Session 1", "body": "Met the innkeeper.", "updatedAt": "2026-10-16T12:00:00.000Z" }],
+  "overrides": [{ "id": "o1", "target": "ac", "value": 1, "reason": "Ring of Protection" }]
+}
