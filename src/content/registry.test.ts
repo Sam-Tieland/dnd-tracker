@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createRegistry } from './registry';
-import type { ContentItem, FeatureDef } from './schema';
+import { createRegistry, mergeFill } from './registry';
+import type { ContentItem, FeatureDef, SubclassDef } from './schema';
 
 const skeletonFeature: FeatureDef = { id: 'skeleton:feature:battle-master:3:feature', type: 'feature', source: 'skeleton', name: '', text: '', effects: [] };
 const fill: FeatureDef = {
@@ -40,5 +40,39 @@ describe('createRegistry', () => {
     expect(registry.getOf('spell', skeletonFeature.id)).toBeUndefined();
     expect(registry.list('feature')).toHaveLength(1);
     expect(registry.list('spell')).toEqual([]);
+  });
+});
+
+describe('mergeFill', () => {
+  const ekFeature: FeatureDef = {
+    id: 'skeleton:feature:eldritch-knight:3:feature', type: 'feature', source: 'skeleton', name: '', text: '',
+    effects: [{ kind: 'spellcasting', classId: 'srd:class:fighter', ability: 'int', progression: 'third' }],
+  };
+  const resource = { kind: 'resource', key: 'war-bond', name: 'War Bond', max: 1, recharge: 'long' } as const;
+
+  it('keeps the target effects and adds those of the fill (Eldritch Knight keeps its spellcasting)', () => {
+    const ekFill: FeatureDef = { id: 'user:feature:ek', type: 'feature', source: 'user', fills: ekFeature.id, name: 'Spellcasting', text: 'Notes', effects: [resource] };
+    expect(createRegistry([ekFeature], [ekFill]).getOf('feature', ekFeature.id)!.effects).toEqual([...ekFeature.effects, resource]);
+  });
+
+  it('keeps name and text the fill leaves empty, and counts an effect the target already has once', () => {
+    const target: FeatureDef = { ...ekFeature, name: 'Old', text: 'Old text' };
+    const merged = mergeFill(target, { ...ekFeature, id: 'user:feature:x', source: 'user', name: '', text: '' });
+    expect(merged).toMatchObject({ id: ekFeature.id, source: 'skeleton', name: 'Old', text: 'Old text' });
+    expect((merged as FeatureDef).effects).toEqual(ekFeature.effects);
+  });
+
+  it('a subclass fill adds features after the built-in ones and never moves the subclass to another class', () => {
+    const sub: SubclassDef = {
+      id: 'skeleton:subclass:battle-master', type: 'subclass', source: 'skeleton', name: 'Battle Master', classId: 'srd:class:fighter',
+      text: '', features: [{ level: 3, featureId: 'skeleton:feature:battle-master:3:feature' }],
+    };
+    const subFill: SubclassDef = {
+      ...sub, id: 'user:subclass:bm', source: 'user', fills: sub.id, name: '', classId: 'srd:class:wizard',
+      text: 'Masters of maneuvers.', features: [{ level: 3, featureId: 'user:feature:student-of-war' }],
+    };
+    const merged = mergeFill(sub, subFill) as SubclassDef;
+    expect(merged.features.map((f) => f.featureId)).toEqual(['skeleton:feature:battle-master:3:feature', 'user:feature:student-of-war']);
+    expect(merged).toMatchObject({ name: 'Battle Master', classId: 'srd:class:fighter', text: 'Masters of maneuvers.' });
   });
 });
