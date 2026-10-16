@@ -40,3 +40,6 @@ export const CONDITIONS = [
   'paralyzed', 'petrified', 'poisoned', 'prone', 'restrained', 'stunned', 'unconscious',
 ] as const;
 export type Condition = (typeof CONDITIONS)[number];
+
+/** SRD Rules Glossary: these conditions say "Speed 0. Your Speed is 0 and can't increase." */
+export const SPEED_ZERO_CONDITIONS: readonly Condition[] = ['grappled', 'paralyzed', 'petrified', 'restrained', 'unconscious'];
