@@ -95,4 +95,4 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 .toast button { background: transparent; color: inherit; border-color: transparent; }
 .toast-error { background: var(--danger); color: #fff; }
 .error-box { border: 2px solid var(--danger); border-radius: var(--radius); padding: 1rem; background: var(--surface); }
-.update-banner { position: fixed; top: env(safe-area-inset-top); left: 0; right: 0; z-index: 40; display: flex; gap: 0.75rem; justify-content: center; align-items: center; padding: 0.5rem; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+.update-banner { display: flex; gap: 0.75rem; justify-content: center; align-items: center; padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem 0.5rem; background: var(--surface-2); border-bottom: 1px solid var(--border); }

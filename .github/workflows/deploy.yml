@@ -30,6 +30,7 @@ jobs:
         run: npm run convert:srd && git diff --exit-code -- src/content/srd/generated
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
+      - run: npm run build
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
