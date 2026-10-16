@@ -542,3 +542,23 @@ describe('deriveSheet: choices that change numbers', () => {
     expect(fighter.warnings).toEqual([]);
   });
 });
+
+describe('deriveSheet: values for the screens', () => {
+  it('class table values at the current level in each class', () => {
+    const sheet = derive(makeCharacter({ choices: { levels: [...levels('barbarian', 5), ...levels('rogue', 3)] } }));
+    expect(sheet.classLevels.map((cl) => [cl.name, cl.columns['rage-damage'] ?? cl.columns['sneak-attack']])).toEqual([
+      ['Barbarian', '+2'],
+      ['Rogue', '2d6'],
+    ]);
+  });
+
+  it('lists every bonus with its source, overrides included, and leaves out bonuses that do not apply', () => {
+    const sheet = derive(kael({ overrides: [{ id: 'o1', target: 'ac', value: 1, reason: 'Ring of Protection' }] }));
+    expect(sheet.bonusParts.filter((p) => p.target === 'ac')).toEqual([
+      { target: 'ac', source: 'Defense', value: 1, override: false },
+      { target: 'ac', source: 'Ring of Protection', value: 1, override: true },
+    ]);
+    expect(sheet.ac.value).toBe(20);
+    expect(derive(kael({ inventory: [] })).bonusParts.some((p) => p.source === 'Defense')).toBe(false);
+  });
+});

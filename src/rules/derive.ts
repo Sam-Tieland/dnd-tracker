@@ -2,7 +2,7 @@ import { ABILITIES, type Ability } from '../content/constants';
 import type { ContentRegistry } from '../content/registry';
 import type { Character } from '../model/character';
 import { computeAbilities } from './abilities';
-import { equippedArmor, makeBonus } from './bonuses';
+import { collectBonusParts, equippedArmor, makeBonus } from './bonuses';
 import { computeInitiative, computeSaves, computeSkills } from './checks';
 import { computeArmorClass, computeHitDice, computeHpMax, computeSpeed, computeWeaponAttacks } from './combat';
 import { collectFeatures } from './features';
@@ -38,7 +38,8 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     },
   };
   const equipment = equippedArmor(character, registry);
-  const bonus = makeBonus(effects, character.overrides, ctx, equipment);
+  const bonusParts = collectBonusParts(features, character.overrides, ctx, equipment);
+  const bonus = makeBonus(bonusParts);
   const prof = computeProficiencies(character, registry, classLevels, effects);
   // SRD Armor Training: without training, Disadvantage on Strength and Dexterity D20 Tests and no spellcasting.
   if (equipment.armor && !prof.armor.has(equipment.armor.category)) {
@@ -62,7 +63,7 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   return {
     totalLevel,
     proficiencyBonus: pb,
-    classLevels,
+    classLevels: classLevels.map((cl) => ({ ...cl, columns: registry.getOf('class', cl.classId)?.levels[cl.level - 1]?.columns ?? {} })),
     abilities,
     saves: computeSaves(abilities, prof, pb, bonus, d20Penalty),
     skills,
@@ -80,6 +81,7 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     armorTraining: [...prof.armor],
     weaponProficiencies: [...prof.weapons],
     flags: effects.flatMap((e) => (e.kind === 'flag' ? [e.flag] : [])),
+    bonusParts,
     warnings,
   };
 }

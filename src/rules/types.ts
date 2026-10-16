@@ -20,6 +20,19 @@ export interface ClassLevel {
   subclassName?: string;
 }
 
+/** A class with its table values at the character's level in that class, e.g. rage-damage: "+2". */
+export interface SheetClassLevel extends ClassLevel {
+  columns: Record<string, string>;
+}
+
+/** One contribution to a number on the sheet: an effect of a feature or feat, or an override with its reason. */
+export interface BonusPart {
+  target: string;
+  source: string;
+  value: number;
+  override: boolean;
+}
+
 export type FeatureOrigin = 'class' | 'subclass' | 'species' | 'feat' | 'option';
 export interface ActiveFeature {
   id: string;
@@ -104,7 +117,7 @@ export interface ResourceResult {
 export interface DerivedSheet {
   totalLevel: number;
   proficiencyBonus: number;
-  classLevels: ClassLevel[];
+  classLevels: SheetClassLevel[];
   abilities: Record<Ability, AbilityResult>;
   saves: Record<Ability, CheckResult>;
   skills: Record<SkillId, SkillResult>;
@@ -123,5 +136,6 @@ export interface DerivedSheet {
   armorTraining: ArmorTraining[];
   weaponProficiencies: WeaponProficiency[];
   flags: string[];
+  bonusParts: BonusPart[];
   warnings: Warning[];
 }
