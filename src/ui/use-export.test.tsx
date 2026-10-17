@@ -44,7 +44,7 @@ describe('useExport', () => {
     expect(message.closest('.toast')?.classList.contains('toast-error')).toBe(true);
     expect(screen.queryByText('Export ready.')).toBeNull();
     expect(deliverFile).toHaveBeenCalledOnce();
-    const exported = JSON.parse(vi.mocked(deliverFile).mock.calls[0][1]) as { characters: unknown[] };
+    const exported = JSON.parse(vi.mocked(deliverFile).mock.calls[0][1] as string) as { characters: unknown[] };
     expect(exported.characters).toHaveLength(1);
     await waitFor(async () => expect((await loadSettings(db)).lastExportAt).not.toBeNull());
   });

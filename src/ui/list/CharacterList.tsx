@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/i18n';
 import type { Character } from '../../model/character';
 import { deriveSheet } from '../../rules/derive';
@@ -11,6 +11,7 @@ import { classSummary } from '../format';
 import { ImportButton } from '../ImportButton';
 import { hrefFor } from '../router';
 import { useExport } from '../use-export';
+import { usePdfExport } from '../use-pdf-export';
 import './list.css';
 
 /** The message of a failed read or write, as the error box and the toast show it. */
@@ -22,8 +23,11 @@ export function CharacterList() {
   const { t } = useI18n();
   const toast = useToast();
   const { exportCharacter, exportBackup } = useExport();
+  const { exportPdf } = usePdfExport();
   const [loaded, setLoaded] = useState<LoadedCharacters>();
   const [loadError, setLoadError] = useState<string>();
+  const [pdfBusy, setPdfBusy] = useState<string>();
+  const pdfRunning = useRef(false);
   const [toDelete, setToDelete] = useState<{ id: string; name: string }>();
 
   /** A failed read is shown with the export button (spec §15), never as an empty screen or an unhandled rejection. */
@@ -41,6 +45,19 @@ export function CharacterList() {
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  /** One PDF at a time: a second tap during the run would start a second share. */
+  const makePdf = async (character: Character) => {
+    if (pdfRunning.current) return;
+    pdfRunning.current = true;
+    setPdfBusy(character.id);
+    try {
+      await exportPdf(character);
+    } finally {
+      pdfRunning.current = false;
+      setPdfBusy(undefined);
+    }
+  };
 
   const header = (
     <header className="screen-header">
@@ -107,6 +124,14 @@ export function CharacterList() {
               <div className="row list-actions">
                 <button type="button" onClick={() => void exportCharacter(character)}>
                   {t('list.export')}
+                </button>
+                <button
+                  type="button"
+                  disabled={pdfBusy === character.id}
+                  aria-label={`${t('pdf.button')} ${nameOf(character)}`}
+                  onClick={() => void makePdf(character)}
+                >
+                  {pdfBusy === character.id ? t('pdf.busy') : t('pdf.button')}
                 </button>
                 <button type="button" onClick={() => setToDelete({ id: character.id, name: nameOf(character) })}>
                   {t('common.delete')}
