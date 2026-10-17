@@ -20,7 +20,7 @@ export function ClassBlocksSection({ character, onChange }: SectionProps) {
     const block = blocks.find((b) => b.classId === classId);
     const last = block?.rows[block.rows.length - 1];
     if (!block || !last) return;
-    if (removalLosesData(levels[last.index])) setRemoving({ classId, name: block.name, classLevel: last.classLevel });
+    if (removalLosesData(character, registry, last.index)) setRemoving({ classId, name: block.name, classLevel: last.classLevel });
     else onChange(removeLastClassLevel(character, classId));
   };
   return (

@@ -3,7 +3,9 @@ import type { ContentRegistry } from '../../content/registry';
 import { STANDARD_ARRAY } from '../../content/srd/creation';
 import { createCharacter, type Character, type LevelChoice } from '../../model/character';
 import { syncHitPoints } from '../../rules/actions';
+import { optionsFor } from '../../rules/choices';
 import { deriveSheet } from '../../rules/derive';
+import { classBlocks } from './class-blocks';
 
 export const ASI_FEAT_ID = 'srd:feat:ability-score-improvement';
 export const MAX_LEVEL = 20;
@@ -65,11 +67,6 @@ export function bonusMode(bonuses: Partial<Record<Ability, number>>): BonusMode 
 export function addLevel(character: Character, classId: string): Character {
   if (character.choices.levels.length >= MAX_LEVEL) return character;
   return withChoices(character, { levels: [...character.choices.levels, { classId, hp: 'average', featureChoices: {} }] });
-}
-
-/** Spec §5: undoing a level removes the last LevelChoice. */
-export function removeLastLevel(character: Character): Character {
-  return withChoices(character, { levels: character.choices.levels.slice(0, -1) });
 }
 
 /** Average, or a rolled whole number from 1 up to the hit die (when given); a non-number changes nothing. */
@@ -172,7 +169,18 @@ export function setLevelNote(character: Character, index: number, note: string):
   return mapLevel(character, index, ({ note: _old, ...rest }) => (note === '' ? rest : { ...rest, note }));
 }
 
-/** True when removing this level would lose a feat, ASI, note or subclass choice. */
-export function removalLosesData(level: LevelChoice): boolean {
-  return level.featId !== undefined || level.asi !== undefined || (level.note !== undefined && level.note !== '') || level.subclassId !== undefined;
+/**
+ * True when removing the level at this index (the last level of its class) would lose a feat, ASI, note, a subclass
+ * choice with no remaining level of the class to move to, or a chosen option whose parent feature arrives on this level
+ * (saving drops options without an active parent).
+ */
+export function removalLosesData(character: Character, registry: ContentRegistry, index: number): boolean {
+  const level = character.choices.levels[index];
+  if (!level) return false;
+  if (level.featId !== undefined || level.asi !== undefined || (level.note !== undefined && level.note !== '')) return true;
+  const block = classBlocks(character, registry).find((b) => b.rows.some((r) => r.index === index));
+  if (level.subclassId !== undefined && block?.rows.length === 1) return true;
+  const row = block?.rows.find((r) => r.index === index);
+  const chosen = new Set(character.choices.featureOptions);
+  return row?.optionParentIds.some((id) => optionsFor(registry, id).some((o) => chosen.has(o.id))) ?? false;
 }

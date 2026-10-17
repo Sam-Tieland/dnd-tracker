@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { readVendor } from '../../../scripts/convert-srd/vendor';
+import type { LevelChoice } from '../../model/character';
 import { kael, level, levels, makeCharacter, registry } from '../../rules/testing/fixtures';
 import {
-  addLevel, ASI_FEAT_ID, removalLosesData, removeLastClassLevel, setLevelNote, assignStandard, bonusMode, finishForm, MAX_LEVEL, parseList, pruneOptions, removeLastLevel,
+  addLevel, ASI_FEAT_ID, removalLosesData, removeLastClassLevel, setLevelNote, assignStandard, bonusMode, finishForm, MAX_LEVEL, parseList, pruneOptions,
   setAbilityMethod, setBackground, setBackgroundBonuses, setBaseAbility, setExpertise, setLevelAsi, setLevelFeat,
   setLevelHp, setSkill, setSubclass, subclassLevel,
 } from './form-logic';
@@ -52,7 +53,7 @@ describe('levels', () => {
   it('adds levels up to 20 and removes the last one', () => {
     const one = addLevel(makeCharacter(), 'srd:class:fighter');
     expect(one.choices.levels).toEqual([{ classId: 'srd:class:fighter', hp: 'average', featureChoices: {} }]);
-    expect(removeLastLevel(one).choices.levels).toEqual([]);
+    expect(removeLastClassLevel(one, 'srd:class:fighter').choices.levels).toEqual([]);
     const full = makeCharacter({ choices: { levels: levels('fighter', MAX_LEVEL) } });
     expect(addLevel(full, 'srd:class:wizard')).toBe(full);
   });
@@ -153,11 +154,21 @@ describe('class blocks editing', () => {
   });
 
   it('knows which levels hold data that removal would lose', () => {
-    expect(removalLosesData({ classId: FIGHTER, hp: 'average', featureChoices: {} })).toBe(false);
-    expect(removalLosesData(level('fighter', { featId: 'x' }))).toBe(true);
-    expect(removalLosesData(level('fighter', { asi: { str: 2 } }))).toBe(true);
-    expect(removalLosesData(level('fighter', { note: 'hi' }))).toBe(true);
-    expect(removalLosesData(level('fighter', { note: '' }))).toBe(false);
-    expect(removalLosesData(level('fighter', { subclassId: 'srd:subclass:champion' }))).toBe(true);
+    const CHAMPION = 'srd:subclass:champion';
+    const DIVINE_ORDER = 'srd:feature:cleric:1:divine-order:protector';
+    const lose = (levelsList: LevelChoice[], index: number, featureOptions: string[] = []) =>
+      removalLosesData(makeCharacter({ choices: { levels: levelsList, featureOptions } }), registry, index);
+    expect(lose([level('fighter')], 0)).toBe(false);
+    expect(lose([level('fighter', { featId: 'x' })], 0)).toBe(true);
+    expect(lose([level('fighter', { asi: { str: 2 } })], 0)).toBe(true);
+    expect(lose([level('fighter', { note: 'hi' })], 0)).toBe(true);
+    expect(lose([level('fighter', { note: '' })], 0)).toBe(false);
+    expect(lose([level('fighter', { subclassId: CHAMPION })], 0)).toBe(true);
+    // the subclass moves to the highest remaining level of the class
+    expect(lose([level('fighter'), level('fighter'), level('fighter', { subclassId: CHAMPION })], 2)).toBe(false);
+    // the parent of a chosen option arrives on this level
+    expect(lose([level('cleric')], 0, [DIVINE_ORDER])).toBe(true);
+    expect(lose([level('cleric')], 0)).toBe(false);
+    expect(lose([level('cleric'), level('cleric')], 1, [DIVINE_ORDER])).toBe(false);
   });
 });
