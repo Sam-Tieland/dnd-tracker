@@ -6,7 +6,7 @@ import type { ParsedImport } from './export';
 export type CharacterImportMode = 'replace' | 'copy';
 
 export interface ImportPlan {
-  characters: { character: Character; exists: boolean }[];
+  characters: { character: Character; exists: boolean; /** updatedAt of the stored character, when there is one. */ existingUpdatedAt?: string }[];
   content: { item: ContentItem; exists: boolean }[];
 }
 
@@ -19,10 +19,16 @@ export interface ImportResult {
 
 /** Looks at what is already stored, without writing. */
 export async function planImport(db: TrackerDb, parsed: ParsedImport): Promise<ImportPlan> {
-  const characterKeys = new Set(await db.characters.bulkGet(parsed.characters.map((c) => c.id)).then((rows) => rows.flatMap((r) => (r ? [r.id] : []))));
+  const stored = new Map<string, string | undefined>();
+  const rows = await db.characters.bulkGet(parsed.characters.map((c) => c.id));
+  for (const row of rows) {
+    if (!row) continue;
+    const updatedAt: unknown = (row as { updatedAt?: unknown }).updatedAt;
+    stored.set(row.id, typeof updatedAt === 'string' ? updatedAt : undefined);
+  }
   const contentKeys = new Set(await db.customContent.bulkGet(parsed.customContent.map((i) => i.id)).then((rows) => rows.flatMap((r) => (r ? [r.id] : []))));
   return {
-    characters: parsed.characters.map((character) => ({ character, exists: characterKeys.has(character.id) })),
+    characters: parsed.characters.map((character) => ({ character, exists: stored.has(character.id), existingUpdatedAt: stored.get(character.id) })),
     content: parsed.customContent.map((item) => ({ item, exists: contentKeys.has(item.id) })),
   };
 }

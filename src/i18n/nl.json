@@ -203,5 +203,9 @@
   "import.error.newer-version": "Dit bestand komt uit een nieuwere versie van de app. Werk de app eerst bij.",
   "import.error.invalid-character": "Een character in dit bestand is niet te lezen: {reason}",
   "import.error.invalid-content": "Eigen inhoud in dit bestand is niet geldig: {reason}",
-  "import.failed": "Importeren mislukt: {reason}"
+  "import.failed": "Importeren mislukt: {reason}",
+  "import.fileVersion": "In bestand: {date}",
+  "import.deviceVersion": "Op dit apparaat: {date}",
+  "import.newer": "nieuwer",
+  "import.same": "Zelfde versie"
 }

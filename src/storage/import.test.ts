@@ -27,6 +27,13 @@ describe('import storage', () => {
     expect(plan.content.map((c) => [c.item.id, c.exists])).toEqual([['user:spell:frost-whip', true], ['user:spell:new', false]]);
   });
 
+  it('returns the updatedAt of an existing character', async () => {
+    const db = freshDb();
+    await db.characters.put({ ...kael(), updatedAt: '2026-01-02T00:00:00.000Z' });
+    const plan = await planImport(db, parsed({ characters: [kael(), { ...kael(), id: 'other' }] }));
+    expect(plan.characters.map((c) => c.existingUpdatedAt)).toEqual(['2026-01-02T00:00:00.000Z', undefined]);
+  });
+
   it('adds new characters and content', async () => {
     const db = freshDb();
     const result = await applyImport(db, await planImport(db, parsed()), {}, NOW);

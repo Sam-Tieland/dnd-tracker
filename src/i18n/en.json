@@ -203,5 +203,9 @@
   "import.error.newer-version": "This file was made with a newer version of the app. Update the app first.",
   "import.error.invalid-character": "A character in this file cannot be read: {reason}",
   "import.error.invalid-content": "Own content in this file is not valid: {reason}",
-  "import.failed": "Import failed: {reason}"
+  "import.failed": "Import failed: {reason}",
+  "import.fileVersion": "In file: {date}",
+  "import.deviceVersion": "On this device: {date}",
+  "import.newer": "newer",
+  "import.same": "Same version"
 }

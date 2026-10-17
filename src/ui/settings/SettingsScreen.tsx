@@ -95,16 +95,13 @@ export function SettingsScreen() {
           plan={plan}
           onClose={() => setPlan(undefined)}
           onDone={(result) => {
-            void reloadContent().then(
-              () => {
+            // The data is written; if reading it back fails, it shows after a reload.
+            void reloadContent()
+              .catch(() => undefined)
+              .then(() => {
                 setPlan(undefined);
                 toast({ message: t('import.done', { ...result }) });
-              },
-              (error: unknown) => {
-                setPlan(undefined);
-                fail(error);
-              },
-            );
+              });
           }}
           onError={(error) => {
             setPlan(undefined);
