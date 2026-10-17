@@ -12,7 +12,7 @@ const KEY = 'sheet-template';
 
 const TemplateSchema = z.object({
   name: z.string(),
-  bytes: z.custom<Uint8Array>((v) => ArrayBuffer.isView(v), 'bytes'),
+  bytes: z.custom<Uint8Array | ArrayBuffer>((v) => v instanceof Uint8Array || v instanceof ArrayBuffer || Object.prototype.toString.call(v) === '[object Uint8Array]' || Object.prototype.toString.call(v) === '[object ArrayBuffer]', 'bytes'),
   savedAt: z.string(),
 });
 
@@ -24,8 +24,8 @@ export async function saveSheetTemplate(db: TrackerDb, template: SheetTemplate):
 export async function loadSheetTemplate(db: TrackerDb): Promise<SheetTemplate | undefined> {
   const row = await db.settings.get(KEY);
   const parsed = TemplateSchema.safeParse(row?.value);
-  // Copied into a plain Uint8Array of this realm, whatever the database handed back.
-  return parsed.success ? { ...parsed.data, bytes: Uint8Array.from(parsed.data.bytes) } : undefined;
+  // Copied (typed-array copy) into a Uint8Array of this realm, whatever the database handed back.
+  return parsed.success ? { ...parsed.data, bytes: new Uint8Array(parsed.data.bytes) } : undefined;
 }
 
 export async function deleteSheetTemplate(db: TrackerDb): Promise<void> {

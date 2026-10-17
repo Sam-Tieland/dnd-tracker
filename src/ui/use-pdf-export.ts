@@ -31,7 +31,7 @@ export function usePdfExport() {
         }
         const bytes = await fillSheet(template.bytes, sheetValues(character, registry));
         const name = exportFileName(buildCharacterExport(character, registry, [], new Date().toISOString())).replace(/\.json$/, '.pdf');
-        if (await deliver(name, bytes, 'application/pdf', done, failed)) done();
+        if (await deliver(name, bytes, 'application/pdf', done, failed, 'pdf.shareRetry')) done();
       } catch (error) {
         failed(error);
       }

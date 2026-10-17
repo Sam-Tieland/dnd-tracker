@@ -136,7 +136,7 @@ describe('import', () => {
   });
 });
 
-describe('character sheet template', { timeout: 30000 }, () => {
+describe('character sheet template', { timeout: 15000 }, () => {
   const pdfFile = (bytes: Uint8Array, name = 'sheet.pdf') => new File([bytes as BlobPart], name, { type: 'application/pdf' });
   const sheetInput = async () => (await screen.findByTestId('sheet-input')) as HTMLInputElement;
 

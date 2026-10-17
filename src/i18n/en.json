@@ -219,5 +219,7 @@
   "pdf.done": "PDF ready.",
   "pdf.failed": "PDF failed: {reason}",
   "pdf.error.not-pdf": "This file is not a PDF.",
-  "pdf.error.not-sheet": "This PDF is not the fillable 5E character sheet."
+  "pdf.error.not-sheet": "This PDF is not the fillable 5E character sheet.",
+  "pdf.busy": "Making PDF…",
+  "pdf.shareRetry": "Sharing was blocked. Tap Share to share the PDF."
 }

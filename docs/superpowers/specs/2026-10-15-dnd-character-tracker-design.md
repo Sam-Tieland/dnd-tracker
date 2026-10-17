@@ -280,6 +280,8 @@ Elke stap is terug te nemen. De wizard schrijft alleen naar `choices`; de sheet 
 
 Een print-stylesheet die de sheet netjes op A4 zet; PDF via de printfunctie van de browser.
 
+Daarnaast bestaat een PDF-export op het eigen invulbare 5E-characterblad van de speler (plan `docs/superpowers/plans/2026-10-17-pdf-export.md`).
+
 ## 15. Foutafhandeling
 
 - **Import:** een ongeldig of kapot bestand geeft een duidelijke melding; er wordt niets overschreven.
@@ -301,7 +303,7 @@ Een print-stylesheet die de sheet netjes op A4 zet; PDF via de printfunctie van 
 - **Content:** elke class heeft features voor level 1–20 waar de SRD die geeft, elke verwezen ID bestaat, alle data voldoet aan de schema's.
 - **Storage:** export → import geeft een identiek character; migratietests per schemaversie.
 - **End-to-end (Playwright, Chromium en WebKit):** character aanmaken, level toevoegen met multiclass, schade nemen en long rest, ongedaan maken, export en import. In fase 2 ook beide wizards.
-- **Handmatig op de iPad** aan het eind van elke fase: installeren via *Zet op beginscherm*, gebruik in vliegtuigmodus, export via het deelmenu.
+- **Handmatig op de iPad** aan het eind van elke fase: installeren via *Zet op beginscherm*, gebruik in vliegtuigmodus, export via het deelmenu, PDF via het deelmenu.
 
 ## 17. Buiten scope
 

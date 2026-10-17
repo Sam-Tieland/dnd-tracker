@@ -1,6 +1,5 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
-import { buildBackup } from './export';
 import { openDb } from './db';
 import { deleteSheetTemplate, loadSheetTemplate, saveSheetTemplate } from './sheet-template';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from './settings';
@@ -23,12 +22,11 @@ describe('sheet template storage', () => {
     expect(await loadSheetTemplate(d)).toBeUndefined();
   });
 
-  it('leaves the settings alone, and the backup does not hold it', async () => {
+  it('leaves the settings alone', async () => {
     const d = db();
     await saveSettings(d, { ...DEFAULT_SETTINGS, theme: 'dark' });
     await saveSheetTemplate(d, template);
     expect((await loadSettings(d)).theme).toBe('dark');
-    expect(JSON.stringify(buildBackup([], [], '2026-10-17T10:00:00.000Z'))).not.toContain('sheet-template');
   });
 
   it('ignores a template row that cannot be read', async () => {

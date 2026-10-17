@@ -27,8 +27,15 @@ const MULTILINE = new Set<string>([
   PAGE2_FIELDS.treasure,
 ]);
 
-/** Test only: builds a 3-page PDF with every field name the sheet constants use (positions are meaningless). */
+let cached: Promise<Uint8Array> | undefined;
+
+/** Test only: a 3-page PDF with every field name the sheet constants use (positions are meaningless). Built once per module instance, handed out as a copy. */
 export async function fakeTemplate(): Promise<Uint8Array> {
+  cached ??= buildTemplate();
+  return (await cached).slice();
+}
+
+async function buildTemplate(): Promise<Uint8Array> {
   const { PDFDocument } = await import('pdf-lib');
   const doc = await PDFDocument.create();
   const pages = [doc.addPage(), doc.addPage(), doc.addPage()];

@@ -17,7 +17,7 @@ describe('fillSheet', () => {
     expect(form.getTextField('STR').getText()).toBe('17');
     expect(form.getCheckBox('Check Box 11').isChecked()).toBe(true);
     expect(form.getCheckBox('Check Box 18').isChecked()).toBe(false);
-  }, 30000);
+  }, 15000);
 
   it('keeps the form fillable', async () => {
     const out = await fillSheet(await fakeTemplate(), { text: { CharacterName: 'Kael' }, checks: [] });

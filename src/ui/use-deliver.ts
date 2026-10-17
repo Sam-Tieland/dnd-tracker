@@ -16,10 +16,11 @@ export function useDeliver() {
     type: string,
     onDelivered: () => unknown,
     onFailed: (error: unknown) => void,
+    retryMessage: 'export.shareRetry' | 'pdf.shareRetry' = 'export.shareRetry',
   ): Promise<boolean> => {
     const onRefused = (retry: () => Promise<boolean>) =>
       toast({
-        message: t('export.shareRetry'),
+        message: t(retryMessage),
         error: true,
         action: {
           label: t('export.shareAction'),

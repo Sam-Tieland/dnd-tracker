@@ -219,5 +219,7 @@
   "pdf.done": "PDF klaar.",
   "pdf.failed": "PDF mislukt: {reason}",
   "pdf.error.not-pdf": "Dit bestand is geen PDF.",
-  "pdf.error.not-sheet": "Deze PDF is niet het invulbare 5E-characterblad."
+  "pdf.error.not-sheet": "Deze PDF is niet het invulbare 5E-characterblad.",
+  "pdf.busy": "PDF maken…",
+  "pdf.shareRetry": "Delen werd geblokkeerd. Tik op Delen om de PDF te delen."
 }
