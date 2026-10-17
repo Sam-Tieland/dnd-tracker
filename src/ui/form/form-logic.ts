@@ -155,3 +155,24 @@ export function finishForm(original: Character | undefined, draft: Character, re
   const synced = syncHitPoints(pruned, before, deriveSheet(pruned, registry));
   return { ...synced, updatedAt: now };
 }
+
+/** Removes the last level of one class, wherever it sits; a subclass that was on it moves to the class's highest remaining level. */
+export function removeLastClassLevel(character: Character, classId: string): Character {
+  const levels = character.choices.levels;
+  const at = levels.map((l) => l.classId).lastIndexOf(classId);
+  if (at < 0) return character;
+  const { subclassId } = levels[at];
+  const kept = levels.filter((_, i) => i !== at);
+  const heir = subclassId ? kept.map((l) => l.classId).lastIndexOf(classId) : -1;
+  return withChoices(character, { levels: kept.map((l, i) => (i === heir && !l.subclassId ? { ...l, subclassId } : l)) });
+}
+
+/** An empty note removes the field. */
+export function setLevelNote(character: Character, index: number, note: string): Character {
+  return mapLevel(character, index, ({ note: _old, ...rest }) => (note === '' ? rest : { ...rest, note }));
+}
+
+/** True when removing this level would lose a feat, ASI, note or subclass choice. */
+export function removalLosesData(level: LevelChoice): boolean {
+  return level.featId !== undefined || level.asi !== undefined || (level.note !== undefined && level.note !== '') || level.subclassId !== undefined;
+}

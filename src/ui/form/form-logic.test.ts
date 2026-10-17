@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readVendor } from '../../../scripts/convert-srd/vendor';
 import { kael, level, levels, makeCharacter, registry } from '../../rules/testing/fixtures';
 import {
-  addLevel, ASI_FEAT_ID, assignStandard, bonusMode, finishForm, MAX_LEVEL, parseList, pruneOptions, removeLastLevel,
+  addLevel, ASI_FEAT_ID, removalLosesData, removeLastClassLevel, setLevelNote, assignStandard, bonusMode, finishForm, MAX_LEVEL, parseList, pruneOptions, removeLastLevel,
   setAbilityMethod, setBackground, setBackgroundBonuses, setBaseAbility, setExpertise, setLevelAsi, setLevelFeat,
   setLevelHp, setSkill, setSubclass, subclassLevel,
 } from './form-logic';
@@ -127,5 +127,37 @@ describe('saving the form', () => {
     const wizard = { ...cleric, choices: { ...cleric.choices, levels: levels('wizard', 1) } };
     expect(finishForm(cleric, wizard, registry, NOW).choices.featureOptions).toEqual([]);
     expect(pruneOptions(cleric, registry, new Set(['srd:feature:cleric:1:divine-order'])).choices.featureOptions).toEqual(cleric.choices.featureOptions);
+  });
+});
+
+describe('class blocks editing', () => {
+  const FIGHTER = 'srd:class:fighter';
+
+  it('removes the last level of one class only', () => {
+    const c = makeCharacter({ choices: { levels: [level('fighter'), level('wizard'), level('fighter')] } });
+    expect(removeLastClassLevel(c, FIGHTER).choices.levels.map((l) => l.classId.split(':')[2])).toEqual(['fighter', 'wizard']);
+  });
+
+  it('keeps the subclass when its level is removed', () => {
+    const c = makeCharacter({ choices: { levels: [level('fighter'), level('fighter'), level('fighter', { subclassId: 'srd:subclass:champion' })] } });
+    const next = removeLastClassLevel(c, FIGHTER).choices.levels;
+    expect(next).toHaveLength(2);
+    expect(next[1].subclassId).toBe('srd:subclass:champion');
+  });
+
+  it('sets and clears a level note', () => {
+    const c = makeCharacter({ choices: { levels: [level('fighter')] } });
+    const noted = setLevelNote(c, 0, 'Took the hill');
+    expect(noted.choices.levels[0].note).toBe('Took the hill');
+    expect('note' in setLevelNote(noted, 0, '').choices.levels[0]).toBe(false);
+  });
+
+  it('knows which levels hold data that removal would lose', () => {
+    expect(removalLosesData({ classId: FIGHTER, hp: 'average', featureChoices: {} })).toBe(false);
+    expect(removalLosesData(level('fighter', { featId: 'x' }))).toBe(true);
+    expect(removalLosesData(level('fighter', { asi: { str: 2 } }))).toBe(true);
+    expect(removalLosesData(level('fighter', { note: 'hi' }))).toBe(true);
+    expect(removalLosesData(level('fighter', { note: '' }))).toBe(false);
+    expect(removalLosesData(level('fighter', { subclassId: 'srd:subclass:champion' }))).toBe(true);
   });
 });
