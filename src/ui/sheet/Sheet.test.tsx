@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Character } from '../../model/character';
 import { kael } from '../../rules/testing/fixtures';
 import { loadCharacter, saveCharacter } from '../../storage/characters';
 import { renderApp, setMatchMedia, testDb } from '../testing/render';
-import { resetUndoStacks } from './session';
+import { resetUndoStacks, whenSaved } from './session';
 
 async function openKael(state: Partial<Character['state']> = { hpCurrent: 40 }) {
   const db = testDb();
@@ -22,6 +22,7 @@ async function damage(user: ReturnType<typeof userEvent.setup>, amount: string) 
 }
 
 afterEach(() => {
+  vi.restoreAllMocks();
   // The page-hidden test overrides the visibility state; leave it the way jsdom has it for the tests that follow.
   Reflect.deleteProperty(document, 'visibilityState');
   // Every test uses the character id "test"; undo history must not carry over from one test to the next.
@@ -98,6 +99,45 @@ describe('sheet', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(window.location.hash).toBe('#/c/test'));
     await waitFor(async () => expect(await loadCharacter(db, 'test')).toMatchObject({ name: 'Kael the Bold', state: { hpCurrent: 33 } }));
+  });
+
+  /** A slow IndexedDB write makes it visible whether a flush was registered for whenSaved or fired as a bare flush. */
+  function slowPuts(db: ReturnType<typeof testDb>) {
+    const put = db.characters.put.bind(db.characters) as (...args: unknown[]) => Promise<unknown>;
+    vi.spyOn(db.characters, 'put').mockImplementation(((...args: unknown[]) =>
+      new Promise((resolve) => setTimeout(resolve, 30)).then(() => put(...args))) as typeof db.characters.put);
+  }
+
+  it('Damage → immediate Edit → Save keeps the HP, also when the write takes a while', async () => {
+    const { db, user } = await openKael();
+    slowPuts(db);
+    await damage(user, '7');
+    await user.click(screen.getByRole('link', { name: 'Edit' }));
+    const name = await screen.findByLabelText('Name');
+    await user.clear(name);
+    await user.type(name, 'Kael the Bold');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(window.location.hash).toBe('#/c/test'));
+    await waitFor(async () => expect(await loadCharacter(db, 'test')).toMatchObject({ name: 'Kael the Bold', state: { hpCurrent: 33 } }));
+  });
+
+  it('a flush on pagehide is registered for whenSaved, so a screen that reads next waits for the write', async () => {
+    const { db, user } = await openKael();
+    slowPuts(db);
+    await damage(user, '4');
+    window.dispatchEvent(new Event('pagehide'));
+    await whenSaved();
+    expect((await loadCharacter(db, 'test'))?.state.hpCurrent).toBe(36);
+  });
+
+  it('a flush on hiding the app is registered for whenSaved too', async () => {
+    const { db, user } = await openKael();
+    slowPuts(db);
+    await damage(user, '4');
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    await whenSaved();
+    expect((await loadCharacter(db, 'test'))?.state.hpCurrent).toBe(36);
   });
 
   it('saves a change straight away when the page is hidden or closed', async () => {

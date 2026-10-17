@@ -13,18 +13,7 @@ const browserEnv = (): DeliverEnv => ({
   document,
 });
 
-/** Hands a JSON file to the player. Returns false when the share sheet was closed without sharing. */
-export async function deliverFile(name: string, text: string, env: DeliverEnv = browserEnv()): Promise<boolean> {
-  const file = new File([text], name, { type: 'application/json' });
-  if (env.preferShare && env.share && env.canShare?.({ files: [file] })) {
-    try {
-      await env.share({ files: [file], title: name });
-      return true;
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return false;
-      throw error;
-    }
-  }
+function download(name: string, file: File, env: DeliverEnv): void {
   const url = URL.createObjectURL(file);
   const link = env.document.createElement('a');
   link.href = url;
@@ -33,5 +22,46 @@ export async function deliverFile(name: string, text: string, env: DeliverEnv = 
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const isAbort = (error: unknown): boolean => error instanceof DOMException && error.name === 'AbortError';
+
+/**
+ * Hands a JSON file to the player. Returns false when the share sheet was closed without sharing, or (with `onRefused`)
+ * when the share sheet refused and the player was offered a retry.
+ *
+ * Safari refuses `share` outside a fresh tap, which an earlier await (reading the database) can use up. With `onRefused`,
+ * the prepared file is kept: the callback gets a `retry` that must be called straight from a tap. It shares again with
+ * no await before the call, and falls back to a download when that fails too. Without `onRefused` the error is thrown.
+ */
+export async function deliverFile(
+  name: string,
+  text: string,
+  env: DeliverEnv = browserEnv(),
+  onRefused?: (retry: () => Promise<boolean>) => void,
+): Promise<boolean> {
+  const file = new File([text], name, { type: 'application/json' });
+  if (env.preferShare && env.share && env.canShare?.({ files: [file] })) {
+    const share = env.share;
+    try {
+      await share({ files: [file], title: name });
+      return true;
+    } catch (error) {
+      if (isAbort(error)) return false;
+      if (!onRefused) throw error;
+      onRefused(async () => {
+        try {
+          await share({ files: [file], title: name });
+          return true;
+        } catch (second) {
+          if (isAbort(second)) return false;
+          download(name, file, env);
+          return true;
+        }
+      });
+      return false;
+    }
+  }
+  download(name, file, env);
   return true;
 }

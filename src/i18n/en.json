@@ -13,6 +13,8 @@
   "export.done": "Export ready.",
   "export.failed": "Export failed: {reason}",
   "export.partial": "Export ready, but {count} character(s) could not be read and are not included.",
+  "export.shareRetry": "Sharing was blocked. Tap Share to export again.",
+  "export.shareAction": "Share",
   "save.failed": "Saving failed: {reason}. Export your data to be safe.",
   "warning.unknown-content": "Unknown: {name}",
   "warning.multiclass-prerequisite": "Multiclass prerequisite not met for {name}: 13 in its primary ability.",

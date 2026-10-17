@@ -68,6 +68,14 @@ export function useCharacterSession(id: string): SessionState {
   const [character, setCharacter] = useState<Character>();
   const [undoCount, setUndoCount] = useState(0);
   const current = useRef<Character | undefined>(undefined);
+  /** Set when the sheet is left. A toast's Undo can outlive the sheet; it must not write this session's old character. */
+  const disposed = useRef(false);
+  useEffect(() => {
+    disposed.current = false;
+    return () => {
+      disposed.current = true;
+    };
+  }, []);
   const notify = useRef({ t, toast });
   useEffect(() => {
     notify.current = { t, toast };
@@ -135,6 +143,7 @@ export function useCharacterSession(id: string): SessionState {
 
   const store = useCallback(
     (next: Character) => {
+      if (disposed.current) return;
       const stamped = { ...next, updatedAt: new Date().toISOString() };
       current.current = stamped;
       setCharacter(stamped);
@@ -144,6 +153,7 @@ export function useCharacterSession(id: string): SessionState {
   );
 
   const undo = useCallback(() => {
+    if (disposed.current) return;
     const entry = stack.pop();
     setUndoCount(stack.size);
     if (!entry || !current.current) return;

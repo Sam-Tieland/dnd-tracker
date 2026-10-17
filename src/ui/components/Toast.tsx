@@ -25,6 +25,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  // A toast with an action belongs to the screen it came from (Undo of a closed sheet); leaving that screen removes it.
+  useEffect(() => {
+    const onRouteChange = () => setToast((current) => (current?.action ? null : current));
+    window.addEventListener('hashchange', onRouteChange);
+    return () => window.removeEventListener('hashchange', onRouteChange);
+  }, []);
+
   return (
     <ToastContext.Provider value={show}>
       {children}
