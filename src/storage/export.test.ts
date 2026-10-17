@@ -61,4 +61,15 @@ describe('export', () => {
     expect(codeOf(JSON.stringify({ ...good, characters: [{ ...first, state: { ...first.state, exhaustion: 9 } }] }))).toBe('invalid-character');
     expect(codeOf(JSON.stringify({ ...good, customContent: [{ ...spell, source: 'srd' }] }))).toBe('invalid-content');
   });
+
+  it('rejects duplicate character ids', () => {
+    const file = buildBackup([character, { ...character }], [], NOW);
+    expect(codeOf(serializeExport(file))).toBe('invalid-character');
+  });
+
+  it('rejects a character file with two characters', () => {
+    const file = { ...buildBackup([character, { ...character, id: 'second' }], [], NOW), kind: 'character' as const };
+    expect(codeOf(serializeExport(file))).toBe('invalid-character');
+    expect(codeOf(serializeExport({ ...file, characters: [] }))).toBe('invalid-character');
+  });
 });

@@ -96,6 +96,14 @@ export function parseExportFile(text: string): ParsedImport {
       throw new ImportError('invalid-character', `Character ${index + 1}: ${error instanceof Error ? error.message : String(error)}`);
     }
   });
+  const ids = new Set<string>();
+  for (const c of characters) {
+    if (ids.has(c.id)) throw new ImportError('invalid-character', `Character id "${c.id}" occurs more than once in the file.`);
+    ids.add(c.id);
+  }
+  if (file.data.kind === 'character' && characters.length !== 1) {
+    throw new ImportError('invalid-character', `A character file holds exactly one character, this one holds ${characters.length}.`);
+  }
   const content = validateUserContent(file.data.customContent);
   if (content.issues.length > 0) {
     throw new ImportError('invalid-content', content.issues.map((i) => `${i.id ?? `#${i.index + 1}`}: ${i.message}`).join('; '));
