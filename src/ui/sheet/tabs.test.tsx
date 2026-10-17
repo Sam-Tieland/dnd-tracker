@@ -24,6 +24,10 @@ describe('actions tab', () => {
     expect(screen.getByText('Second Wind 1/2')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Level 1 slot 1' }));
     expect(screen.getByRole('button', { name: 'Level 1 slot 1' }).getAttribute('aria-pressed')).toBe('true');
+    // Slots are spent from the right: the spent coin is the last one in the row, the ones in hand stay on the left.
+    const row = screen.getAllByRole('button', { name: /^Level 1 slot/ }).map((b) => b.getAttribute('aria-pressed'));
+    expect(row.at(-1)).toBe('true');
+    expect(row.slice(0, -1).every((p) => p === 'false')).toBe(true);
     await waitFor(async () =>
       expect((await loadCharacter(db, 'test'))?.state).toMatchObject({ resourcesUsed: { 'second-wind': 1 }, slotsUsed: { '1': 1 } }),
     );
