@@ -22,7 +22,7 @@ De app kan nu:
 
 | Controle | Uitkomst |
 |---|---|
-| Unit-tests | 62 bestanden, 639 tests groen |
+| Unit-tests | 62 bestanden, 639 tests groen (na de eindreview-fixes: 64 bestanden, 648 tests) |
 | Typecheck | Schoon |
 | Build | Geslaagd: PWA v2.0.0 met 12 precache-items |
 | `convert:srd` | Geen verschil in `generated/` |
@@ -116,4 +116,29 @@ De punten die de eindreview van 1B niet oplost, komen in sectie 5 te staan.
 
 ## 5. Eindreview
 
-Wordt aangevuld na de eindreview van de hele branch.
+De eindreview van de hele branch (opus, `f34a584..a0713e1`) concludeerde: **samenvoegen met fixes**. Er waren geen kritieke punten. Wel kwamen er twee belangrijke punten en een CSS-regel uit. Die zijn opgelost in commit `53fad62`, en een gerichte hercontrole vond ze alle drie opgelost.
+
+- **Undo na het verlaten van de sheet (I1).** De undo-toast bleef staan na het verlaten van de sheet. Een tik schreef dan een oude versie van het character terug, waardoor een naamswijziging verloren ging of een verwijderd character terugkwam.
+  - Nu doet een gesloten sessie niets meer.
+  - Toasts met een actie verdwijnen bij navigeren.
+  - Er zijn tests bij voor de flush-registratie, met een mutatiecontrole.
+- **Export op de iPad (I2).** Weigert het deelmenu met een andere fout dan annuleren, dan verschijnt er nu een toast met de knop *Delen*. Die deelt hetzelfde bestand opnieuw, zonder wachten vóór `navigator.share`. Faalt dat ook, dan wordt het bestand gedownload.
+- **Foutmeldingen (M1).** De tekst op foutmeldingen heeft nu voldoende contrast: 7,6:1 in donker en 6:1 in licht.
+
+Beslissingen na de eindreview:
+
+22. **Eén fixronde**, voor I1, I2, M1 en de test op de flush-registratie. De rest wacht op 1C.
+23. **Export-retry** via een toast met *Delen* en daarna downloaden.
+24. **De eerste echte iPad-controle** komt na het samenvoegen en publiceren. GitHub Pages publiceert alleen vanaf `main`, dus dat is de volgorde van het plan zelf.
+
+**Voor plan 1C.** De reviewer beoordeelde alle andere uitgestelde punten als *kan wachten tot 1C*. De belangrijkste:
+
+- Getallen boven 2^53 maken bewaren onmogelijk tot je ze verlaagt (temp HP, munten, aantallen, aanpassingen). Eén gedeelde grens lost dit op.
+- Foutmeldingen hebben nog geen `role="alert"`. Een mislukte schrijfactie bij de instellingen wordt niet gemeld.
+- Dode characters kunnen nog resources, slots en rollen gebruiken op het tabblad Acties.
+- Enkele Engelse labels staan buiten de lijst met spelregeltermen. Dat schendt een Global Constraint.
+- Een retry-toast verdwijnt bij navigeren; dan exporteer je opnieuw.
+- Twee tabbladen met hetzelfde character overschrijven elkaar (de laatste schrijfactie wint).
+- Exporteer nooit ongevalideerde staat uit het geheugen.
+- Databaseversie 1 heeft alleen primaire sleutels. Een index op `customContent.type` voor de bibliotheek betekent `db.version(2)` met een migratietest.
+- Plan in 1C vroeg een echte apparaatcontrole in: delen, installeren en vliegtuigmodus.
