@@ -188,5 +188,20 @@
   "overrides.add": "Add override",
   "overrides.remove": "Remove override {name}",
   "update.available": "A new version is available.",
-  "update.reload": "Reload"
+  "update.reload": "Reload",
+  "import.button": "Import",
+  "import.title": "Import file",
+  "import.summary": "{characters} character(s) and {content} own content item(s).",
+  "import.exists": "Already on this device",
+  "import.replace": "Replace",
+  "import.copy": "Add as copy",
+  "import.contentReplaced": "{count} item(s) replace your own content with the same name.",
+  "import.confirm": "Import",
+  "import.done": "Imported: {added} new, {replaced} replaced, {copied} copies, {content} content item(s).",
+  "import.error.not-json": "This file is not a JSON file.",
+  "import.error.wrong-format": "This file is not an export of this app.",
+  "import.error.newer-version": "This file was made with a newer version of the app. Update the app first.",
+  "import.error.invalid-character": "A character in this file cannot be read: {reason}",
+  "import.error.invalid-content": "Own content in this file is not valid: {reason}",
+  "import.failed": "Import failed: {reason}"
 }

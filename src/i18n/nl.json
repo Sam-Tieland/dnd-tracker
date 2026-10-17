@@ -188,5 +188,20 @@
   "overrides.add": "Aanpassing toevoegen",
   "overrides.remove": "Aanpassing {name} verwijderen",
   "update.available": "Nieuwe versie beschikbaar.",
-  "update.reload": "Herladen"
+  "update.reload": "Herladen",
+  "import.button": "Importeren",
+  "import.title": "Bestand importeren",
+  "import.summary": "{characters} character(s) en {content} eigen inhoudsitem(s).",
+  "import.exists": "Staat al op dit apparaat",
+  "import.replace": "Vervangen",
+  "import.copy": "Als kopie toevoegen",
+  "import.contentReplaced": "{count} item(s) vervangen eigen inhoud met dezelfde naam.",
+  "import.confirm": "Importeren",
+  "import.done": "Geïmporteerd: {added} nieuw, {replaced} vervangen, {copied} kopieën, {content} inhoudsitem(s).",
+  "import.error.not-json": "Dit bestand is geen JSON-bestand.",
+  "import.error.wrong-format": "Dit bestand is geen export van deze app.",
+  "import.error.newer-version": "Dit bestand komt uit een nieuwere versie van de app. Werk de app eerst bij.",
+  "import.error.invalid-character": "Een character in dit bestand is niet te lezen: {reason}",
+  "import.error.invalid-content": "Eigen inhoud in dit bestand is niet geldig: {reason}",
+  "import.failed": "Importeren mislukt: {reason}"
 }

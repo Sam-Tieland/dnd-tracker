@@ -74,6 +74,30 @@ test('export a character as a JSON file', async ({ page, browserName }) => {
   expect(json).toMatchObject({ format: 'dnd-tracker-export', version: 1, kind: 'character', characters: [{ name: 'Kael' }] });
 });
 
+test('imports an exported character as a copy', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Needs the download of the export test; the file chooser itself is the same on the iPad.');
+  await createKael(page);
+  await page.getByRole('link', { name: 'Back' }).click();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
+  const path = await (await download).path();
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByTestId('import-input').setInputFiles(path);
+  const dialog = page.getByRole('dialog', { name: 'Import file' });
+  await expect(dialog.getByText('Already on this device')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Import' }).click();
+  await expect(page.getByText('Imported: 0 new, 0 replaced, 1 copies, 0 content item(s).')).toBeVisible();
+  await page.getByRole('link', { name: 'Back' }).click();
+  await expect(page.getByRole('link', { name: /Kael/ })).toHaveCount(2);
+});
+
+test('reports an invalid import file', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByTestId('import-input').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+  await expect(page.getByText('This file is not an export of this app.')).toBeVisible();
+});
+
 test('switches the interface to Dutch and the theme to dark', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: 'Settings' }).click();

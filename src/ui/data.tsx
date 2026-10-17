@@ -15,6 +15,8 @@ export interface AppData {
   userContentIssues: UserContentIssue[];
   settings: Settings;
   updateSettings(patch: Partial<Settings>): Promise<void>;
+  /** Reads the own content again (after an import) and rebuilds the registry. */
+  reloadContent(): Promise<void>;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -55,6 +57,10 @@ export function AppDataProvider({ db, children }: { db: TrackerDb; children: Rea
     [db],
   );
 
+  const reloadContent = useCallback(async () => {
+    setContent(await loadUserContent(db));
+  }, [db]);
+
   useEffect(() => {
     if (settings && !settings.persistRequested) {
       // A failing save only means the request is repeated on the next start.
@@ -68,9 +74,9 @@ export function AppDataProvider({ db, children }: { db: TrackerDb; children: Rea
   const value = useMemo(
     () =>
       settings && content
-        ? { db, registry, userItems: content.items, userContentIssues: content.issues, settings, updateSettings }
+        ? { db, registry, userItems: content.items, userContentIssues: content.issues, settings, updateSettings, reloadContent }
         : null,
-    [db, registry, content, settings, updateSettings],
+    [db, registry, content, settings, updateSettings, reloadContent],
   );
   // This sits above the I18nProvider (the language is a setting), so the message is fixed and bilingual.
   if (failed) {
