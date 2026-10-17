@@ -31,6 +31,21 @@ describe('character list', () => {
     expect((await loadCharacters(db)).characters.map((c) => c.name)).toEqual(['Mira']);
   });
 
+  it('shows an imported copy next to the original', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael());
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    expect(await screen.findByRole('link', { name: /Test/ })).toBeTruthy();
+    const registry = createRegistry(loadBuiltinContent());
+    const text = serializeExport(buildCharacterExport(kael(), registry, [], '2026-10-17T10:00:00.000Z'));
+    await user.upload(screen.getByTestId('import-input'), new File([text], 'test.json', { type: 'application/json' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Import file' });
+    await user.click(within(dialog).getByRole('button', { name: 'Import' }));
+    expect(await screen.findByText('Imported: 0 new, 0 replaced, 1 copies, 0 content item(s).')).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByRole('link', { name: /Test/ })).toHaveLength(2));
+  });
+
   it('shows each character with classes and level, linking to its sheet', async () => {
     const db = testDb();
     await saveCharacter(db, kael({ state: { hpCurrent: 40 } }));

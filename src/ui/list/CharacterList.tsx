@@ -80,12 +80,12 @@ export function CharacterList() {
           </button>
         </div>
       )}
-      <p>
+      <div className="row list-actions">
         <a className="button primary" href={hrefFor({ name: 'new' })}>
           {t('list.new')}
-        </a>{' '}
+        </a>
         <ImportButton onImported={() => void reload()} />
-      </p>
+      </div>
       {loaded.characters.length === 0 && loaded.broken.length === 0 && <p className="muted">{t('list.empty')}</p>}
       <ul className="card-list">
         {loaded.characters.map((character) => {
@@ -97,7 +97,7 @@ export function CharacterList() {
                 <span>{classSummary(sheet) || t('list.noClass')}</span>
                 <span className="muted">{t('list.level', { level: sheet.totalLevel })}</span>
               </a>
-              <div className="row">
+              <div className="row list-actions">
                 <button type="button" onClick={() => void exportCharacter(character)}>
                   {t('list.export')}
                 </button>
