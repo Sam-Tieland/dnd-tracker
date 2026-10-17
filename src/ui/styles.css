@@ -11,8 +11,15 @@
   --ok: #2e6b30;
   --warning: #8a5a00;
   --focus: #1f5fbf;
+  --accent-soft: rgb(139 30 30 / 10%);
+  --shadow: 0 1px 2px rgb(60 40 20 / 8%), 0 2px 8px rgb(60 40 20 / 6%);
+  --shadow-lg: 0 12px 40px rgb(30 20 10 / 22%);
   --radius: 10px;
   --tap: 44px;
+  /* Strong ease-out: movement starts at once, so a press or an opening dialog feels immediate. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Book serifs that ship with iPadOS and Windows, so the app stays offline without a web font. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
   color-scheme: light;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.4;
@@ -31,6 +38,9 @@
   --ok: #8fcf8f;
   --warning: #f0c060;
   --focus: #8ab4ff;
+  --accent-soft: rgb(208 87 78 / 14%);
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
   color-scheme: dark;
 }
 
@@ -48,30 +58,63 @@
     --ok: #8fcf8f;
     --warning: #f0c060;
     --focus: #8ab4ff;
+    --accent-soft: rgb(208 87 78 / 14%);
+    --shadow: 0 1px 2px rgb(0 0 0 / 30%);
+    --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
     color-scheme: dark;
   }
 }
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
-h1, h2 { margin: 0 0 0.5rem; }
-h1 { font-size: 1.4rem; }
-h2 { font-size: 1.1rem; }
+h1, h2 { margin: 0 0 0.5rem; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.005em; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.2rem; }
 
 button, .button, input, select, textarea { font: inherit; font-size: 16px; color: inherit; }
 button, .button {
   min-height: var(--tap); min-width: var(--tap); padding: 0 0.8rem;
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
   display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
-  text-decoration: none; cursor: pointer;
+  text-decoration: none; cursor: pointer; -webkit-user-select: none; user-select: none;
+  transition: transform 160ms var(--ease-out), background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+/* Every pressable thing gives a little under the finger, so the app visibly heard the tap. */
+button:not(:disabled):active, .button:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover, .button:hover { border-color: var(--muted); }
+  button.primary:not(:disabled):hover, .button.primary:hover { filter: brightness(1.08); }
 }
 button:disabled { opacity: 0.45; cursor: default; }
 button.primary, .button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 button.danger { color: var(--danger); }
+@media (hover: hover) and (pointer: fine) {
+  button.danger:not(:disabled):hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+}
 button[aria-pressed='true'], button[aria-selected='true'] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-input, select, textarea { min-height: var(--tap); padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); max-width: 100%; }
+input, select, textarea { min-height: var(--tap); padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); max-width: 100%; transition: border-color 150ms ease, box-shadow 150ms ease; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 /* Checkboxes and radios are tap targets too (at least 44x44), also when they stand alone in a table cell or row. */
-input[type='checkbox'], input[type='radio'] { width: var(--tap); height: var(--tap); min-width: var(--tap); min-height: var(--tap); margin: 0; padding: 0; flex: none; accent-color: var(--accent); }
+input[type='checkbox'], input[type='radio'] {
+  width: var(--tap); height: var(--tap); min-width: var(--tap); min-height: var(--tap); margin: 0; padding: 0; flex: none;
+  /* The tap target stays 44x44, but what you see is a 22px box: the native control at full size looked like a grey slab. */
+  -webkit-appearance: none; appearance: none; border: none; background: transparent; display: inline-grid; place-content: center; cursor: pointer;
+}
+input[type='checkbox']::before, input[type='radio']::before {
+  content: ''; grid-area: 1 / 1; width: 22px; height: 22px; box-sizing: border-box; border: 2px solid var(--muted); border-radius: 6px; background: var(--surface);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+input[type='radio']::before { border-radius: 50%; }
+input[type='checkbox']::after, input[type='radio']::after {
+  content: ''; grid-area: 1 / 1; place-self: center; opacity: 0; transform: scale(0.6);
+  transition: opacity 150ms ease, transform 160ms var(--ease-out);
+}
+input[type='checkbox']::after { width: 12px; height: 12px; background: var(--accent-text); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+input[type='radio']::after { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-text); }
+input[type='checkbox']:checked::before, input[type='radio']:checked::before { background: var(--accent); border-color: var(--accent); }
+input[type='checkbox']:checked::after, input[type='radio']:checked::after { opacity: 1; transform: scale(1); }
+input[type='checkbox']:disabled, input[type='radio']:disabled { opacity: 0.45; cursor: default; }
+input[type='checkbox']:focus, input[type='radio']:focus { box-shadow: none; }
 label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display: inline-flex; align-items: center; gap: 0.5rem; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
@@ -79,22 +122,42 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 .screen-header { display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; }
 .row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 .field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); padding: 1rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
 .muted { color: var(--muted); }
 .warning { color: var(--warning); }
 .warnings { list-style: none; padding: 0.5rem 0.75rem; margin: 0.5rem 0; border-left: 4px solid var(--warning); background: var(--surface-2); border-radius: var(--radius); }
 .notice { padding: 0.75rem; border-radius: var(--radius); background: var(--surface-2); margin-bottom: 1rem; }
 .loading { padding: 2rem; text-align: center; }
 
-.dialog-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 45%); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 20; }
-.dialog { background: var(--surface); border-radius: var(--radius); padding: 1rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; }
+.dialog-backdrop {
+  position: fixed; inset: 0; background: rgb(0 0 0 / 45%); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 20;
+  transition: opacity 200ms ease;
+  @starting-style { opacity: 0; }
+}
+/* A modal is not anchored to its trigger, so it grows from the centre; from 0.96, never from nothing. */
+.dialog {
+  background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius) + 6px); padding: 1.25rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; box-shadow: var(--shadow-lg);
+  transition: opacity 200ms var(--ease-out), transform 240ms var(--ease-out);
+  @starting-style { opacity: 0; transform: scale(0.96) translateY(6px); }
+}
 .dialog-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; flex-wrap: wrap; }
 
 .toast-region { position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom)); display: flex; justify-content: center; pointer-events: none; z-index: 30; }
-.toast { pointer-events: auto; display: flex; gap: 0.5rem; align-items: center; background: var(--text); color: var(--bg); padding: 0.25rem 0.25rem 0.25rem 1rem; border-radius: var(--radius); box-shadow: 0 4px 16px rgb(0 0 0 / 25%); }
+.toast {
+  pointer-events: auto; display: flex; gap: 0.5rem; align-items: center; background: var(--text); color: var(--bg); padding: 0.25rem 0.25rem 0.25rem 1rem; border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow-lg);
+  transition: opacity 200ms ease, transform 300ms var(--ease-out);
+  @starting-style { opacity: 0; transform: translateY(12px); }
+}
 .toast button { background: transparent; color: inherit; border-color: transparent; }
 .toast-error { background: var(--danger); color: var(--bg); }
 .error-box { border: 2px solid var(--danger); border-radius: var(--radius); padding: 1rem; background: var(--surface); }
 .update-banner { display: flex; gap: 0.75rem; justify-content: center; align-items: center; padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem 0.5rem; background: var(--surface-2); border-bottom: 1px solid var(--border); }
 .import-list { list-style: none; padding: 0; margin: 0; }
 .import-modes { border: 0; padding: 0; margin: 0.25rem 0 0.75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Fewer, gentler animations: fades stay, movement and scaling go. */
+  button:not(:disabled):active, .button:active { transform: none; }
+  .dialog, .toast { @starting-style { transform: none; } }
+  input[type='checkbox']::after, input[type='radio']::after { transform: none; }
+}
