@@ -190,6 +190,24 @@ describe('sheet', () => {
     await waitFor(async () => expect((await loadCharacter(db, 'test'))?.notes.map((n) => n.title)).toEqual(['Session 1']));
   });
 
+  it('opens the story from the top bar, saves what you write and closes without asking', async () => {
+    const { db, user } = await openKael();
+    await user.click(topBar().getByRole('button', { name: 'Story' }));
+    const story = within(screen.getByRole('dialog', { name: /^The story of / }));
+    await user.type(story.getByLabelText('Backstory'), 'Raised in a border fort.');
+    await user.type(story.getByLabelText('Personality'), 'Quiet');
+    expect(screen.queryByText(/HP −|Undo/)).toBeNull();
+    await waitFor(async () =>
+      expect((await loadCharacter(db, 'test'))?.details).toMatchObject({ backstory: 'Raised in a border fort.', personality: 'Quiet' }),
+    );
+    await user.click(story.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    await user.click(topBar().getByRole('button', { name: 'Story' }));
+    expect((screen.getByLabelText('Backstory') as HTMLTextAreaElement).value).toBe('Raised in a border fort.');
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   describe('a forgotten dice setting (Ruling 15)', () => {
     it('shows an Advantage chip in the top bar that clears the mode', async () => {
       const { user } = await openKael();

@@ -11,6 +11,7 @@ import { classSummary, formatMod, titleCase } from '../format';
 import { hrefFor } from '../router';
 import { LongRestDialog, ShortRestDialog } from './RestDialogs';
 import type { ReadySession } from './session';
+import { StoryDialog } from './StoryDialog';
 
 function HitPoints({ session }: { session: ReadySession }) {
   const { character, sheet, commit } = session;
@@ -248,6 +249,7 @@ export function TopBar({ session }: { session: ReadySession }) {
   const { t } = useI18n();
   const dice = useDice();
   const dcs = [...new Set(sheet.spellcasting.classes.map((c) => c.dc))];
+  const [storyOpen, setStoryOpen] = useState(false);
   return (
     <header className="top-bar card">
       <div className="row top-row">
@@ -267,10 +269,14 @@ export function TopBar({ session }: { session: ReadySession }) {
           ⚄
         </button>
         <DiceSettings />
+        <button type="button" className="story-button" onClick={() => setStoryOpen(true)}>
+          {t('sheet.story')}
+        </button>
         <a className="button" href={hrefFor({ name: 'edit', id: character.id })}>
           {t('sheet.edit')}
         </a>
       </div>
+      {storyOpen && <StoryDialog session={session} onClose={() => setStoryOpen(false)} />}
       <div className="head-main">
         <HitPoints session={session} />
         <div className="vitals">

@@ -158,6 +158,9 @@ button.stat { border-radius: 6px; }
   .hp-control { flex-wrap: nowrap; }
   .hp-control input { width: 4.5rem; flex: none; }
   .hp-control button, .hp-control button.big { min-width: 0; flex: 1 1 auto; padding: 0 0.55rem; white-space: nowrap; }
+  /* The head column is too narrow for the name and five buttons on one line: the name keeps the first line, the buttons go below it. */
+  .top-row { flex-wrap: wrap; justify-content: flex-end; row-gap: 6px; }
+  .top-row .identity { flex: 1 1 calc(100% - 56px); }
   /* All six abilities with every skill must fit the column next to the rest bar; each row stays a full-width target. */
   .check-list button { min-height: 28px; }
   .ability { min-height: 36px; }
@@ -192,3 +195,20 @@ body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bo
 .breakdown dt { font-weight: 600; }
 .breakdown dd { margin: 0; color: var(--muted); }
 .overrides { list-style: none; padding: 0; }
+
+/* --- The story: a wide page with the backstory to read and write on, the shorter details beside it --- */
+.dialog.story {
+  width: min(860px, 100%); max-height: 92vh; max-height: 92dvh;
+  display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 0 20px;
+  grid-template-areas: "title title" "main side" "actions actions";
+}
+.dialog.story h2 { grid-area: title; font-size: 1.8rem; }
+.story-main { grid-area: main; margin: 0; }
+.story-side { grid-area: side; display: grid; align-content: start; }
+.dialog.story .dialog-actions { grid-area: actions; align-items: center; }
+.story-text { min-height: 42vh; min-height: 42dvh; font-size: 1.12rem; line-height: 1.6; resize: vertical; }
+.story-saved { margin-right: auto; font-style: italic; font-size: 0.9rem; }
+@media (max-width: 760px) {
+  .dialog.story { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "main" "side" "actions"; }
+  .story-text { min-height: 34vh; min-height: 34dvh; }
+}
