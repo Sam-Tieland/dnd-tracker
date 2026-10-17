@@ -14,6 +14,7 @@
     "test": "vitest run",
     "convert:srd": "tsx scripts/convert-srd/index.ts",
     "icons": "tsx scripts/make-icons.ts",
+    "boek": "tsx scripts/boek-naar-import.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {
