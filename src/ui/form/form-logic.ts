@@ -164,7 +164,7 @@ export function removeLastClassLevel(character: Character, classId: string): Cha
   const { subclassId } = levels[at];
   const kept = levels.filter((_, i) => i !== at);
   const heir = subclassId ? kept.map((l) => l.classId).lastIndexOf(classId) : -1;
-  return withChoices(character, { levels: kept.map((l, i) => (i === heir && !l.subclassId ? { ...l, subclassId } : l)) });
+  return withChoices(character, { levels: kept.map((l, i) => (i === heir ? { ...l, subclassId } : l)) });
 }
 
 /** An empty note removes the field. */

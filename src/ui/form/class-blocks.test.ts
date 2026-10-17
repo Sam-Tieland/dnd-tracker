@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { level, levels, makeCharacter, registry } from '../../rules/testing/fixtures';
+import { removeLastClassLevel } from './form-logic';
 import { classBlocks, grantsFeat, isSubclassSlot } from './class-blocks';
 
 const FIGHTER = 'srd:class:fighter';
@@ -55,5 +56,19 @@ describe('feature id helpers', () => {
   it('recognises feat features', () => {
     expect(grantsFeat('srd:feature:fighter:4:ability-score-improvement')).toBe(true);
     expect(grantsFeat('srd:feature:fighter:2:action-surge')).toBe(false);
+  });
+});
+
+describe('subclass resolution', () => {
+  it('moves the effective subclass to the highest remaining level on removal', () => {
+    const c = makeCharacter({ choices: { levels: [level('fighter'), level('fighter', { subclassId: 'srd:subclass:battle-master' }), level('fighter', { subclassId: CHAMPION })] } });
+    const next = removeLastClassLevel(c, FIGHTER);
+    expect(next.choices.levels[1].subclassId).toBe(CHAMPION);
+    expect(classBlocks(next, registry)[0].subclassId).toBe(CHAMPION);
+  });
+
+  it('ignores an unknown subclass id like the sheet does', () => {
+    const c = makeCharacter({ choices: { levels: [level('fighter'), level('fighter'), level('fighter', { subclassId: CHAMPION }), level('fighter', { subclassId: 'srd:subclass:gone' })] } });
+    expect(classBlocks(c, registry)[0].subclassId).toBe(CHAMPION);
   });
 });

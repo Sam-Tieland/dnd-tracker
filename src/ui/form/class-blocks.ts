@@ -45,7 +45,7 @@ export function classBlocks(character: Character, registry: ContentRegistry): Cl
       block = { classId: choice.classId, name: cls?.name ?? choice.classId, subclassLevel: cls?.subclassLevels[0], rows: [] };
       blocks.push(block);
     }
-    if (choice.subclassId) block.subclassId = choice.subclassId;
+    if (choice.subclassId && registry.getOf('subclass', choice.subclassId)) block.subclassId = choice.subclassId;
     const classLevel = block.rows.length + 1;
     block.rows.push({ index, classLevel, characterLevel: index + 1, featureIds: [], grantsFeat: false, optionParentIds: [] });
   });
