@@ -1,5 +1,6 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadBuiltinContent } from '../src/content/load';
 import { createRegistry } from '../src/content/registry';
 import { buildBackup, parseExportFile, serializeExport } from '../src/storage/export';
@@ -12,6 +13,14 @@ import { parseBookFile, toUserContent, type BookSubclass } from './boek/convert'
 const [folder, output] = process.argv.slice(2);
 if (!folder || !output) {
   console.error('Gebruik: npm run boek -- "<boekmap>" "<uitvoer.json>"');
+  process.exit(1);
+}
+
+// The import file holds the player's notes: never write it where git could pick it up.
+const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const target = resolve(output);
+if (target.toLowerCase().startsWith(repo.toLowerCase() + sep)) {
+  console.error('Schrijf het importbestand buiten de code-map (bijv. in je privé boekmap); het hoort niet in de repository.');
   process.exit(1);
 }
 

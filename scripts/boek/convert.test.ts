@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { loadBuiltinContent } from '../../src/content/load';
 import { createRegistry } from '../../src/content/registry';
 import { validateUserContent } from '../../src/content/user';
+import { deriveSheet } from '../../src/rules/derive';
+import { kael } from '../../src/rules/testing/fixtures';
 import { parseBookFile, parseUsage, toUserContent, type BookSubclass } from './convert';
 
 const registry = createRegistry(loadBuiltinContent());
@@ -97,7 +99,7 @@ describe('toUserContent', () => {
     expect(names).toContainEqual([7, 'Know Your Enemy']);
     expect(sub?.text).toBe('A made-up description.');
     const combat = sub?.features.map((f) => user.getOf('feature', f.featureId)).find((f) => f?.name === 'Combat Superiority');
-    expect(combat?.effects).toEqual([{ kind: 'resource', key: 'fighter-battle-master-combat-superiority', name: 'Combat Superiority', max: 4, recharge: 'short' }]);
+    expect(combat?.effects).toEqual([{ kind: 'resource', key: 'fighter-battle-master-3-combat-superiority', name: 'Combat Superiority', max: 4, recharge: 'short' }]);
   });
 
   it('skips an SRD subclass, which is complete already', () => {
@@ -125,6 +127,39 @@ describe('toUserContent', () => {
     const a = toUserContent([parsed(battleMaster)], registry).items.map((i) => i.id);
     const b = toUserContent([parsed(battleMaster)], registry).items.map((i) => i.id);
     expect(a).toEqual(b);
+  });
+
+  it('replaces a renamed feature on a re-import instead of keeping both', () => {
+    const first = toUserContent([parsed(battleMaster)], registry).items;
+    const renamed = toUserContent([parsed(battleMaster.replace('Combat Superiority', 'Superiority Dice'))], registry).items;
+    // The database keeps one row per id; a re-import overwrites rows with the same id.
+    const stored = new Map([...first, ...renamed].map((item) => [item.id, item]));
+    const user = createRegistry(loadBuiltinContent(), [...stored.values()]);
+    const slot = user.getOf('feature', 'skeleton:feature:battle-master:3:feature');
+    expect(slot?.name).toBe('Superiority Dice');
+    expect(slot?.effects.filter((e) => e.kind === 'resource')).toHaveLength(1);
+  });
+
+  it('gives same-named features on different levels their own resource', () => {
+    const md = file(
+      "class: Cleric\nsubclass: Twilight Domain\nbron: Tasha's\nregels: 2014",
+      '# T\n\nX.\n\n## Level 3: Twilight Sanctuary\n\nGebruik: 1 per Long Rest\n\nA.\n\n## Level 17: Twilight Sanctuary\n\nGebruik: 2 per Long Rest\n\nB.',
+    );
+    const keys = toUserContent([parsed(md)], registry).items.flatMap((i) => ('effects' in i ? i.effects : [])).map((e) => (e.kind === 'resource' ? e.key : ''));
+    expect(new Set(keys).size).toBe(2);
+  });
+
+  it('puts the resource of a filled skeleton level on the sheet', () => {
+    const user = createRegistry(loadBuiltinContent(), toUserContent([parsed(battleMaster)], registry).items);
+    const character = kael();
+    character.choices.levels = character.choices.levels.map((l) => (l.subclassId ? { ...l, subclassId: 'skeleton:subclass:battle-master' } : l));
+    const resource = deriveSheet(character, user).resources.find((r) => r.name === 'Combat Superiority');
+    expect(resource).toMatchObject({ max: 4, recharge: 'short' });
+  });
+
+  it('reads a header with a byte order mark and quoted values', () => {
+    const md = `\uFEFF---\ntype: subclass\nclass: "Fighter"\nsubclass: 'Battle Master'\nbron: PHB 2024\n---\n\n# B\n\nX.\n\n## Level 3: A\n\nB.`;
+    expect(parseBookFile('x.md', md).subclass).toMatchObject({ className: 'Fighter', subclass: 'Battle Master' });
   });
 
   it('warns about an unknown class or subclass', () => {

@@ -4,8 +4,10 @@ import type { ContentRegistry } from '../../src/content/registry';
 import type { ContentItem, Effect, FeatureDef, Formula, SubclassDef } from '../../src/content/schema';
 
 /**
- * Turns the player's private notes on subclasses (one Markdown file per subclass, format in boek/README.md) into own
- * content for the import. The notes and the import file stay private; this code only knows the format.
+ * Turns the player's private notes on subclasses (one Markdown file per subclass, format in the README of his private
+ * notes folder) into own content for the import. The notes and the import file stay private; this code only knows the
+ * format: frontmatter type/class/subclass/bron, "# Name" and a description, "## Level N[ (was M)]: Feature" sections
+ * with an optional first line "Gebruik: <amount> per Short|Long Rest", and "## Notities" (left out).
  */
 
 export type BookSource = "PHB 2024" | "Xanathar's" | "Tasha's";
@@ -53,13 +55,13 @@ export function parseUsage(line: string): Usage | undefined {
 /** Reads one file; problems that make it unusable are returned as warnings and no subclass. */
 export function parseBookFile(file: string, markdown: string): { subclass?: BookSubclass; warnings: string[] } {
   const warnings: string[] = [];
-  const text = markdown.replace(/\r\n?/g, '\n');
+  const text = markdown.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
   const front = /^---\n([\s\S]*?)\n---\n/.exec(text);
   if (!front) return { warnings: [`${file}: geen blok tussen --- bovenaan`] };
   const meta: Record<string, string> = {};
   for (const line of front[1].split('\n')) {
     const kv = /^(\w+):\s*(.*)$/.exec(line);
-    if (kv) meta[kv[1]] = kv[2].trim();
+    if (kv) meta[kv[1]] = kv[2].trim().replace(/^(["'])(.*)\1$/, '$2');
   }
   if (meta.type !== 'subclass') return { warnings: [`${file}: type is niet "subclass"`] };
   const source = SOURCES.find((s) => s === meta.bron);
@@ -127,8 +129,11 @@ export function toUserContent(subclasses: readonly BookSubclass[], registry: Con
     const label = `${book.className}: ${book.subclass}${book.source === 'PHB 2024' ? '' : ` (${book.source})`}`;
     const slug = slugify(book.source === 'PHB 2024' ? `${book.className} ${book.subclass}` : `${book.className} ${book.subclass} ${book.source}`);
     const feature = (f: BookFeature, fills?: string): FeatureDef => {
-      const id = uniqueId(`user:feature:${slug}-${f.level}-${slugify(f.name)}`);
-      return { id, type: 'feature', source: 'user', name: f.name, text: f.text, effects: effectsOf(f, `${slug}-${slugify(f.name)}`), ...(fills ? { fills } : {}) };
+      // A feature that fills a skeleton level gets an id per level, not per name: renaming it in the notes and importing
+      // again replaces it, instead of leaving the old one filling the same level next to the new one.
+      const id = uniqueId(fills ? `user:feature:${slug}-fill-${f.level}` : `user:feature:${slug}-${f.level}-${slugify(f.name)}`);
+      const key = `${slug}-${f.level}-${slugify(f.name)}`;
+      return { id, type: 'feature', source: 'user', name: f.name, text: f.text, effects: effectsOf(f, key), ...(fills ? { fills } : {}) };
     };
 
     if (book.source === 'PHB 2024') {
