@@ -43,6 +43,14 @@ describe('export', () => {
     expect(exportFileName(buildBackup([], [], NOW))).toBe('dnd-tracker-backup-2026-10-16.json');
   });
 
+  it('imports a version 1 character from an export file', () => {
+    const good = JSON.parse(serializeExport(buildCharacterExport(character, registry, userItems, NOW)));
+    const v1File = { ...good, characters: [{ ...good.characters[0], schemaVersion: 1 }] };
+    const parsed = parseExportFile(JSON.stringify(v1File));
+    expect(parsed.characters[0].schemaVersion).toBe(2);
+    expect(parsed.characters[0]).toEqual({ ...character, schemaVersion: 2 });
+  });
+
   it('rejects anything that is not a valid export, as a whole', () => {
     const good = JSON.parse(serializeExport(buildCharacterExport(character, registry, userItems, NOW)));
     const first = good.characters[0];

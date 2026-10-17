@@ -1,18 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { createCharacter } from '../model/character';
+import { CharacterSchema, createCharacter } from '../model/character';
 import v1 from './fixtures/character-v1.json';
 import { CHARACTER_SCHEMA_VERSION, MigrationError, migrateCharacter } from './migrations';
 
 describe('migrateCharacter', () => {
-  it('reads the frozen schema 1 fixture unchanged', () => {
-    expect(migrateCharacter(v1)).toEqual(v1);
+  it('migrates the version 1 fixture to version 2 unchanged apart from the version', () => {
+    expect(migrateCharacter(v1)).toEqual({ ...v1, schemaVersion: 2 });
+  });
+
+  it('keeps a level note', () => {
+    const character = createCharacter({ id: 'c1', name: 'Kael' });
+    const noted = {
+      ...character,
+      choices: { ...character.choices, levels: [{ classId: 'srd:class:fighter', hp: 'average' as const, featureChoices: {}, note: 'Riposte, Parry' }] },
+    };
+    expect(migrateCharacter(noted).choices.levels[0].note).toBe('Riposte, Parry');
+    expect(CharacterSchema.parse(noted).choices.levels[0].note).toBe('Riposte, Parry');
   });
 
   it('runs every migration from the stored version up to the current one', () => {
     const current = createCharacter({ id: 'c1', name: 'Kael', now: '2026-10-16T10:00:00.000Z' });
     const { name, ...rest } = current;
     const v0 = { ...rest, naam: name, schemaVersion: 0 };
-    const migrations = { 0: ({ naam, ...raw }: Record<string, unknown>) => ({ ...raw, name: naam }) };
+    const migrations = { 0: ({ naam, ...raw }: Record<string, unknown>) => ({ ...raw, name: naam }), 1: (raw: Record<string, unknown>) => raw };
     expect(migrateCharacter(v0, migrations)).toEqual(current);
   });
 

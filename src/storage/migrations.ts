@@ -1,11 +1,14 @@
 import { CharacterSchema, type Character } from '../model/character';
 
-export const CHARACTER_SCHEMA_VERSION = 1;
+export const CHARACTER_SCHEMA_VERSION = 2;
 
 export type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 
 /** MIGRATIONS[n] turns a character of schema version n into version n + 1. Schema 1 is the first stored version. */
-export const MIGRATIONS: Readonly<Record<number, Migration>> = {};
+export const MIGRATIONS: Readonly<Record<number, Migration>> = {
+  // Schema 2 only adds the optional levels[].note, so existing characters pass through unchanged.
+  1: (raw) => raw,
+};
 
 export type MigrationErrorCode = 'invalid' | 'newer-version';
 

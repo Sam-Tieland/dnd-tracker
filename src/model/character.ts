@@ -19,11 +19,13 @@ export const LevelChoiceSchema = z.strictObject({
   asi: AbilityDeltaSchema.optional(),
   featId: z.string().optional(),
   featureChoices: anyRecord,
+  /** Free text the player writes about this level. */
+  note: z.string().optional(),
 });
 
 export const CharacterSchema = z.strictObject({
   id: z.string().min(1),
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
   name: z.string(),
@@ -94,7 +96,7 @@ export function createCharacter(input: NewCharacterInput = {}): Character {
   const now = input.now ?? new Date().toISOString();
   return {
     id: input.id ?? crypto.randomUUID(),
-    schemaVersion: 1,
+    schemaVersion: 2,
     createdAt: now,
     updatedAt: now,
     name: input.name ?? '',
