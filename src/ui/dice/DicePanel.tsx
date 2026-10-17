@@ -17,11 +17,12 @@ export function DicePanel() {
     <aside className="dice-panel" aria-label={t('dice.title')}>
       <button type="button" className="dice-latest" aria-expanded={dice.open} onClick={() => dice.setOpen(!dice.open)}>
         {latest ? (
-          <>
+          // Keyed on the roll, so every new roll mounts fresh and plays its entrance, also when the total repeats.
+          <span key={latest.id} className="dice-result">
             <strong className={latest.natural20 ? 'nat20' : latest.natural1 ? 'nat1' : undefined}>{latest.total}</strong>
             <span>{latest.label}</span>
             <span className="muted">{latest.detail}</span>
-          </>
+          </span>
         ) : (
           t('dice.title')
         )}

@@ -1,7 +1,37 @@
-.dice-panel { position: sticky; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding: 0.25rem 1rem calc(0.25rem + env(safe-area-inset-bottom)); }
+.dice-panel { position: sticky; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding: 0.25rem 1rem calc(0.25rem + env(safe-area-inset-bottom)); box-shadow: 0 -6px 20px rgb(0 0 0 / 6%); }
 .dice-latest { width: 100%; justify-content: flex-start; border: none; background: transparent; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.dice-latest strong { font-size: 1.3rem; }
+.dice-result { display: inline-flex; align-items: baseline; gap: 0.4rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dice-latest strong { font-family: var(--font-display); font-size: 1.5rem; line-height: 1; font-variant-numeric: tabular-nums; }
+/* A new roll rises into place, so a repeated total still reads as a new roll. The result is keyed per roll, so this plays on every roll. */
+.dice-result strong {
+  display: inline-block;
+  transition: transform 220ms var(--ease-out), opacity 150ms ease;
+  @starting-style { opacity: 0; transform: translateY(35%) scale(0.9); }
+}
+.dice-result > span:not(.muted) {
+  transition: opacity 200ms ease 40ms;
+  @starting-style { opacity: 0; }
+}
 .dice-body { display: grid; gap: 0.5rem; padding: 0.5rem 0; max-height: 45vh; overflow: auto; }
 .dice-history { margin: 0; padding-left: 1.5rem; }
-.nat20 { color: var(--ok); }
+.dice-history strong { font-variant-numeric: tabular-nums; }
+.nat20 { color: var(--gold); }
 .nat1 { color: var(--danger); }
+/* Natural 20 and natural 1 are one roll in twenty: rare enough for a moment of delight, played once. */
+.dice-result .nat20 { animation: nat20-glow 900ms var(--ease-out) 1; }
+.dice-result .nat1 { animation: nat1-shake 320ms var(--ease-out) 1; }
+@keyframes nat20-glow {
+  0% { text-shadow: 0 0 0 transparent; }
+  30% { text-shadow: 0 0 14px var(--gold); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+@keyframes nat1-shake {
+  0%, 100% { translate: 0; }
+  25% { translate: -3px; }
+  50% { translate: 3px; }
+  75% { translate: -2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dice-result strong { @starting-style { transform: none; } }
+  .dice-result .nat1 { animation: none; }
+}

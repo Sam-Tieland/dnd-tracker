@@ -14,6 +14,22 @@
 .hp-control { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
 .hp-value { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1; min-width: 5ch; font-variant-numeric: tabular-nums; }
 .hp-control input { width: 6rem; }
+/* State indication: the number starts in the colour of what happened and settles back. Remounted per change, so a second hit replays it. */
+.hp-value { display: inline-block; }
+.hp-down { animation: hp-down 600ms var(--ease-out) 1; }
+.hp-up { animation: hp-up 600ms var(--ease-out) 1; }
+@keyframes hp-down {
+  0% { color: var(--danger); transform: scale(1.08); }
+  35% { color: var(--danger); transform: scale(1); }
+}
+@keyframes hp-up {
+  0% { color: var(--ok); transform: scale(1.08); }
+  35% { color: var(--ok); transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes hp-down { 0%, 35% { color: var(--danger); } }
+  @keyframes hp-up { 0%, 35% { color: var(--ok); } }
+}
 button.big { min-width: 5.5rem; font-weight: 700; }
 .stat { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.1rem; min-width: 4.75rem; min-height: var(--tap); padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
 .stat span { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -32,10 +48,15 @@ button.big { min-width: 5.5rem; font-weight: 700; }
 }
 .abilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
 .ability { flex-direction: column; gap: 0.15rem; min-height: 5.25rem; padding: 0.5rem 0.25rem; box-shadow: var(--shadow); }
-.ability .ability-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); }
+.ability .ability-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); }
 .ability strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
 .ability .muted { font-size: 0.8rem; min-width: 2.2rem; padding: 0 0.4rem; border-radius: 999px; background: var(--surface-2); font-variant-numeric: tabular-nums; }
-.sheet-left h2, .tab-panel h2 { font-size: 1.1rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); margin-top: 0.25rem; }
+/* Section heads as on a printed sheet: a small gold lozenge and a hairline that fades out to the right. */
+.sheet-left h2, .tab-panel h2 {
+  display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; padding-bottom: 0.35rem; margin-top: 0.25rem;
+  background: linear-gradient(90deg, var(--gold), color-mix(in srgb, var(--gold) 25%, transparent) 60%, transparent) left bottom / 100% 1px no-repeat;
+}
+.sheet-left h2::before, .tab-panel h2::before { content: ''; width: 0.4rem; height: 0.4rem; flex: none; background: var(--gold); transform: rotate(45deg); }
 .check-list { list-style: none; padding: 0; margin: 0 0 1.25rem; }
 .check-list button { width: 100%; justify-content: flex-start; border: none; background: transparent; }
 .check-list strong { font-variant-numeric: tabular-nums; }

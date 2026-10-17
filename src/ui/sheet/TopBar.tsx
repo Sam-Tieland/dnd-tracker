@@ -25,9 +25,17 @@ function HitPoints({ session }: { session: ReadySession }) {
     setAmount('');
     setCritical(false);
   };
+  // A change of current HP (damage, healing, a rest, an undo) briefly colours the number, so the table sees which way it went.
+  const current = sheet.hp.current;
+  const [previous, setPrevious] = useState(current);
+  const [flash, setFlash] = useState<{ direction: 'down' | 'up' | null; n: number }>({ direction: null, n: 0 });
+  if (current !== previous) {
+    setPrevious(current);
+    setFlash((f) => ({ direction: current < previous ? 'down' : 'up', n: f.n + 1 }));
+  }
   return (
     <div className="hp-control">
-      <span className="hp-value" data-testid="hp">
+      <span key={flash.n} className={flash.direction ? `hp-value hp-${flash.direction}` : 'hp-value'} data-testid="hp">
         {sheet.hp.current}/{sheet.hp.max}
       </span>
       {sheet.hp.temp > 0 && <span className="muted">+{sheet.hp.temp} temp</span>}

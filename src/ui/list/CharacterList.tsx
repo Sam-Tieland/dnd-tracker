@@ -44,7 +44,14 @@ export function CharacterList() {
 
   const header = (
     <header className="screen-header">
-      <h1>{t('list.title')}</h1>
+      <h1 className="list-title">
+        {/* A d20 as the app's emblem; decoration only, so hidden from screen readers. */}
+        <svg className="emblem" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 2 25 8.5v11L14 26 3 19.5v-11Z" />
+          <path d="M14 7.5 21.5 19h-15ZM3 8.5 14 7.5 25 8.5M3 8.5l3.5 10.5M25 8.5 21.5 19M3 19.5 6.5 19M25 19.5 21.5 19M14 26 6.5 19M14 26l7.5-7M14 2v5.5" />
+        </svg>
+        {t('list.title')}
+      </h1>
       <a className="button" href={hrefFor({ name: 'settings' })}>
         {t('nav.settings')}
       </a>

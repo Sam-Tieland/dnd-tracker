@@ -1,6 +1,6 @@
 :root {
   --bg: #f7f4ee;
-  --surface: #ffffff;
+  --surface: #fffdf8;
   --surface-2: #efeae0;
   --text: #1f1c17;
   --muted: #6a6358;
@@ -12,6 +12,7 @@
   --warning: #8a5a00;
   --focus: #1f5fbf;
   --accent-soft: rgb(139 30 30 / 10%);
+  --gold: #7d5e12;
   --shadow: 0 1px 2px rgb(60 40 20 / 8%), 0 2px 8px rgb(60 40 20 / 6%);
   --shadow-lg: 0 12px 40px rgb(30 20 10 / 22%);
   --radius: 10px;
@@ -39,6 +40,7 @@
   --warning: #f0c060;
   --focus: #8ab4ff;
   --accent-soft: rgb(208 87 78 / 14%);
+  --gold: #d9b45a;
   --shadow: 0 1px 2px rgb(0 0 0 / 30%);
   --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
   color-scheme: dark;
@@ -59,6 +61,7 @@
     --warning: #f0c060;
     --focus: #8ab4ff;
     --accent-soft: rgb(208 87 78 / 14%);
+    --gold: #d9b45a;
     --shadow: 0 1px 2px rgb(0 0 0 / 30%);
     --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
     color-scheme: dark;
@@ -67,6 +70,14 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
+/* A faint paper grain and a warm light from above, drawn in CSS so nothing extra is downloaded. The grain is brown at a few percent, so it reads in both themes. */
+body {
+  min-height: 100vh; min-height: 100dvh;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.25 0 0 0 0 0.12 0.16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 70%);
+  background-repeat: repeat, no-repeat;
+}
 h1, h2 { margin: 0 0 0.5rem; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.005em; }
 h1 { font-size: 1.6rem; }
 h2 { font-size: 1.2rem; }
@@ -86,7 +97,7 @@ button:not(:disabled):active, .button:active { transform: scale(0.97); }
   button.primary:not(:disabled):hover, .button.primary:hover { filter: brightness(1.08); }
 }
 button:disabled { opacity: 0.45; cursor: default; }
-button.primary, .button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button.primary, .button.primary { background: var(--accent); background-image: linear-gradient(180deg, rgb(255 255 255 / 14%), transparent); color: var(--accent-text); border-color: var(--accent); box-shadow: var(--shadow); font-weight: 600; }
 button.danger { color: var(--danger); }
 @media (hover: hover) and (pointer: fine) {
   button.danger:not(:disabled):hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
