@@ -11,8 +11,7 @@ import { whenSaved } from '../sheet/session';
 import { AbilitySection } from './AbilitySection';
 import { DetailsSection } from './DetailsSection';
 import { finishForm } from './form-logic';
-import { LevelsSection } from './LevelsSection';
-import { OptionsSection } from './OptionsSection';
+import { ClassBlocksSection } from './ClassBlocksSection';
 import { OriginSection } from './OriginSection';
 import { ProficiencySection } from './ProficiencySection';
 import './form.css';
@@ -96,8 +95,7 @@ export function CharacterForm({ id }: { id?: string }) {
       </section>
       <AbilitySection {...section} />
       <OriginSection {...section} />
-      <LevelsSection {...section} />
-      <OptionsSection {...section} />
+      <ClassBlocksSection {...section} />
       <ProficiencySection {...section} />
       <DetailsSection {...section} />
     </main>

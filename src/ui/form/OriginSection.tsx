@@ -1,7 +1,9 @@
 import { ABILITIES, type Ability } from '../../content/constants';
 import { useI18n } from '../../i18n/i18n';
+import { optionsFor } from '../../rules/choices';
 import { useAppData } from '../data';
 import { abilityName, titleCase } from '../format';
+import { OptionGroup } from './OptionGroup';
 import { bonusMode, setBackground, setBackgroundBonuses } from './form-logic';
 import type { SectionProps } from './types';
 
@@ -29,6 +31,8 @@ export function OriginSection({ character, onChange }: SectionProps) {
   const mode = bonusMode(bonuses);
   const plusTwo = ABILITIES.find((a) => bonuses[a] === 2);
   const plusOne = mode === 'two' ? ABILITIES.find((a) => bonuses[a] === 1) : undefined;
+  const species = speciesId ? registry.getOf('species', speciesId) : undefined;
+  const speciesParents = (species?.traitIds ?? []).filter((id) => optionsFor(registry, id).length > 0);
   const feat = background?.featId ? registry.get(background.featId)?.name : undefined;
   return (
     <section className="card">
@@ -44,6 +48,9 @@ export function OriginSection({ character, onChange }: SectionProps) {
           ))}
         </select>
       </label>
+      {speciesParents.map((id) => (
+        <OptionGroup key={id} character={character} parentId={id} legend={registry.getOf('feature', id)?.name ?? id} onChange={onChange} />
+      ))}
       <label className="field">
         Background
         <select value={backgroundId ?? ''} onChange={(e) => onChange(setBackground(character, e.target.value || null))}>

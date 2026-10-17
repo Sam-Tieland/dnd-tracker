@@ -5,10 +5,10 @@ async function createKael(page: Page) {
   await page.goto('./');
   await page.getByRole('link', { name: 'New character' }).click();
   await page.getByLabel('Name', { exact: true }).fill('Kael');
-  await page.getByLabel('Class', { exact: true }).selectOption('srd:class:fighter');
-  await page.getByRole('button', { name: 'Add level' }).click();
-  await page.getByLabel('Class', { exact: true }).selectOption('srd:class:wizard');
-  await page.getByRole('button', { name: 'Add level' }).click();
+  await page.getByLabel('New class', { exact: true }).selectOption('srd:class:fighter');
+  await page.getByRole('button', { name: 'Add class' }).click();
+  await page.getByLabel('New class', { exact: true }).selectOption('srd:class:wizard');
+  await page.getByRole('button', { name: 'Add class' }).click();
   await expect(page.getByText(/Multiclass prerequisite not met for Fighter/)).toBeVisible();
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByRole('heading', { name: 'Kael' })).toBeVisible();
@@ -39,6 +39,27 @@ test('create a multiclass character, take damage, undo, rest, and find it again'
   await expect(page.getByTestId('hp')).toHaveText('11/14');
   await page.reload();
   await expect(page.getByTestId('hp')).toHaveText('11/14');
+});
+
+test('a subclass chosen on level 1 gives no features until its level, and the level buttons are tappable', async ({ page, browserName }) => {
+  await createKael(page);
+  await page.getByRole('link', { name: 'Edit' }).click();
+  const addFighter = page.getByRole('button', { name: 'Add Fighter level' });
+  await expect(addFighter).toBeVisible();
+  if (browserName === 'webkit') {
+    const box = await addFighter.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+  await page.locator('section.class-block').filter({ has: page.getByRole('heading', { name: 'Fighter' }) }).getByLabel('Subclass').selectOption('srd:subclass:champion');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('tab', { name: 'Features' }).click();
+  await expect(page.getByText('Improved Critical')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Edit' }).click();
+  await addFighter.click();
+  await addFighter.click();
+  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('tab', { name: 'Features' }).click();
+  await expect(page.getByText('Improved Critical').first()).toBeVisible();
 });
 
 test('export a character as a JSON file', async ({ page, browserName }) => {
