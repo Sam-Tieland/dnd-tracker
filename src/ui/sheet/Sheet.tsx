@@ -1,6 +1,3 @@
-import '@fontsource/im-fell-dw-pica/latin-400.css';
-import '@fontsource/im-fell-dw-pica/latin-400-italic.css';
-import '@fontsource/pirata-one/latin-400.css';
 import { useState } from 'react';
 import { useI18n } from '../../i18n/i18n';
 import { Section } from '../components/ErrorBoundary';

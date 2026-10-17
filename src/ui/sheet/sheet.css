@@ -1,58 +1,23 @@
 /*
- * The tavern sheet: parchment cards on an oak table, lit by a candle at the top left. The sheet keeps this look in
- * both themes; it redefines the app's colour tokens for everything inside it, so every tab and dialog follows along.
+ * The tavern sheet: the app's parchment-and-oak look (styles.css), laid out so that on an iPad everything fits one screen.
  */
 .sheet.tavern {
-  --bg: #2c1c10;
-  --surface: #f8eed6;
-  --surface-2: #e8d6ab;
-  --text: #2b1d0e;
-  --muted: #6e4b22;
-  --border: #b89a64;
-  --accent: #8c1a14;
-  --accent-text: #fff3e0;
-  --accent-soft: rgb(140 26 20 / 12%);
-  --danger: #9b1c14;
-  --ok: #2f6b2a;
-  --warning: #8a5a00;
-  --gold: #8a5f14;
-  --focus: #1f5fbf;
-  --shadow: none;
-  --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
-  --font-display: 'Pirata One', 'IM Fell DW Pica', Georgia, serif;
-  --font-body: 'IM Fell DW Pica', Georgia, 'Times New Roman', serif;
-  --parchment: linear-gradient(180deg, #f1e2bf, #e3cd9c);
-  --coin: radial-gradient(circle at 38% 34%, #ffe08a 0, #c9962e 55%, #8a5f14 100%);
-  color-scheme: light;
-  color: var(--text);
-  font-family: var(--font-body);
+  color: var(--on-table);
   font-size: 15px;
   min-height: 100vh;
   min-height: 100dvh;
-  background:
-    radial-gradient(70% 60% at 20% 0%, rgb(255 181 74 / 16%), transparent 70%),
-    repeating-linear-gradient(176deg, #3b2616 0 9px, #352113 9px 15px, #40291a 15px 26px),
-    #3b2616;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: calc(8px + env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
 }
-/* Behind the sheet, an overscroll on the iPad shows more table instead of the app's own background. */
-body:has(.sheet.tavern) { background: #2c1c10; }
-.tavern input, .tavern select, .tavern textarea, .tavern button { font-family: var(--font-body); }
-
-/* Parchment cards. A card inside a card (the spell sections, a feature group) loses its own paper and shadow. */
-.tavern .card { background: var(--parchment); border: 0; border-radius: 4px; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); padding: 12px 14px; margin: 0; }
-.tavern .card .card { background: none; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 14px; }
-.tavern h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.4rem; color: var(--accent); }
+.tavern .card { margin: 0; padding: 12px 14px; }
 /* Section heads as on a printed sheet: a small gold lozenge and a hairline that fades out to the right. */
 .tavern .tab-panel h2, .tavern .area-spells h2, .tavern .area-abil h2 {
   display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.3rem; margin: 0.25rem 0 0.5rem;
   background: linear-gradient(90deg, var(--gold), color-mix(in srgb, var(--gold) 25%, transparent) 60%, transparent) left bottom / 100% 1px no-repeat;
 }
 .tavern .tab-panel h2::before, .tavern .area-spells h2::before, .tavern .area-abil h2::before { content: ''; width: 0.4rem; height: 0.4rem; flex: none; background: var(--gold); transform: rotate(45deg); }
-.tavern .muted { color: var(--muted); }
 
 /* --- The head card: name, the life flask, and the numbers called out at the table --- */
 .top-bar { display: grid; gap: 10px; }
@@ -147,12 +112,12 @@ button.stat { border-radius: 6px; }
 .rest-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
 .rest-bar .row { display: contents; }
 .rest-bar select { max-width: 11rem; }
-.rest-bar > .row:first-child > button { font-family: var(--font-display); font-size: 1.05rem; color: #f1e2bf; background: radial-gradient(circle at 35% 30%, #7a4f2c, #4a2c16); border: 0; box-shadow: 0 2px 4px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 13%); }
+.rest-bar > .row:first-child > button { font-family: var(--font-display); font-size: 1.05rem; color: #f1e2bf; background: var(--wood-button); border: 0; box-shadow: 0 2px 4px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 13%); }
 
 /* --- The dice tray --- */
-.tavern .dice-panel { position: static; background: var(--parchment); border: 0; border-radius: 4px; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); padding: 6px 12px; }
+.tavern .dice-panel { position: static; color: var(--text); background: var(--parchment); border: 0; border-radius: 4px; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); padding: 6px 12px; }
 .tavern .dice-latest strong { font-family: var(--font-display); font-weight: 400; font-size: 2.2rem; }
-.tavern .dice-body button:not([aria-pressed]) { font-family: var(--font-display); color: #f1e2bf; background: radial-gradient(circle at 35% 30%, #7a4f2c, #4a2c16); border: 0; }
+.tavern .dice-body button:not([aria-pressed]) { font-family: var(--font-display); color: #f1e2bf; background: var(--wood-button); border: 0; }
 
 /* --- Phone: the parts stack, abilities and spells are tabs, and the dice tray stays at the bottom of the screen --- */
 .area-tray { position: sticky; bottom: calc(-8px - env(safe-area-inset-bottom)); z-index: 10; }

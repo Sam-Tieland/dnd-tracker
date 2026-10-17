@@ -18,8 +18,8 @@ export default defineConfig({
         description: 'Character sheet for D&D 5e (2024 rules) that works offline.',
         lang: 'nl',
         display: 'standalone',
-        background_color: '#16140f',
-        theme_color: '#8b1e1e',
+        background_color: '#2c1c10',
+        theme_color: '#2c1c10',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

@@ -1,88 +1,94 @@
+/*
+ * The whole app is a tavern table: parchment cards on dark oak, lit by a candle at the top left.
+ * Light is the table by day; dark is the same table at night, with deeper wood and parchment dimmed by candlelight.
+ * Text that sits on the wood uses --on-table; everything on parchment uses --text.
+ */
 :root {
-  --bg: #f7f4ee;
-  --surface: #fffdf8;
-  --surface-2: #efeae0;
-  --text: #1f1c17;
-  --muted: #6a6358;
-  --border: #d6cfc1;
-  --accent: #8b1e1e;
-  --accent-text: #ffffff;
-  --danger: #b3261e;
-  --ok: #2e6b30;
+  --table-1: #3b2616;
+  --table-2: #352113;
+  --table-3: #40291a;
+  --glow: rgb(255 181 74 / 16%);
+  --parchment-top: #f1e2bf;
+  --parchment-bottom: #e3cd9c;
+  --on-table: #f1e2bf;
+  --on-table-muted: #c9a774;
+  --bg: #2c1c10;
+  --surface: #f8eed6;
+  --surface-2: #e8d6ab;
+  --text: #2b1d0e;
+  --muted: #6e4b22;
+  --border: #b89a64;
+  --accent: #8c1a14;
+  --accent-text: #fff3e0;
+  --danger: #9b1c14;
+  --ok: #2f6b2a;
   --warning: #8a5a00;
   --focus: #1f5fbf;
-  --accent-soft: rgb(139 30 30 / 10%);
-  --gold: #7d5e12;
-  --shadow: 0 1px 2px rgb(60 40 20 / 8%), 0 2px 8px rgb(60 40 20 / 6%);
-  --shadow-lg: 0 12px 40px rgb(30 20 10 / 22%);
+  --accent-soft: rgb(140 26 20 / 12%);
+  --gold: #8a5f14;
+  --shadow: none;
+  --card-shadow: 0 6px 14px rgb(0 0 0 / 40%);
+  --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
+  --parchment: linear-gradient(180deg, var(--parchment-top), var(--parchment-bottom));
+  --coin: radial-gradient(circle at 38% 34%, #ffe08a 0, #c9962e 55%, #8a5f14 100%);
+  --wood-button: radial-gradient(circle at 35% 30%, #7a4f2c, #4a2c16);
   --radius: 10px;
   --tap: 44px;
   /* Strong ease-out: movement starts at once, so a press or an opening dialog feels immediate. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  /* Book serifs that ship with iPadOS and Windows, so the app stays offline without a web font. */
-  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  /* Fontsource ships both faces with the app, so they work offline; the serif stack is the fallback while they load. */
+  --font-display: 'Pirata One', 'IM Fell DW Pica', Georgia, serif;
+  --font-body: 'IM Fell DW Pica', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  /* The parchment is always light, so form controls stay light in both themes. */
   color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.4;
 }
 
 :root[data-theme='dark'] {
-  --bg: #16140f;
-  --surface: #221f19;
-  --surface-2: #2c2820;
-  --text: #f1ece2;
-  --muted: #a89f90;
-  --border: #4a443a;
-  --accent: #d0574e;
-  --accent-text: #16140f;
-  --danger: #f08a80;
-  --ok: #8fcf8f;
-  --warning: #f0c060;
-  --focus: #8ab4ff;
-  --accent-soft: rgb(208 87 78 / 14%);
-  --gold: #d9b45a;
-  --shadow: 0 1px 2px rgb(0 0 0 / 30%);
-  --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
-  color-scheme: dark;
+  --table-1: #261810;
+  --table-2: #20140c;
+  --table-3: #2b1b11;
+  --glow: rgb(255 160 60 / 20%);
+  --parchment-top: #dcc79b;
+  --parchment-bottom: #c8af7e;
+  --bg: #1c120a;
+  --surface: #e7d7b3;
+  --surface-2: #d3bd8f;
+  --border: #a3865a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #16140f;
-    --surface: #221f19;
-    --surface-2: #2c2820;
-    --text: #f1ece2;
-    --muted: #a89f90;
-    --border: #4a443a;
-    --accent: #d0574e;
-    --accent-text: #16140f;
-    --danger: #f08a80;
-    --ok: #8fcf8f;
-    --warning: #f0c060;
-    --focus: #8ab4ff;
-    --accent-soft: rgb(208 87 78 / 14%);
-    --gold: #d9b45a;
-    --shadow: 0 1px 2px rgb(0 0 0 / 30%);
-    --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
-    color-scheme: dark;
+    --table-1: #261810;
+    --table-2: #20140c;
+    --table-3: #2b1b11;
+    --glow: rgb(255 160 60 / 20%);
+    --parchment-top: #dcc79b;
+    --parchment-bottom: #c8af7e;
+    --bg: #1c120a;
+    --surface: #e7d7b3;
+    --surface-2: #d3bd8f;
+    --border: #a3865a;
   }
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
-/* A faint paper grain and a warm light from above, drawn in CSS so nothing extra is downloaded. The grain is brown at a few percent, so it reads in both themes. */
 body {
+  margin: 0; color: var(--on-table); -webkit-tap-highlight-color: transparent;
   min-height: 100vh; min-height: 100dvh;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.25 0 0 0 0 0.12 0.16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 70%);
-  background-repeat: repeat, no-repeat;
+  background:
+    radial-gradient(70% 60% at 20% 0%, var(--glow), transparent 70%) fixed,
+    repeating-linear-gradient(176deg, var(--table-1) 0 9px, var(--table-2) 9px 15px, var(--table-3) 15px 26px),
+    var(--bg);
 }
-h1, h2 { margin: 0 0 0.5rem; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.005em; }
-h1 { font-size: 1.6rem; }
-h2 { font-size: 1.2rem; }
+h1, h2 { margin: 0 0 0.5rem; font-family: var(--font-display); font-weight: 400; letter-spacing: 0.01em; }
+h1 { font-size: 2rem; line-height: 1.1; }
+h2 { font-size: 1.4rem; color: var(--accent); }
+/* A heading straight on the wood is painted in parchment colour with a little shadow, like a sign above the bar. */
+.screen-header h1 { color: var(--on-table); text-shadow: 0 2px 4px rgb(0 0 0 / 50%); }
 
-button, .button, input, select, textarea { font: inherit; font-size: 16px; color: inherit; }
+button, .button, input, select, textarea { font: inherit; font-size: 16px; color: var(--text); }
 button, .button {
   min-height: var(--tap); min-width: var(--tap); padding: 0 0.8rem;
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
@@ -97,7 +103,7 @@ button:not(:disabled):active, .button:active { transform: scale(0.97); }
   button.primary:not(:disabled):hover, .button.primary:hover { filter: brightness(1.08); }
 }
 button:disabled { opacity: 0.45; cursor: default; }
-button.primary, .button.primary { background: var(--accent); background-image: linear-gradient(180deg, rgb(255 255 255 / 14%), transparent); color: var(--accent-text); border-color: var(--accent); box-shadow: var(--shadow); font-weight: 600; }
+button.primary, .button.primary { background: var(--accent); background-image: linear-gradient(180deg, rgb(255 255 255 / 14%), transparent); color: var(--accent-text); border-color: var(--accent); box-shadow: 0 2px 4px rgb(0 0 0 / 35%); font-family: var(--font-display); font-size: 1.1rem; }
 button.danger { color: var(--danger); }
 @media (hover: hover) and (pointer: fine) {
   button.danger:not(:disabled):hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
@@ -133,11 +139,15 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 .screen-header { display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; }
 .row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 .field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); padding: 1rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+/* Parchment cards. A card inside a card (a spell section, a feature group) loses its own paper and shadow. */
+.card { background: var(--parchment); color: var(--text); border: 0; border-radius: 4px; padding: 1rem; margin-bottom: 1rem; box-shadow: var(--card-shadow); overflow-wrap: break-word; }
+.card .card { background: none; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 14px; }
 .muted { color: var(--muted); }
+/* Loose text on the wood, such as the empty-list line, in the muted parchment colour so it stays readable. */
+.screen > .muted, .screen > p { color: var(--on-table-muted); }
 .warning { color: var(--warning); }
 .warnings { list-style: none; padding: 0.5rem 0.75rem; margin: 0.5rem 0; border-left: 4px solid var(--warning); background: var(--surface-2); border-radius: var(--radius); }
-.notice { padding: 0.75rem; border-radius: var(--radius); background: var(--surface-2); margin-bottom: 1rem; }
+.notice { padding: 0.75rem; border-radius: 4px; background: var(--parchment); color: var(--text); box-shadow: var(--card-shadow); margin-bottom: 1rem; }
 .loading { padding: 2rem; text-align: center; }
 
 .dialog-backdrop {
@@ -147,7 +157,7 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 }
 /* A modal is not anchored to its trigger, so it grows from the centre; from 0.96, never from nothing. */
 .dialog {
-  background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius) + 6px); padding: 1.25rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; box-shadow: var(--shadow-lg);
+  background: var(--parchment); color: var(--text); border: 0; border-radius: 4px; padding: 1.25rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; box-shadow: var(--shadow-lg);
   transition: opacity 200ms var(--ease-out), transform 240ms var(--ease-out);
   @starting-style { opacity: 0; transform: scale(0.96) translateY(6px); }
 }
@@ -155,14 +165,14 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 
 .toast-region { position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom)); display: flex; justify-content: center; pointer-events: none; z-index: 30; }
 .toast {
-  pointer-events: auto; display: flex; gap: 0.5rem; align-items: center; background: var(--text); color: var(--bg); padding: 0.25rem 0.25rem 0.25rem 1rem; border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow-lg);
+  pointer-events: auto; display: flex; gap: 0.5rem; align-items: center; background: #241509; color: var(--on-table); padding: 0.25rem 0.25rem 0.25rem 1rem; border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow-lg);
   transition: opacity 200ms ease, transform 300ms var(--ease-out);
   @starting-style { opacity: 0; transform: translateY(12px); }
 }
 .toast button { background: transparent; color: inherit; border-color: transparent; }
-.toast-error { background: var(--danger); color: var(--bg); }
-.error-box { border: 2px solid var(--danger); border-radius: var(--radius); padding: 1rem; background: var(--surface); }
-.update-banner { display: flex; gap: 0.75rem; justify-content: center; align-items: center; padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem 0.5rem; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+.toast-error { background: var(--danger); color: #fff3e0; }
+.error-box { border: 2px solid var(--danger); border-radius: 4px; padding: 1rem; background: var(--parchment); color: var(--text); }
+.update-banner { display: flex; gap: 0.75rem; justify-content: center; align-items: center; padding: calc(0.5rem + env(safe-area-inset-top)) 0.5rem 0.5rem; background: var(--parchment); color: var(--text); box-shadow: 0 4px 10px rgb(0 0 0 / 40%); }
 .import-list { list-style: none; padding: 0; margin: 0; }
 .import-modes { border: 0; padding: 0; margin: 0.25rem 0 0.75rem; }
 
