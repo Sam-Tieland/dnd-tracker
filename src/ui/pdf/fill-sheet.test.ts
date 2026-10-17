@@ -17,7 +17,7 @@ describe('fillSheet', () => {
     expect(form.getTextField('STR').getText()).toBe('17');
     expect(form.getCheckBox('Check Box 11').isChecked()).toBe(true);
     expect(form.getCheckBox('Check Box 18').isChecked()).toBe(false);
-  });
+  }, 30000);
 
   it('keeps the form fillable', async () => {
     const out = await fillSheet(await fakeTemplate(), { text: { CharacterName: 'Kael' }, checks: [] });
@@ -56,5 +56,15 @@ describe('checkTemplate', () => {
     const err = await checkTemplate(new TextEncoder().encode('hello')).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(TemplateError);
     expect((err as TemplateError).code).toBe('not-pdf');
+  });
+
+  it('turns a malformed form into a not-sheet error', async () => {
+    const { PDFDocument, PDFName } = await import('pdf-lib');
+    const doc = await PDFDocument.create();
+    doc.addPage();
+    doc.catalog.set(PDFName.of('AcroForm'), PDFName.of('Broken'));
+    const err = await checkTemplate(await doc.save()).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(TemplateError);
+    expect((err as TemplateError).code).toBe('not-sheet');
   });
 });

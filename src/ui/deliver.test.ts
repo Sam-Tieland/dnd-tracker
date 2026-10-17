@@ -30,3 +30,15 @@ describe('deliverFile', () => {
     expect(await deliverFile('kael.json', '{}', env({ preferShare: true, canShare: () => true, share }))).toBe(false);
   });
 });
+
+describe('deliverFile with bytes', () => {
+  it('delivers bytes with a PDF type', async () => {
+    const share = vi.fn(async (_data: ShareData) => {});
+    const bytes = new Uint8Array([37, 80, 68, 70]);
+    await deliverFile('kael.pdf', bytes, env({ preferShare: true, canShare: () => true, share }), undefined, 'application/pdf');
+    const file = share.mock.calls[0]![0].files![0]!;
+    expect(file.type).toBe('application/pdf');
+    expect(file.name).toBe('kael.pdf');
+    expect(file.size).toBe(4);
+  });
+});

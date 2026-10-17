@@ -11,6 +11,7 @@ import { classSummary } from '../format';
 import { ImportButton } from '../ImportButton';
 import { hrefFor } from '../router';
 import { useExport } from '../use-export';
+import { usePdfExport } from '../use-pdf-export';
 import './list.css';
 
 /** The message of a failed read or write, as the error box and the toast show it. */
@@ -22,6 +23,7 @@ export function CharacterList() {
   const { t } = useI18n();
   const toast = useToast();
   const { exportCharacter, exportBackup } = useExport();
+  const { exportPdf } = usePdfExport();
   const [loaded, setLoaded] = useState<LoadedCharacters>();
   const [loadError, setLoadError] = useState<string>();
   const [toDelete, setToDelete] = useState<{ id: string; name: string }>();
@@ -100,6 +102,9 @@ export function CharacterList() {
               <div className="row list-actions">
                 <button type="button" onClick={() => void exportCharacter(character)}>
                   {t('list.export')}
+                </button>
+                <button type="button" aria-label={`${t('pdf.button')} ${nameOf(character)}`} onClick={() => void exportPdf(character)}>
+                  {t('pdf.button')}
                 </button>
                 <button type="button" onClick={() => setToDelete({ id: character.id, name: nameOf(character) })}>
                   {t('common.delete')}

@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
+import { PDFDocument } from 'pdf-lib';
+import { fakeTemplate } from '../../src/ui/pdf/testing/fake-template';
 
 async function createKael(page: Page) {
   await page.goto('./');
@@ -72,6 +74,22 @@ test('export a character as a JSON file', async ({ page, browserName }) => {
   expect(file.suggestedFilename()).toMatch(/^kael-\d{4}-\d{2}-\d{2}\.json$/);
   const json = JSON.parse(await readFile(await file.path(), 'utf8'));
   expect(json).toMatchObject({ format: 'dnd-tracker-export', version: 1, kind: 'character', characters: [{ name: 'Kael' }] });
+});
+
+test('exports a filled character sheet', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'On the iPad the PDF opens the share sheet; that is checked by hand (spec §16).');
+  await createKael(page);
+  await page.getByRole('link', { name: 'Back' }).click();
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByTestId('sheet-input').setInputFiles({ name: 'sheet.pdf', mimeType: 'application/pdf', buffer: Buffer.from(await fakeTemplate()) });
+  await expect(page.getByText('Sheet: sheet.pdf')).toBeVisible();
+  await page.getByRole('link', { name: 'Back' }).click();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'PDF Kael' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toMatch(/^kael-\d{4}-\d{2}-\d{2}\.pdf$/);
+  const doc = await PDFDocument.load(await readFile(await file.path()));
+  expect(doc.getForm().getTextField('CharacterName').getText()).toBe('Kael');
 });
 
 test('imports an exported character as a copy', async ({ page, browserName }) => {

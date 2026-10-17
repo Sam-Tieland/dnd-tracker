@@ -22,7 +22,13 @@ async function loadTemplate(bytes: Uint8Array) {
 /** Throws a TemplateError when the bytes are not a PDF or lack the fields that identify the character sheet. */
 export async function checkTemplate(bytes: Uint8Array): Promise<void> {
   const doc = await loadTemplate(bytes);
-  const names = new Set(doc.getForm().getFields().map((f) => f.getName()));
+  let names: Set<string>;
+  try {
+    names = new Set(doc.getForm().getFields().map((f) => f.getName()));
+  } catch {
+    // A damaged AcroForm is not a usable character sheet.
+    throw new TemplateError('not-sheet');
+  }
   if (!REQUIRED_FIELDS.every((name) => names.has(name))) throw new TemplateError('not-sheet');
 }
 

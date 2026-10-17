@@ -27,7 +27,7 @@ function download(name: string, file: File, env: DeliverEnv): void {
 const isAbort = (error: unknown): boolean => error instanceof DOMException && error.name === 'AbortError';
 
 /**
- * Hands a JSON file to the player. Returns false when the share sheet was closed without sharing, or (with `onRefused`)
+ * Hands a file (JSON by default) to the player. Returns false when the share sheet was closed without sharing, or (with `onRefused`)
  * when the share sheet refused and the player was offered a retry.
  *
  * Safari refuses `share` outside a fresh tap, which an earlier await (reading the database) can use up. With `onRefused`,
@@ -36,11 +36,12 @@ const isAbort = (error: unknown): boolean => error instanceof DOMException && er
  */
 export async function deliverFile(
   name: string,
-  text: string,
+  content: string | Uint8Array,
   env: DeliverEnv = browserEnv(),
   onRefused?: (retry: () => Promise<boolean>) => void,
+  type = 'application/json',
 ): Promise<boolean> {
-  const file = new File([text], name, { type: 'application/json' });
+  const file = new File([content as BlobPart], name, { type });
   if (env.preferShare && env.share && env.canShare?.({ files: [file] })) {
     const share = env.share;
     try {

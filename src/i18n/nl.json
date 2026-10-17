@@ -207,5 +207,17 @@
   "import.fileVersion": "In bestand: {date}",
   "import.deviceVersion": "Op dit apparaat: {date}",
   "import.newer": "nieuwer",
-  "import.same": "Zelfde versie"
+  "import.same": "Zelfde versie",
+  "pdf.section": "Characterblad (PDF)",
+  "pdf.help": "Kies eenmalig je eigen exemplaar van het invulbare 5E-characterblad. Het blijft op dit apparaat.",
+  "pdf.choose": "Blad kiezen",
+  "pdf.current": "Blad: {name}",
+  "pdf.remove": "Blad verwijderen",
+  "pdf.saved": "Characterblad bewaard.",
+  "pdf.button": "PDF",
+  "pdf.noTemplate": "Kies eerst je characterblad in Instellingen.",
+  "pdf.done": "PDF klaar.",
+  "pdf.failed": "PDF mislukt: {reason}",
+  "pdf.error.not-pdf": "Dit bestand is geen PDF.",
+  "pdf.error.not-sheet": "Deze PDF is niet het invulbare 5E-characterblad."
 }

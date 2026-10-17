@@ -12,6 +12,8 @@ import { buildBackup, buildCharacterExport, serializeExport } from '../../storag
 import { loadSettings } from '../../storage/settings';
 import { loadUserContent } from '../../storage/user-content';
 import { renderApp, testDb } from '../testing/render';
+import { loadSheetTemplate, saveSheetTemplate } from '../../storage/sheet-template';
+import { fakeTemplate } from '../pdf/testing/fake-template';
 
 describe('settings and credits', () => {
   it('switches the language and the theme, and remembers them', async () => {
@@ -131,5 +133,44 @@ describe('import', () => {
     await user.click(await screen.findByRole('button', { name: 'Cancel' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     expect((await loadCharacters(db)).characters).toEqual([]);
+  });
+});
+
+describe('character sheet template', { timeout: 30000 }, () => {
+  const pdfFile = (bytes: Uint8Array, name = 'sheet.pdf') => new File([bytes as BlobPart], name, { type: 'application/pdf' });
+  const sheetInput = async () => (await screen.findByTestId('sheet-input')) as HTMLInputElement;
+
+  it('saves a chosen character sheet', async () => {
+    const db = testDb();
+    renderApp('#/settings', db);
+    const user = userEvent.setup();
+    await user.upload(await sheetInput(), pdfFile(await fakeTemplate()));
+    expect(await screen.findByText('Character sheet saved.')).toBeTruthy();
+    expect(screen.getByText('Sheet: sheet.pdf')).toBeTruthy();
+    expect((await loadSheetTemplate(db))?.name).toBe('sheet.pdf');
+  });
+
+  it('reports a file that is not the character sheet', async () => {
+    const db = testDb();
+    renderApp('#/settings', db);
+    const user = userEvent.setup();
+    const { PDFDocument } = await import('pdf-lib');
+    const doc = await PDFDocument.create();
+    doc.addPage();
+    await user.upload(await sheetInput(), pdfFile(await doc.save()));
+    expect(await screen.findByText('PDF failed: This PDF is not the fillable 5E character sheet.')).toBeTruthy();
+    await user.upload(await sheetInput(), pdfFile(new TextEncoder().encode('hello'), 'x.pdf'));
+    expect(await screen.findByText('PDF failed: This file is not a PDF.')).toBeTruthy();
+    expect(await loadSheetTemplate(db)).toBeUndefined();
+  });
+
+  it('removes the sheet', async () => {
+    const db = testDb();
+    await saveSheetTemplate(db, { name: 'sheet.pdf', bytes: await fakeTemplate(), savedAt: NOW });
+    renderApp('#/settings', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Remove sheet' }));
+    await waitFor(async () => expect(await loadSheetTemplate(db)).toBeUndefined());
+    expect(screen.queryByText('Sheet: sheet.pdf')).toBeNull();
   });
 });

@@ -4,7 +4,7 @@ import { loadCharacters } from '../storage/characters';
 import { buildBackup, buildCharacterExport, exportFileName, serializeExport, type ExportFile } from '../storage/export';
 import { useToast } from './components/Toast';
 import { useAppData } from './data';
-import { deliverFile } from './deliver';
+import { useDeliver } from './use-deliver';
 
 /** What an export holds, and how many stored characters had to be left out because they could not be read. */
 interface Prepared {
@@ -17,6 +17,7 @@ export function useExport() {
   const { db, registry, userItems, updateSettings } = useAppData();
   const toast = useToast();
   const { t } = useI18n();
+  const deliver = useDeliver();
 
   /** A delivered export resets the backup reminder and says so; a partial one says what was left out. */
   const delivered = async (file: ExportFile, skipped: number) => {
@@ -32,17 +33,8 @@ export function useExport() {
     try {
       const { file, skipped } = await prepare();
       // When the share sheet refuses (Safari, after the await above), the file stays prepared and a toast offers a fresh tap.
-      const onRefused = (retry: () => Promise<boolean>) =>
-        toast({
-          message: t('export.shareRetry'),
-          error: true,
-          action: {
-            label: t('export.shareAction'),
-            // No await before retry(): it has to call navigator.share inside this tap.
-            run: () => void retry().then((done) => (done ? delivered(file, skipped) : undefined)).catch(failed),
-          },
-        });
-      if (await deliverFile(exportFileName(file), serializeExport(file), undefined, onRefused)) await delivered(file, skipped);
+      const name = exportFileName(file);
+      if (await deliver(name, serializeExport(file), 'application/json', () => delivered(file, skipped), failed)) await delivered(file, skipped);
     } catch (error) {
       failed(error);
     }

@@ -207,5 +207,17 @@
   "import.fileVersion": "In file: {date}",
   "import.deviceVersion": "On this device: {date}",
   "import.newer": "newer",
-  "import.same": "Same version"
+  "import.same": "Same version",
+  "pdf.section": "Character sheet (PDF)",
+  "pdf.help": "Choose your own copy of the fillable 5E character sheet once. It stays on this device.",
+  "pdf.choose": "Choose sheet",
+  "pdf.current": "Sheet: {name}",
+  "pdf.remove": "Remove sheet",
+  "pdf.saved": "Character sheet saved.",
+  "pdf.button": "PDF",
+  "pdf.noTemplate": "Choose your character sheet in Settings first.",
+  "pdf.done": "PDF ready.",
+  "pdf.failed": "PDF failed: {reason}",
+  "pdf.error.not-pdf": "This file is not a PDF.",
+  "pdf.error.not-sheet": "This PDF is not the fillable 5E character sheet."
 }

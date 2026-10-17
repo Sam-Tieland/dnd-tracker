@@ -9,6 +9,8 @@ import { loadCharacters, saveCharacter } from '../../storage/characters';
 import { buildCharacterExport, serializeExport } from '../../storage/export';
 import { DEFAULT_SETTINGS, saveSettings } from '../../storage/settings';
 import { renderApp, testDb } from '../testing/render';
+import { saveSheetTemplate } from '../../storage/sheet-template';
+import { fakeTemplate } from '../pdf/testing/fake-template';
 
 describe('character list', () => {
   it('starts empty with a link to a new character', async () => {
@@ -118,4 +120,40 @@ describe('character list', () => {
     expect((await screen.findByRole('alert')).textContent).toBe('The characters could not be loaded: blocked');
     expect(screen.queryByRole('link', { name: /Test/ })).toBeNull();
   });
+});
+
+describe('PDF export', { timeout: 30000 }, () => {
+  it('asks for the sheet first', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael());
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'PDF Test' }));
+    expect(await screen.findByText('Choose your character sheet in Settings first.')).toBeTruthy();
+  });
+
+  it('exports a filled PDF', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael());
+    await saveSheetTemplate(db, { name: 'sheet.pdf', bytes: await fakeTemplate(), savedAt: '2026-10-17T10:00:00.000Z' });
+    let blob: Blob | undefined;
+    URL.createObjectURL = vi.fn((b: Blob | MediaSource) => {
+      blob = b as Blob;
+      return 'blob:test';
+    });
+    URL.revokeObjectURL = vi.fn();
+    let downloaded = '';
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+      downloaded = this.download;
+    });
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'PDF Test' }));
+    expect(await screen.findByText('PDF ready.')).toBeTruthy();
+    expect(downloaded).toMatch(/^test-\d{4}-\d{2}-\d{2}\.pdf$/);
+    const { PDFDocument } = await import('pdf-lib');
+    const doc = await PDFDocument.load(new Uint8Array(await blob!.arrayBuffer()));
+    expect(doc.getForm().getTextField('CharacterName').getText()).toBe('Test');
+    vi.restoreAllMocks();
+  }, 30000);
 });
