@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { kael } from '../../rules/testing/fixtures';
@@ -30,11 +30,12 @@ describe('actions tab', () => {
   });
 });
 
-describe('spells tab', () => {
+describe('spells panel', () => {
   it('shows the caster stats and adds and prepares a class spell', async () => {
     const { db, user } = await openKael();
-    await user.click(screen.getByRole('tab', { name: 'Spells' }));
-    expect(screen.getByText('Intelligence · Spell Attack +5 · Spell Save DC 13')).toBeTruthy();
+    // From iPad portrait up the spells have their own card next to the tabs, not a tab of their own.
+    expect(screen.queryByRole('tab', { name: 'Spells' })).toBeNull();
+    expect(within(screen.getByRole('region', { name: 'Spells' })).getByText('Intelligence · Spell Attack +5 · Spell Save DC 13')).toBeTruthy();
     await user.selectOptions(screen.getByLabelText('Add a Wizard spell'), 'srd:spell:magic-missile');
     await user.click(screen.getByRole('button', { name: 'Add' }));
     expect(screen.getByText('Magic Missile')).toBeTruthy();
@@ -46,7 +47,6 @@ describe('spells tab', () => {
 
   it('adds a Magic Initiate cantrip with the ability chosen for the feat', async () => {
     const { db, user } = await openKael();
-    await user.click(screen.getByRole('tab', { name: 'Spells' }));
     await user.selectOptions(screen.getByLabelText('Spell list'), 'srd:class:cleric');
     await user.selectOptions(screen.getByLabelText('Spellcasting ability'), 'wis');
     await user.selectOptions(screen.getByLabelText('Spell'), 'srd:spell:sacred-flame');

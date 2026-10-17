@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { CONDITIONS } from '../../content/constants';
 import { useI18n } from '../../i18n/i18n';
 import {
@@ -34,50 +34,84 @@ function HitPoints({ session }: { session: ReadySession }) {
     setFlash((f) => ({ direction: current < previous ? 'down' : 'up', n: f.n + 1 }));
   }
   return (
-    <div className="hp-control">
-      <span key={flash.n} className={flash.direction ? `hp-value hp-${flash.direction}` : 'hp-value'} data-testid="hp">
-        {sheet.hp.current}/{sheet.hp.max}
-      </span>
-      {sheet.hp.temp > 0 && <span className="muted">+{sheet.hp.temp} temp</span>}
-      <input aria-label={t('sheet.amount')} type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} />
-      <button
-        type="button"
-        className="big danger"
-        disabled={dead || !isNumber || value === 0}
-        onClick={() => {
-          commit(applyDamage(character, value, sheet, { critical }), t('undo.damage', { amount: value }));
-          done();
-        }}
-      >
-        − {t('sheet.damage')}
-      </button>
-      <button
-        type="button"
-        className="big"
-        disabled={dead || !isNumber || value === 0}
-        onClick={() => {
-          commit(applyHealing(character, value, sheet), t('undo.heal', { amount: value }));
-          done();
-        }}
-      >
-        + {t('sheet.heal')}
-      </button>
-      <button
-        type="button"
-        disabled={dead || !isNumber}
-        onClick={() => {
-          commit(setTempHp(character, value), t('undo.temp', { amount: value }));
-          done();
-        }}
-      >
-        {t('sheet.setTemp')}
-      </button>
-      {sheet.hp.current === 0 && sheet.hp.max > 0 && (
-        <label className="option">
-          <input type="checkbox" checked={critical} onChange={(e) => setCritical(e.target.checked)} />
-          {t('sheet.criticalHit')}
-        </label>
-      )}
+    <>
+      <LifeFlask current={current} max={sheet.hp.max} temp={sheet.hp.temp}>
+        <span key={flash.n} className={flash.direction ? `hp-value hp-${flash.direction}` : 'hp-value'} data-testid="hp">
+          <b>{current}</b>
+          <span className="hp-max">/{sheet.hp.max}</span>
+        </span>
+      </LifeFlask>
+      <div className="hp-control">
+        <input aria-label={t('sheet.amount')} type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <button
+          type="button"
+          className="big danger"
+          disabled={dead || !isNumber || value === 0}
+          onClick={() => {
+            commit(applyDamage(character, value, sheet, { critical }), t('undo.damage', { amount: value }));
+            done();
+          }}
+        >
+          − {t('sheet.damage')}
+        </button>
+        <button
+          type="button"
+          className="big"
+          disabled={dead || !isNumber || value === 0}
+          onClick={() => {
+            commit(applyHealing(character, value, sheet), t('undo.heal', { amount: value }));
+            done();
+          }}
+        >
+          + {t('sheet.heal')}
+        </button>
+        <button
+          type="button"
+          disabled={dead || !isNumber}
+          onClick={() => {
+            commit(setTempHp(character, value), t('undo.temp', { amount: value }));
+            done();
+          }}
+        >
+          {t('sheet.setTemp')}
+        </button>
+        {sheet.hp.current === 0 && sheet.hp.max > 0 && (
+          <label className="option">
+            <input type="checkbox" checked={critical} onChange={(e) => setCritical(e.target.checked)} />
+            {t('sheet.criticalHit')}
+          </label>
+        )}
+      </div>
+    </>
+  );
+}
+
+/** A share of max HP as a CSS length for the liquid; a character without max HP shows an empty flask. */
+const share = (n: number, max: number) => `${max > 0 ? Math.round((Math.min(Math.max(n, 0), max) / max) * 100) : 0}%`;
+
+/**
+ * Hit points as a glass flask: red is current HP, a gold layer above it is temp HP. The liquid sinks and rises with
+ * every change; an empty flask shows a crack. The number inside is the child, so the HP text stays one element.
+ */
+function LifeFlask({ current, max, temp, children }: { current: number; max: number; temp: number; children: ReactNode }) {
+  const style = { '--hp': share(current, max), '--temp': share(temp, max) } as CSSProperties;
+  return (
+    <div className="flask-wrap">
+      <div className="flask" style={style}>
+        <div className="cork" />
+        <div className="neck" />
+        <div className="bulb">
+          {temp > 0 && <div className="temp" />}
+          <div className="life" />
+          {children}
+          {current === 0 && max > 0 && (
+            <svg className="crack" viewBox="0 0 100 100" aria-hidden="true">
+              <path d="M70 6 L60 26 L70 36 L54 58 L62 70 M60 26 L48 31" />
+            </svg>
+          )}
+        </div>
+      </div>
+      {temp > 0 && <span className="flask-label">+{temp} temp</span>}
     </div>
   );
 }
@@ -176,9 +210,6 @@ function Rests({ session }: { session: ReadySession }) {
         Long Rest
       </button>
       {!allowed && <span className="muted">{t('rest.needsHp')}</span>}
-      <span className="muted">
-        Hit Point Dice: {session.sheet.hitDice.map((hd) => `d${hd.die} ${hd.total - hd.spent}/${hd.total}`).join(' · ') || '–'}
-      </span>
       {dialog === 'short' && <ShortRestDialog session={session} onClose={() => setDialog(null)} />}
       {dialog === 'long' && <LongRestDialog session={session} onClose={() => setDialog(null)} />}
     </div>
@@ -208,13 +239,17 @@ function DiceSettings() {
   );
 }
 
-/** Spec §8: the fixed bar with name and classes, HP with big buttons and temp HP, AC, Initiative, conditions, rests and dice. */
+/** Hit point dice left per die size, "d8 2/3", as the Short Rest spends them. */
+const hitDiceText = (sheet: ReadySession['sheet']) => sheet.hitDice.map((hd) => `d${hd.die} ${hd.total - hd.spent}/${hd.total}`).join(' · ') || '–';
+
+/** Spec §8: name and classes, HP as the life flask with big buttons, and the numbers you call out at the table. */
 export function TopBar({ session }: { session: ReadySession }) {
   const { character, sheet } = session;
   const { t } = useI18n();
   const dice = useDice();
+  const dcs = [...new Set(sheet.spellcasting.classes.map((c) => c.dc))];
   return (
-    <header className="top-bar">
+    <header className="top-bar card">
       <div className="row top-row">
         <a className="button" href={hrefFor({ name: 'list' })} aria-label={t('nav.back')}>
           ←
@@ -236,29 +271,49 @@ export function TopBar({ session }: { session: ReadySession }) {
           {t('sheet.edit')}
         </a>
       </div>
-      <div className="row top-row">
+      <div className="head-main">
         <HitPoints session={session} />
-        <div className="stat" title={sheet.ac.source}>
-          <span>AC</span>
-          <strong data-testid="ac">{sheet.ac.value}</strong>
-        </div>
-        <button type="button" className="stat" onClick={() => dice.rollD20('Initiative', sheet.initiative)}>
-          <span>Initiative</span>{' '}
-          <strong>{formatMod(sheet.initiative)}</strong>
-        </button>
-        <div className="stat">
-          <span>Speed</span>
-          <strong>{sheet.speed} ft.</strong>
-        </div>
-        <div className="stat">
-          <span>Proficiency Bonus</span>
-          <strong>{formatMod(sheet.proficiencyBonus)}</strong>
+        <div className="vitals">
+          <div className="stat" title={sheet.ac.source}>
+            <span>AC</span>
+            <strong data-testid="ac">{sheet.ac.value}</strong>
+          </div>
+          <button type="button" className="stat" onClick={() => dice.rollD20('Initiative', sheet.initiative)}>
+            <span>Initiative</span>{' '}
+            <strong>{formatMod(sheet.initiative)}</strong>
+          </button>
+          <div className="stat">
+            <span>Speed</span>
+            <strong>{sheet.speed} ft.</strong>
+          </div>
+          <div className="stat">
+            <span>Proficiency</span>
+            <strong>{formatMod(sheet.proficiencyBonus)}</strong>
+          </div>
+          {dcs.length > 0 && (
+            <div className="stat">
+              <span>Spell DC</span>
+              <strong>{dcs.join(' / ')}</strong>
+            </div>
+          )}
+          <div className="stat">
+            <span>Hit Dice</span>
+            <strong>{hitDiceText(sheet)}</strong>
+          </div>
         </div>
       </div>
       <DeathSaves session={session} />
-      <Conditions session={session} />
-      <Rests session={session} />
       <WarningList warnings={sheet.warnings} />
     </header>
+  );
+}
+
+/** Conditions, Exhaustion, Heroic Inspiration and the rests: what changes between fights rather than during one. */
+export function RestBar({ session }: { session: ReadySession }) {
+  return (
+    <div className="rest-bar card">
+      <Rests session={session} />
+      <Conditions session={session} />
+    </div>
   );
 }

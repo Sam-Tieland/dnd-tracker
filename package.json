@@ -17,6 +17,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource/im-fell-dw-pica": "^5.3.0",
+    "@fontsource/pirata-one": "^5.3.0",
     "dexie": "^4.4.6",
     "pdf-lib": "1.17.1",
     "react": "^19.3.1",

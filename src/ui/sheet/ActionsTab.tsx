@@ -1,46 +1,11 @@
 import { useI18n } from '../../i18n/i18n';
-import { setPactSlotsUsed, setResourceUsed, setSlotsUsed } from '../../rules/actions';
+import { setResourceUsed } from '../../rules/actions';
 import { useDice } from '../dice/DiceContext';
 import { formatMod } from '../format';
 import type { ReadySession } from './session';
 import { playColumns } from './spell-logic';
 
-function Slots({ session }: { session: ReadySession }) {
-  const { character, sheet, commit } = session;
-  const { t } = useI18n();
-  const { slots, pact } = sheet.spellcasting;
-  if (slots.length === 0 && !pact) return null;
-  const boxes = (level: number, max: number, used: number, set: (used: number) => void) =>
-    Array.from({ length: max }, (_, i) => (
-      <button
-        key={i}
-        type="button"
-        className={i < used ? 'slot used' : 'slot'}
-        aria-pressed={i < used}
-        aria-label={t('slots.slot', { level, n: i + 1 })}
-        onClick={() => set(i < used ? i : i + 1)}
-      />
-    ));
-  return (
-    <section>
-      <h2>Spell Slots</h2>
-      {slots.map((s) => (
-        <div key={s.level} className="row slot-row">
-          <span>Level {s.level}</span>
-          {boxes(s.level, s.max, s.used, (used) => commit(setSlotsUsed(character, s.level, used, sheet), t('undo.slots', { level: s.level, left: s.max - used, max: s.max })))}
-        </div>
-      ))}
-      {pact && (
-        <div className="row slot-row">
-          <span>Pact Magic (Level {pact.slotLevel})</span>
-          {boxes(pact.slotLevel, pact.slots, pact.used, (used) => commit(setPactSlotsUsed(character, used, sheet), `Pact Magic: ${pact.slots - used}/${pact.slots}`))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-/** Spec §8: attacks, resources and spell slots, plus the class table values for this level. */
+/** Spec §8: attacks and resources, plus the class table values for this level. The spell slots live with the spells. */
 export function ActionsTab({ session }: { session: ReadySession }) {
   const { character, sheet, commit } = session;
   const { t } = useI18n();
@@ -116,7 +81,6 @@ export function ActionsTab({ session }: { session: ReadySession }) {
           </ul>
         </section>
       )}
-      <Slots session={session} />
     </div>
   );
 }

@@ -1,3 +1,6 @@
+import '@fontsource/im-fell-dw-pica/latin-400.css';
+import '@fontsource/im-fell-dw-pica/latin-400-italic.css';
+import '@fontsource/pirata-one/latin-400.css';
 import { useState } from 'react';
 import { useI18n } from '../../i18n/i18n';
 import { Section } from '../components/ErrorBoundary';
@@ -6,18 +9,23 @@ import { useMediaQuery } from '../hooks';
 import { hrefFor } from '../router';
 import { AbilityColumn } from './AbilityColumn';
 import { useCharacterSession } from './session';
+import { SpellsTab } from './SpellsTab';
 import { sheetTabs, type SheetTab } from './tabs';
-import { TopBar } from './TopBar';
+import { RestBar, TopBar } from './TopBar';
 import './sheet.css';
 
+/** Phones: one column, where abilities and spells become tabs. From iPad portrait up every part has its own place. */
+export const NARROW_QUERY = '(max-width: 760px)';
+
 /**
- * Spec §8, the hybrid sheet: a fixed bar on top, abilities on the left, tabs on the right. On iPad portrait and other
- * narrow screens the left column becomes a tab; the first other tab stays the default.
+ * The tavern sheet: parchment cards on an oak table. iPad landscape gets three columns (abilities, the character and
+ * the fight, magic and dice), iPad portrait puts the character on top with two columns below, and on both everything
+ * fits in one screen; long lists scroll inside their own card. On a phone the parts stack and some become tabs.
  */
 export function Sheet({ id }: { id: string }) {
   const session = useCharacterSession(id);
   const { t } = useI18n();
-  const narrow = useMediaQuery('(max-width: 900px)');
+  const narrow = useMediaQuery(NARROW_QUERY);
   const [tab, setTab] = useState<string>();
   if (session.status === 'loading') return null;
   if (session.status !== 'ready') {
@@ -31,35 +39,50 @@ export function Sheet({ id }: { id: string }) {
     );
   }
   const abilitiesTab: SheetTab = { id: 'abilities', label: t('tab.abilities'), render: (s) => <AbilityColumn sheet={s.sheet} /> };
-  const tabs = narrow ? [abilitiesTab, ...sheetTabs(t)] : sheetTabs(t);
+  // On a wide screen the spells have their own card, so they are not a tab as well.
+  const tabs = narrow ? [abilitiesTab, ...sheetTabs(t)] : sheetTabs(t).filter((x) => x.id !== 'spells');
   const current = tabs.find((x) => x.id === tab) ?? tabs.find((x) => x.id !== 'abilities') ?? tabs[0];
   return (
-    <div className="sheet">
-      <Section>
-        <TopBar session={session} />
-      </Section>
-      <div className="sheet-body">
-        {!narrow && (
-          <aside className="sheet-left">
-            <Section>
-              <AbilityColumn sheet={session.sheet} />
-            </Section>
-          </aside>
-        )}
-        <main className="sheet-main">
-          <div role="tablist" className="tabs">
-            {tabs.map((x) => (
-              <button key={x.id} type="button" role="tab" aria-selected={x.id === current.id} onClick={() => setTab(x.id)}>
-                {x.label}
-              </button>
-            ))}
-          </div>
-          <div role="tabpanel" className="tab-panel">
-            <Section key={current.id}>{current.render(session)}</Section>
-          </div>
-        </main>
+    <div className="sheet tavern">
+      <div className="area-head">
+        <Section>
+          <TopBar session={session} />
+        </Section>
       </div>
-      <DicePanel />
+      {!narrow && (
+        <aside className="area-abil card">
+          <Section>
+            <AbilityColumn sheet={session.sheet} />
+          </Section>
+        </aside>
+      )}
+      <main className="area-act">
+        <div role="tablist" className="tabs ribbons">
+          {tabs.map((x) => (
+            <button key={x.id} type="button" role="tab" aria-selected={x.id === current.id} onClick={() => setTab(x.id)}>
+              {x.label}
+            </button>
+          ))}
+        </div>
+        <div role="tabpanel" className="tab-panel card">
+          <Section key={current.id}>{current.render(session)}</Section>
+        </div>
+      </main>
+      {!narrow && (
+        <section className="area-spells card" aria-label={t('tab.spells')}>
+          <Section>
+            <SpellsTab session={session} />
+          </Section>
+        </section>
+      )}
+      <div className="area-rest">
+        <Section>
+          <RestBar session={session} />
+        </Section>
+      </div>
+      <div className="area-tray">
+        <DicePanel />
+      </div>
     </div>
   );
 }

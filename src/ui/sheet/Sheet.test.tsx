@@ -7,6 +7,7 @@ import { kael } from '../../rules/testing/fixtures';
 import { loadCharacter, saveCharacter } from '../../storage/characters';
 import { renderApp, setMatchMedia, testDb } from '../testing/render';
 import { resetUndoStacks, whenSaved } from './session';
+import { NARROW_QUERY } from './Sheet';
 
 async function openKael(state: Partial<Character['state']> = { hpCurrent: 40 }) {
   const db = testDb();
@@ -152,12 +153,23 @@ describe('sheet', () => {
     await waitFor(async () => expect((await loadCharacter(db, 'test'))?.state.hpCurrent).toBe(34), { timeout: 300, interval: 10 });
   });
 
-  it('on a narrow screen the left column becomes a tab', async () => {
-    setMatchMedia((query) => query === '(max-width: 900px)');
+  it('on a phone the abilities and the spells become tabs', async () => {
+    setMatchMedia((query) => query === NARROW_QUERY);
     const { user } = await openKael();
     expect(screen.queryByRole('button', { name: /Athletics/ })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Spells' })).toBeNull();
     await user.click(screen.getByRole('tab', { name: 'Abilities' }));
     expect(screen.getByRole('button', { name: /Athletics/ })).toBeTruthy();
+    await user.click(screen.getByRole('tab', { name: 'Spells' }));
+    expect(screen.getByText('Intelligence · Spell Attack +5 · Spell Save DC 13')).toBeTruthy();
+  });
+
+  it('keeps each saving throw with its ability', async () => {
+    await openKael();
+    const strength = within(screen.getByRole('region', { name: 'Strength' }));
+    expect(strength.getByRole('button', { name: /^Strength saving throw/ })).toBeTruthy();
+    expect(strength.getByRole('button', { name: /Athletics/ })).toBeTruthy();
+    expect(strength.queryByRole('button', { name: /Stealth/ })).toBeNull();
   });
 
   it('a Short Rest spends the chosen hit dice and heals die + CON', async () => {

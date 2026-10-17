@@ -1,79 +1,207 @@
-.sheet { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
-/* Translucent so the sheet scrolls visibly underneath; the solid fallback stays for browsers without backdrop blur. */
-.top-bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--border); padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.6rem; display: grid; gap: 0.5rem; }
-/* The blur sits on a pseudo-element: a backdrop-filter on the bar itself would trap the fixed rest dialogs inside the bar. */
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .top-bar { background: transparent; }
-  .top-bar::before { content: ''; position: absolute; inset: 0; z-index: -1; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); }
+/*
+ * The tavern sheet: parchment cards on an oak table, lit by a candle at the top left. The sheet keeps this look in
+ * both themes; it redefines the app's colour tokens for everything inside it, so every tab and dialog follows along.
+ */
+.sheet.tavern {
+  --bg: #2c1c10;
+  --surface: #f8eed6;
+  --surface-2: #e8d6ab;
+  --text: #2b1d0e;
+  --muted: #6e4b22;
+  --border: #b89a64;
+  --accent: #8c1a14;
+  --accent-text: #fff3e0;
+  --accent-soft: rgb(140 26 20 / 12%);
+  --danger: #9b1c14;
+  --ok: #2f6b2a;
+  --warning: #8a5a00;
+  --gold: #8a5f14;
+  --focus: #1f5fbf;
+  --shadow: none;
+  --shadow-lg: 0 16px 48px rgb(0 0 0 / 55%);
+  --font-display: 'Pirata One', 'IM Fell DW Pica', Georgia, serif;
+  --font-body: 'IM Fell DW Pica', Georgia, 'Times New Roman', serif;
+  --parchment: linear-gradient(180deg, #f1e2bf, #e3cd9c);
+  --coin: radial-gradient(circle at 38% 34%, #ffe08a 0, #c9962e 55%, #8a5f14 100%);
+  color-scheme: light;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(70% 60% at 20% 0%, rgb(255 181 74 / 16%), transparent 70%),
+    repeating-linear-gradient(176deg, #3b2616 0 9px, #352113 9px 15px, #40291a 15px 26px),
+    #3b2616;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: calc(8px + env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
 }
-/* The rest dialogs render inside the bar; while one is open the bar rises above the docked dice panel so the backdrop covers it too. */
-.top-bar:has(.dialog-backdrop) { z-index: 25; }
-.top-row { justify-content: space-between; }
-.identity { flex: 1; min-width: 0; }
-.identity h1 { margin: 0; font-size: 1.4rem; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hp-control { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-.hp-value { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1; min-width: 5ch; font-variant-numeric: tabular-nums; }
-.hp-control input { width: 6rem; }
-/* State indication: the number starts in the colour of what happened and settles back. Remounted per change, so a second hit replays it. */
-.hp-value { display: inline-block; }
-.hp-down { animation: hp-down 600ms var(--ease-out) 1; }
-.hp-up { animation: hp-up 600ms var(--ease-out) 1; }
-@keyframes hp-down {
-  0% { color: var(--danger); transform: scale(1.08); }
-  35% { color: var(--danger); transform: scale(1); }
-}
-@keyframes hp-up {
-  0% { color: var(--ok); transform: scale(1.08); }
-  35% { color: var(--ok); transform: scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  @keyframes hp-down { 0%, 35% { color: var(--danger); } }
-  @keyframes hp-up { 0%, 35% { color: var(--ok); } }
-}
-button.big { min-width: 5.5rem; font-weight: 700; }
-.stat { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.1rem; min-width: 4.75rem; min-height: var(--tap); padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
-.stat span { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.stat strong { font-family: var(--font-display); font-size: 1.2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.death-saves { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; padding: 0.4rem 0.75rem; border-radius: var(--radius); background: var(--surface-2); }
-.death-saves.dead { border: 2px solid var(--danger); }
-.chip { border-radius: 999px; }
-.sheet-body { flex: 1; display: grid; grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); gap: 1rem; padding: 1rem; max-width: 1400px; width: 100%; margin: 0 auto; }
-.sheet-main { min-width: 0; }
-/* A segmented control: the chosen tab lifts out of a sunken track instead of turning bright red. */
-.tabs { display: flex; gap: 0.2rem; overflow-x: auto; margin-bottom: 1rem; padding: 0.25rem; background: var(--surface-2); border-radius: calc(var(--radius) + 4px); scrollbar-width: none; }
-.tabs button { flex: 1 0 auto; border-color: transparent; background: transparent; color: var(--muted); font-weight: 600; }
-.tabs button[aria-selected='true'] { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--shadow); }
-@media (hover: hover) and (pointer: fine) {
-  .tabs button:not([aria-selected='true']):hover { color: var(--text); border-color: transparent; }
-}
-.abilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
-.ability { flex-direction: column; gap: 0.15rem; min-height: 5.25rem; padding: 0.5rem 0.25rem; box-shadow: var(--shadow); }
-.ability .ability-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); }
-.ability strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
-.ability .muted { font-size: 0.8rem; min-width: 2.2rem; padding: 0 0.4rem; border-radius: 999px; background: var(--surface-2); font-variant-numeric: tabular-nums; }
+/* Behind the sheet, an overscroll on the iPad shows more table instead of the app's own background. */
+body:has(.sheet.tavern) { background: #2c1c10; }
+.tavern input, .tavern select, .tavern textarea, .tavern button { font-family: var(--font-body); }
+
+/* Parchment cards. A card inside a card (the spell sections, a feature group) loses its own paper and shadow. */
+.tavern .card { background: var(--parchment); border: 0; border-radius: 4px; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); padding: 12px 14px; margin: 0; }
+.tavern .card .card { background: none; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 14px; }
+.tavern h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.4rem; color: var(--accent); }
 /* Section heads as on a printed sheet: a small gold lozenge and a hairline that fades out to the right. */
-.sheet-left h2, .tab-panel h2 {
-  display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; padding-bottom: 0.35rem; margin-top: 0.25rem;
+.tavern .tab-panel h2, .tavern .area-spells h2, .tavern .area-abil h2 {
+  display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.3rem; margin: 0.25rem 0 0.5rem;
   background: linear-gradient(90deg, var(--gold), color-mix(in srgb, var(--gold) 25%, transparent) 60%, transparent) left bottom / 100% 1px no-repeat;
 }
-.sheet-left h2::before, .tab-panel h2::before { content: ''; width: 0.4rem; height: 0.4rem; flex: none; background: var(--gold); transform: rotate(45deg); }
-.check-list { list-style: none; padding: 0; margin: 0 0 1.25rem; }
-.check-list button { width: 100%; justify-content: flex-start; border: none; background: transparent; }
-.check-list strong { font-variant-numeric: tabular-nums; }
+.tavern .tab-panel h2::before, .tavern .area-spells h2::before, .tavern .area-abil h2::before { content: ''; width: 0.4rem; height: 0.4rem; flex: none; background: var(--gold); transform: rotate(45deg); }
+.tavern .muted { color: var(--muted); }
+
+/* --- The head card: name, the life flask, and the numbers called out at the table --- */
+.top-bar { display: grid; gap: 10px; }
+.top-row { justify-content: space-between; flex-wrap: nowrap; }
+.identity { flex: 1; min-width: 0; }
+/* A long name wraps to a second line rather than being cut off; past two lines it ends in an ellipsis. */
+.identity h1 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; line-height: 1.05; color: #3a200c; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; }
+.top-row { align-items: flex-start; }
+.top-row > .button, .top-row > button { min-width: 40px; min-height: 40px; padding: 0 0.6rem; }
+.identity .muted { font-style: italic; }
+.head-main { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "flask vitals" "flask inputs"; gap: 10px 16px; align-items: center; }
+.flask-wrap { grid-area: flask; display: grid; justify-items: center; gap: 2px; }
+.vitals { grid-area: vitals; display: grid; grid-template-columns: repeat(auto-fit, minmax(5.4rem, 1fr)); gap: 4px 8px; }
+.hp-control { grid-area: inputs; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.hp-control input { width: 5.5rem; }
+button.big { min-width: 5.5rem; font-weight: 700; }
+.stat { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; min-height: var(--tap); padding: 2px 4px; border: 0; background: transparent; }
+.stat span { font-style: italic; font-size: 0.82rem; color: var(--muted); }
+.stat strong { font-family: var(--font-display); font-weight: 400; font-size: 1.45rem; line-height: 1.1; color: #3a200c; font-variant-numeric: tabular-nums; white-space: nowrap; }
+button.stat { border-radius: 6px; }
 @media (hover: hover) and (pointer: fine) {
-  .check-list button:hover { background: var(--surface-2); }
+  button.stat:hover { background: rgb(255 255 255 / 30%); }
 }
-.check-name { flex: 1; text-align: left; }
-.dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; border: 2px solid var(--muted); flex: none; }
-.dot.on { background: var(--text); border-color: var(--text); }
-.dot.double { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text); }
+
+/* The life flask: red is current HP, the gold layer above it is temp HP. The liquid sinks and rises with each change. */
+.flask { --hp: 100%; --temp: 0%; display: grid; justify-items: center; filter: drop-shadow(0 6px 8px rgb(0 0 0 / 45%)); }
+.flask .cork { width: 20px; height: 10px; border-radius: 3px 3px 1px 1px; background: linear-gradient(90deg, #7a5230, #b07e4f 45%, #6b4628); }
+.flask .neck { width: 16px; height: 14px; background: linear-gradient(90deg, #d9eef055, #ffffff33 40%, #9cb9bd44); border-inline: 2px solid #c7dadc99; }
+.flask .bulb { width: 112px; height: 112px; border-radius: 50%; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 40%, #2a1a12cc, #120b07ee); border: 3px solid #c7dadcaa; box-shadow: inset 0 -6px 12px rgb(0 0 0 / 55%); }
+.flask .bulb .temp, .flask .bulb .life { position: absolute; inset: auto -10% 0; border-radius: 45% 55% 0 0 / 10% 10% 0 0; transition: height 400ms var(--ease-out); }
+.flask .bulb .temp { height: calc(var(--hp) + var(--temp)); background: linear-gradient(180deg, #ffe08a, #d9a640); }
+.flask .bulb .life { height: var(--hp); background: radial-gradient(120% 90% at 50% 100%, #e0453b, #a51d16 60%, #6d0f0b); box-shadow: inset 0 3px 0 rgb(255 138 122 / 40%); }
+.flask .bulb::after { content: ''; position: absolute; left: 16%; top: 12%; width: 22%; height: 34%; border-radius: 50%; background: linear-gradient(160deg, rgb(255 255 255 / 67%), rgb(255 255 255 / 0%)); transform: rotate(18deg); pointer-events: none; }
+.flask .crack { position: absolute; inset: 0; z-index: 2; }
+.flask .crack path { stroke: #e8f4f5; stroke-width: 1.6; fill: none; stroke-linejoin: round; opacity: 0.85; }
+.flask-label { font-style: italic; font-size: 0.85rem; color: var(--muted); }
+.hp-value { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; text-align: center; line-height: 1; color: #fff3e2; text-shadow: 0 1px 3px rgb(0 0 0 / 80%); font-variant-numeric: tabular-nums; }
+.hp-value b { font-family: var(--font-display); font-weight: 400; font-size: 2.4rem; }
+.hp-value .hp-max { font-size: 0.85rem; }
+/* A change of HP makes the number swell for a moment while the liquid moves: the table sees that something happened. */
+.hp-down, .hp-up { animation: hp-pulse 450ms var(--ease-out) 1; }
+@keyframes hp-pulse {
+  0% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-down, .hp-up { animation: none; }
+  .flask .bulb .temp, .flask .bulb .life { transition: none; }
+}
+.death-saves { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; padding: 0.4rem 0.75rem; border-radius: 4px; background: rgb(255 255 255 / 30%); }
+.death-saves.dead { border: 2px solid var(--danger); }
+.chip { border-radius: 999px; }
+
+/* --- Tabs as cloth ribbons hanging over the top edge of the card --- */
+.tavern .ribbons { display: flex; gap: 6px; overflow-x: auto; padding: 0 10px; margin: 0 0 -4px; background: none; border-radius: 0; position: relative; z-index: 1; scrollbar-width: none; }
+.tavern .ribbons button { flex: none; min-height: 40px; padding: 4px 14px 10px; border: 0; border-radius: 0; background: #5a3a20; color: #f1e2bf; font-family: var(--font-display); font-size: 1.1rem; font-weight: 400; box-shadow: none; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); transition: padding 160ms var(--ease-out), background-color 150ms ease; }
+.tavern .ribbons button[aria-selected='true'] { background: var(--accent); color: #fff3e0; padding-bottom: 14px; }
+@media (hover: hover) and (pointer: fine) {
+  .tavern .ribbons button:not([aria-selected='true']):hover { background: #6e4a2a; }
+}
+
+/* --- Abilities: each block holds its Saving Throw and Skills; the blocks flow into two balanced columns --- */
+.ability-blocks { column-count: 2; column-gap: 16px; }
+.ability-block { break-inside: avoid; margin: 0 0 10px; }
+.ability { width: 100%; display: flex; align-items: baseline; justify-content: flex-start; gap: 6px; min-height: 40px; padding: 0 2px; border: 0; border-bottom: 1px solid #a88a55; border-radius: 0; background: transparent; }
+.ability .ability-label { flex: 1; text-align: left; font-family: var(--font-display); font-size: 1.2rem; color: var(--accent); }
+.ability strong { font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.ability .ability-score { font-size: 0.8rem; color: var(--muted); min-width: 1.4rem; text-align: right; font-variant-numeric: tabular-nums; }
+.check-list { list-style: none; padding: 0; margin: 2px 0 0; }
+.check-list button { width: 100%; min-height: 30px; justify-content: flex-start; gap: 7px; padding: 0 2px; border: none; border-radius: 4px; background: transparent; font-size: 0.95rem; }
+.check-list .save-row button { font-style: italic; }
+.check-list strong { font-weight: 400; font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) {
+  .check-list button:hover { background: rgb(255 255 255 / 35%); }
+}
+.check-name { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #8a6c3e; flex: none; }
+.dot.on { background: var(--coin); border-color: #8a5f14; }
+.dot.double { box-shadow: 0 0 0 1.5px #f1e2bf, 0 0 0 3px #8a5f14; }
+.passive { margin: 4px 0 0; font-style: italic; color: var(--muted); }
+.passive strong { font-family: var(--font-display); font-weight: 400; font-style: normal; font-size: 1.3rem; color: #3a200c; }
+
+/* --- Spell slots as brass coins; a spent slot is an empty ring. The button keeps a full tap target around the coin. --- */
+.slot-row { gap: 2px; }
+.slot-row > span { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent); margin-right: 6px; }
+.tavern .slot { width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 50%; box-shadow: none;
+  background: radial-gradient(circle at 42% 40%, #ffe08a 0, #c9962e 9px, #8a5f14 14px, transparent 15px); }
+.tavern .slot.used { background: radial-gradient(circle, transparent 12.5px, #a88a55 13px 14.5px, transparent 15px); }
+
+/* --- Rests and conditions --- */
+/* The rows inside dissolve, so rests, conditions, Exhaustion and Inspiration flow as one compact wrapping line. */
+.rest-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.rest-bar .row { display: contents; }
+.rest-bar select { max-width: 11rem; }
+.rest-bar > .row:first-child > button { font-family: var(--font-display); font-size: 1.05rem; color: #f1e2bf; background: radial-gradient(circle at 35% 30%, #7a4f2c, #4a2c16); border: 0; box-shadow: 0 2px 4px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 13%); }
+
+/* --- The dice tray --- */
+.tavern .dice-panel { position: static; background: var(--parchment); border: 0; border-radius: 4px; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); padding: 6px 12px; }
+.tavern .dice-latest strong { font-family: var(--font-display); font-weight: 400; font-size: 2.2rem; }
+.tavern .dice-body button:not([aria-pressed]) { font-family: var(--font-display); color: #f1e2bf; background: radial-gradient(circle at 35% 30%, #7a4f2c, #4a2c16); border: 0; }
+
+/* --- Phone: the parts stack, abilities and spells are tabs, and the dice tray stays at the bottom of the screen --- */
+.area-tray { position: sticky; bottom: calc(-8px - env(safe-area-inset-bottom)); z-index: 10; }
+.tab-panel { min-width: 0; }
+@media (max-width: 760px) {
+  .tavern .check-list button { min-height: var(--tap); }
+  .head-main { grid-template-columns: auto minmax(0, 1fr); }
+  .ability-blocks { column-count: 1; }
+}
+
+/* --- iPad portrait and up: every part has its own place and the sheet fills exactly one screen --- */
+@media (min-width: 761px) {
+  .sheet.tavern {
+    display: grid; height: 100vh; height: 100dvh; overflow: hidden; gap: 12px;
+    padding: calc(12px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1.1fr) minmax(0, 1fr) auto;
+    grid-template-areas: "head head" "abil act" "abil spells" "rest tray";
+  }
+  .area-head { grid-area: head; min-width: 0; }
+  .area-abil { grid-area: abil; min-height: 0; overflow: auto; }
+  .area-act { grid-area: act; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+  .area-act .tab-panel { min-height: 0; overflow: auto; }
+  .area-spells { grid-area: spells; min-height: 0; overflow: auto; }
+  .area-rest { grid-area: rest; min-width: 0; }
+  .area-tray { grid-area: tray; position: static; min-width: 0; }
+  .area-rest > .card, .area-tray > .dice-panel { height: 100%; }
+}
+/* --- iPad landscape and computers: three columns, abilities left, the character and the fight in the middle, magic right --- */
+@media (min-width: 1000px) and (orientation: landscape) {
+  .sheet.tavern {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "abil head spells" "abil act spells" "rest act tray";
+  }
+  /* The middle column is narrow: the damage and heal controls get a full row under the flask and the numbers. */
+  .head-main { grid-template-areas: "flask vitals" "inputs inputs"; }
+  .hp-control { flex-wrap: nowrap; }
+  .hp-control input { width: 4.5rem; flex: none; }
+  .hp-control button, .hp-control button.big { min-width: 0; flex: 1 1 auto; padding: 0 0.55rem; white-space: nowrap; }
+  /* All six abilities with every skill must fit the column next to the rest bar; each row stays a full-width target. */
+  .check-list button { min-height: 28px; }
+  .ability { min-height: 36px; }
+}
+
 .note { display: grid; gap: 0.5rem; }
 .rules-text { white-space: pre-line; }
-/* The dice panel is docked at the bottom of the sheet (53px high when closed); messages stand just above it, not over it. */
+/* On a phone the dice tray is docked at the bottom; messages stand just above it, not over it. */
 body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bottom)); }
-@media (max-width: 900px) {
-  .sheet-body { grid-template-columns: minmax(0, 1fr); padding: 0.5rem; }
-}
 .attack-list, .resource-list, .spell-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 0.4rem; }
 .attack { display: grid; grid-template-columns: minmax(8rem, 1fr) auto auto; gap: 0.4rem; align-items: center; }
 .attack > .muted { grid-column: 1 / -1; font-size: 0.85rem; }
@@ -81,9 +209,6 @@ body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bo
 .columns { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem; }
 .columns dt { color: var(--muted); font-size: 0.85rem; }
 .columns dd { margin: 0; font-weight: 700; }
-.slot-row { gap: 0.3rem; }
-.slot { min-width: var(--tap); padding: 0; border-radius: 50%; border: 2px solid var(--accent); background: var(--accent-soft); }
-.slot.used { background: transparent; border-color: var(--border); border-style: dashed; }
 .spell-row { display: flex; gap: 0.5rem; align-items: flex-start; }
 .spell-row details { flex: 1; }
 .spell-row summary { min-height: var(--tap); display: flex; align-items: center; gap: 0.4rem; cursor: pointer; flex-wrap: wrap; }

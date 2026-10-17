@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/i18n';
 import { useAppData } from '../data';
 import { abilityName, formatMod, plainParagraphs } from '../format';
 import type { ReadySession } from './session';
+import { SpellSlots } from './SpellSlots';
 import { addSpell, MAGIC_INITIATE_ABILITIES, MAGIC_INITIATE_LISTS, removeSpell, setPrepared, type SpellEntry } from './spell-logic';
 
 type Indexed = { entry: SpellEntry; index: number };
@@ -141,7 +142,7 @@ function AddFeatSpell({ onAdd }: { onAdd: (entry: SpellEntry) => void }) {
   );
 }
 
-/** Spec §7: casting ability, spell attack and save DC per class, prepared spells against the class table, spells from feats. */
+/** Spec §7: the spell slots, then casting ability, spell attack and save DC per class, prepared spells against the class table, spells from feats. */
 export function SpellsTab({ session }: { session: ReadySession }) {
   const { character, sheet, commit } = session;
   const { registry } = useAppData();
@@ -155,6 +156,7 @@ export function SpellsTab({ session }: { session: ReadySession }) {
   const remove = (index: number) => setSpells(removeSpell(spells, index));
   return (
     <div className="spells-tab">
+      <SpellSlots session={session} />
       {sheet.spellcasting.classes.length === 0 && <p className="muted">{t('spells.noCaster')}</p>}
       {sheet.spellcasting.classes.map((c) => {
         const own = indexed.filter(({ entry }) => entry.classId === c.classId && !entry.ability);
