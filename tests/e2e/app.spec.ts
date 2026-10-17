@@ -81,19 +81,20 @@ test('imports an exported character as a copy', async ({ page, browserName }) =>
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   const path = await (await download).path();
-  await page.getByRole('link', { name: 'Settings' }).click();
+  // Import sits next to New character on the list.
   await page.getByTestId('import-input').setInputFiles(path);
   const dialog = page.getByRole('dialog', { name: 'Import file' });
   await expect(dialog.getByText('Already on this device')).toBeVisible();
   await dialog.getByRole('button', { name: 'Import' }).click();
   await expect(page.getByText('Imported: 0 new, 0 replaced, 1 copies, 0 content item(s).')).toBeVisible();
-  await page.getByRole('link', { name: 'Back' }).click();
   await expect(page.getByRole('link', { name: /Kael/ })).toHaveCount(2);
 });
 
 test('reports an invalid import file', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: 'Settings' }).click();
+  // The list has an import input too; wait until Settings has replaced it.
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
   await page.getByTestId('import-input').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
   await expect(page.getByText('This file is not an export of this app.')).toBeVisible();
 });

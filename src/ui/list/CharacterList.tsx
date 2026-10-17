@@ -8,6 +8,7 @@ import { Dialog } from '../components/Dialog';
 import { useToast } from '../components/Toast';
 import { useAppData } from '../data';
 import { classSummary } from '../format';
+import { ImportButton } from '../ImportButton';
 import { hrefFor } from '../router';
 import { useExport } from '../use-export';
 import './list.css';
@@ -82,7 +83,8 @@ export function CharacterList() {
       <p>
         <a className="button primary" href={hrefFor({ name: 'new' })}>
           {t('list.new')}
-        </a>
+        </a>{' '}
+        <ImportButton onImported={() => void reload()} />
       </p>
       {loaded.characters.length === 0 && loaded.broken.length === 0 && <p className="muted">{t('list.empty')}</p>}
       <ul className="card-list">

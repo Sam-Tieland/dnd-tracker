@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { loadBuiltinContent } from '../../content/load';
+import { createRegistry } from '../../content/registry';
 import { kael } from '../../rules/testing/fixtures';
 import { loadCharacters, saveCharacter } from '../../storage/characters';
+import { buildCharacterExport, serializeExport } from '../../storage/export';
 import { DEFAULT_SETTINGS, saveSettings } from '../../storage/settings';
 import { renderApp, testDb } from '../testing/render';
 
@@ -12,6 +15,20 @@ describe('character list', () => {
     renderApp('#/');
     expect(await screen.findByText('No characters yet.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'New character' }).getAttribute('href')).toBe('#/new');
+  });
+
+  it('imports a character from the list and shows it right away', async () => {
+    const db = testDb();
+    renderApp('#/', db);
+    const user = userEvent.setup();
+    expect(await screen.findByText('No characters yet.')).toBeTruthy();
+    const registry = createRegistry(loadBuiltinContent());
+    const text = serializeExport(buildCharacterExport({ ...kael(), id: 'mira', name: 'Mira' }, registry, [], '2026-10-17T10:00:00.000Z'));
+    await user.upload(screen.getByTestId('import-input'), new File([text], 'mira.json', { type: 'application/json' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Import file' });
+    await user.click(within(dialog).getByRole('button', { name: 'Import' }));
+    expect(await screen.findByRole('link', { name: /Mira/ })).toBeTruthy();
+    expect((await loadCharacters(db)).characters.map((c) => c.name)).toEqual(['Mira']);
   });
 
   it('shows each character with classes and level, linking to its sheet', async () => {
