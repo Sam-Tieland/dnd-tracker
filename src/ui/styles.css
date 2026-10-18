@@ -169,6 +169,7 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
   transition: opacity 200ms ease, transform 300ms var(--ease-out);
   @starting-style { opacity: 0; transform: translateY(12px); }
 }
+.toast.toast-leaving { opacity: 0; transition: opacity 150ms ease-out; }
 .toast button { background: transparent; color: inherit; border-color: transparent; }
 .toast-error { background: var(--danger); color: #fff3e0; }
 .error-box { border: 2px solid var(--danger); border-radius: 4px; padding: 1rem; background: var(--parchment); color: var(--text); }

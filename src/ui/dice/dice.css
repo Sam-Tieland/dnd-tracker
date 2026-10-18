@@ -1,5 +1,9 @@
 .dice-panel { position: sticky; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding: 0.25rem 1rem calc(0.25rem + env(safe-area-inset-bottom)); box-shadow: 0 -6px 20px rgb(0 0 0 / 6%); }
 .dice-latest { width: 100%; justify-content: flex-start; border: none; background: transparent; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* The bar spans the screen, so it gives only a hair when pressed instead of the buttons' 0.97. */
+@media (prefers-reduced-motion: no-preference) {
+  .dice-latest:not(:disabled):active { transform: scale(0.99); }
+}
 .dice-result { display: inline-flex; align-items: baseline; gap: 0.4rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .dice-latest strong { font-family: var(--font-display); font-size: 1.5rem; line-height: 1; font-variant-numeric: tabular-nums; }
 /* A new roll rises into place, so a repeated total still reads as a new roll. The result is keyed per roll, so this plays on every roll. */
