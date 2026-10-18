@@ -176,6 +176,8 @@ export function shortRest(character: Character, sheet: DerivedSheet, options: Sh
     pactSlotsUsed: 0,
     hpCurrent: Math.min(sheet.hp.max, sheet.hp.current + regained),
     deathSaves: noDeathSaves(),
+    // Ranger Tireless: a Short Rest also lowers Exhaustion by 1.
+    exhaustion: sheet.flags.includes('exhaustion-down-on-short-rest') ? Math.max(0, character.state.exhaustion - 1) : character.state.exhaustion,
   });
 }
 

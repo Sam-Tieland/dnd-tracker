@@ -611,3 +611,40 @@ describe('deriveSheet: values for the screens', () => {
     expect(derive(kael({ inventory: [] })).bonusParts.some((p) => p.source === 'Defense')).toBe(false);
   });
 });
+
+describe('deriveSheet: limited uses and narrow bonuses', () => {
+  const resource = (sheet: ReturnType<typeof derive>, key: string) => sheet.resources.find((r) => r.key === key);
+
+  it('Archery adds +2 to Ranged weapons only', () => {
+    const archer = (featId?: string) =>
+      derive(makeCharacter({
+        choices: { levels: [level('fighter', { featId })] },
+        inventory: [item('bow', 'srd:weapon:longbow'), item('knife', 'srd:weapon:dagger')],
+      }));
+    const plain = archer();
+    const trained = archer('srd:feat:archery');
+    const toHit = (sheet: ReturnType<typeof derive>, id: string) => sheet.attacks.find((a) => a.id === id)?.toHit ?? NaN;
+    expect(toHit(trained, 'bow') - toHit(plain, 'bow')).toBe(2);
+    expect(toHit(trained, 'knife')).toBe(toHit(plain, 'knife'));
+  });
+
+  it('species traits that start at a character level count from that level', () => {
+    const elf = (count: number) => derive(makeCharacter({ choices: { speciesId: 'srd:species:elf', levels: levels('wizard', count) } }));
+    expect(resource(elf(2), 'elven-lineage-3')).toBeUndefined();
+    expect(resource(elf(3), 'elven-lineage-3')?.max).toBe(1);
+    expect(resource(elf(4), 'elven-lineage-5')).toBeUndefined();
+    expect(resource(elf(5), 'elven-lineage-5')?.max).toBe(1);
+    const goliath = (count: number) => derive(makeCharacter({ choices: { speciesId: 'srd:species:goliath', levels: levels('fighter', count) } }));
+    expect(resource(goliath(4), 'large-form')).toBeUndefined();
+    expect(resource(goliath(5), 'large-form')).toMatchObject({ max: 1, recharge: 'long' });
+  });
+
+  it('class features get their uses: Mystic Arcanum grows, Stroke of Luck comes back on a Short Rest', () => {
+    expect(resource(derive(makeCharacter({ choices: { levels: levels('warlock', 13) } })), 'mystic-arcanum')?.max).toBe(2);
+    expect(resource(derive(makeCharacter({ choices: { levels: levels('warlock', 17) } })), 'mystic-arcanum')?.max).toBe(4);
+    expect(resource(derive(makeCharacter({ choices: { levels: levels('rogue', 20) } })), 'stroke-of-luck')).toMatchObject({ max: 1, recharge: 'short' });
+    expect(resource(derive(makeCharacter({ choices: { levels: levels('cleric', 10) } })), 'divine-intervention')?.max).toBe(1);
+    const ranger = derive(makeCharacter({ choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 }, levels: levels('ranger', 14) } }));
+    expect([resource(ranger, 'tireless')?.max, resource(ranger, 'natures-veil')?.max]).toEqual([3, 3]);
+  });
+});

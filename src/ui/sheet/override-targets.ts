@@ -18,6 +18,7 @@ const FIXED: TargetOption[] = [
   { value: 'spellAttack', label: 'Spell Attack' },
   { value: 'spellDC', label: 'Spell Save DC' },
   { value: 'attack', label: 'Attack rolls' },
+  { value: 'attack:ranged-weapons', label: 'Attack rolls (Ranged weapons)' },
   { value: 'damage', label: 'Damage rolls' },
 ];
 

@@ -1,6 +1,8 @@
 import type { Effect, Formula } from '../schema';
 
 const column = (cls: string, key: string): Formula => ({ column: { classId: `srd:class:${cls}`, key } });
+/** One use from a character level on, such as the species traits that start at character level 5. */
+const fromLevel = (level: number): Formula => ({ atLevel: { classId: 'total', values: [[level, 1]] } });
 
 /** Mechanical effects per feature or feat id. Every entry is backed by a quote in overlays.test.ts (EVIDENCE). */
 export const EFFECTS: Record<string, Effect[]> = {
@@ -113,4 +115,64 @@ export const EFFECTS: Record<string, Effect[]> = {
   'srd:feature:human:resourceful': [{ kind: 'flag', flag: 'heroic-inspiration-on-long-rest' }],
   'srd:feat:alert': [{ kind: 'bonus', target: 'initiative', value: { pb: true } }],
   'srd:feat:defense': [{ kind: 'bonus', target: 'ac', value: 1, when: 'armored' }],
+  'srd:feature:barbarian:15:persistent-rage': [
+    { kind: 'resource', key: 'persistent-rage', name: 'Persistent Rage', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:cleric:10:divine-intervention': [
+    { kind: 'resource', key: 'divine-intervention', name: 'Divine Intervention', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:druid:5:wild-resurgence': [
+    { kind: 'resource', key: 'wild-resurgence', name: 'Wild Resurgence (spell slot)', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:druid:20:archdruid': [
+    { kind: 'resource', key: 'nature-magician', name: 'Nature Magician', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:oath-of-devotion:20:holy-nimbus': [
+    { kind: 'resource', key: 'holy-nimbus', name: 'Holy Nimbus', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:ranger:10:tireless': [
+    { kind: 'resource', key: 'tireless', name: 'Tireless', max: { mod: 'wis', min: 1 }, recharge: 'long' },
+    { kind: 'flag', flag: 'exhaustion-down-on-short-rest' },
+  ],
+  'srd:feature:ranger:14:natures-veil': [
+    { kind: 'resource', key: 'natures-veil', name: "Nature's Veil", max: { mod: 'wis', min: 1 }, recharge: 'long' },
+  ],
+  'srd:feature:rogue:20:stroke-of-luck': [
+    { kind: 'resource', key: 'stroke-of-luck', name: 'Stroke of Luck', max: 1, recharge: 'short' },
+  ],
+  'srd:feature:warlock:9:contact-patron': [
+    { kind: 'resource', key: 'contact-patron', name: 'Contact Patron', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:warlock:11:mystic-arcanum': [
+    { kind: 'resource', key: 'mystic-arcanum', name: 'Mystic Arcanum (each spell once)', max: { atLevel: { classId: 'srd:class:warlock', values: [[11, 1], [13, 2], [15, 3], [17, 4]] } }, recharge: 'long' },
+  ],
+  'srd:feature:wizard:20:signature-spells': [
+    { kind: 'resource', key: 'signature-spells', name: 'Signature Spells (each spell once)', max: 2, recharge: 'short' },
+  ],
+  'srd:feature:draconic-sorcery:14:dragon-wings': [
+    { kind: 'resource', key: 'dragon-wings', name: 'Dragon Wings', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:fiend-patron:14:hurl-through-hell': [
+    { kind: 'resource', key: 'hurl-through-hell', name: 'Hurl Through Hell', max: 1, recharge: 'long' },
+  ],
+  'srd:feature:dragonborn:draconic-flight': [
+    { kind: 'resource', key: 'draconic-flight', name: 'Draconic Flight', max: fromLevel(5), recharge: 'long' },
+  ],
+  'srd:feature:elf:elven-lineage': [
+    { kind: 'resource', key: 'elven-lineage-3', name: 'Elven Lineage (level 3 spell)', max: fromLevel(3), recharge: 'long' },
+    { kind: 'resource', key: 'elven-lineage-5', name: 'Elven Lineage (level 5 spell)', max: fromLevel(5), recharge: 'long' },
+  ],
+  'srd:feature:goliath:large-form': [
+    { kind: 'resource', key: 'large-form', name: 'Large Form', max: fromLevel(5), recharge: 'long' },
+  ],
+  'srd:feature:tiefling:fiendish-legacy': [
+    { kind: 'resource', key: 'fiendish-legacy-3', name: 'Fiendish Legacy (level 3 spell)', max: fromLevel(3), recharge: 'long' },
+    { kind: 'resource', key: 'fiendish-legacy-5', name: 'Fiendish Legacy (level 5 spell)', max: fromLevel(5), recharge: 'long' },
+  ],
+  'srd:feat:archery': [
+    { kind: 'bonus', target: 'attack:ranged-weapons', value: 2 },
+  ],
+  'srd:feat:magic-initiate': [
+    { kind: 'resource', key: 'magic-initiate', name: 'Magic Initiate (level 1 spell)', max: 1, recharge: 'long' },
+  ],
 };

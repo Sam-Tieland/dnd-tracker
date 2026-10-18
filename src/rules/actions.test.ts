@@ -318,3 +318,12 @@ describe('concentration', () => {
     expect(setConditions(blessing, ['stunned']).state.concentration).toBeUndefined();
   });
 });
+
+describe('Tireless', () => {
+  it('a Short Rest lowers Exhaustion by 1 for a level 10 Ranger, and not for others', () => {
+    const ranger = makeCharacter({ choices: { levels: levels('ranger', 10) }, state: { hpCurrent: 50, exhaustion: 2 } });
+    expect(shortRest(ranger, sheetOf(ranger), { rolls: [] }).state.exhaustion).toBe(1);
+    const fighter = makeCharacter({ choices: { levels: levels('fighter', 10) }, state: { hpCurrent: 50, exhaustion: 2 } });
+    expect(shortRest(fighter, sheetOf(fighter), { rolls: [] }).state.exhaustion).toBe(2);
+  });
+});

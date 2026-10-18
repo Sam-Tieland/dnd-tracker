@@ -16,7 +16,8 @@ export function evalFormula(formula: Formula, ctx: FormulaContext): number {
   if ('level' in formula) return (formula.level === 'total' ? ctx.totalLevel : ctx.classLevel(formula.level)) * (formula.times ?? 1);
   if ('column' in formula) return ctx.column(formula.column.classId, formula.column.key);
   if ('atLevel' in formula) {
-    const classLevel = ctx.classLevel(formula.atLevel.classId);
+    // `total` counts character levels, as `level: 'total'` does.
+    const classLevel = formula.atLevel.classId === 'total' ? ctx.totalLevel : ctx.classLevel(formula.atLevel.classId);
     let value = 0;
     for (const [minLevel, atValue] of formula.atLevel.values) if (classLevel >= minLevel) value = atValue;
     return value;

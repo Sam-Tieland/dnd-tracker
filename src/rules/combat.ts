@@ -85,6 +85,8 @@ export function withModifier(dice: string, modifier: number): string {
 }
 
 export const UNARMED_STRIKE_ID = 'unarmed-strike';
+/** Bonus target for attack rolls with Ranged weapons only (Archery). */
+export const RANGED_WEAPONS = 'attack:ranged-weapons';
 
 /**
  * SRD Rules Glossary "Unarmed Strike": everyone has it, Strength modifier + Proficiency Bonus to hit and 1 + Strength
@@ -135,7 +137,7 @@ export function computeWeaponAttacks(
       id: entry.id,
       kind: 'weapon',
       name: entry.customName ?? weapon.name,
-      toHit: mod + (proficient ? pb : 0) + bonus('attack') + bonus(`attack:${entry.id}`) - d20Penalty,
+      toHit: mod + (proficient ? pb : 0) + bonus('attack') + bonus(`attack:${entry.id}`) + (weapon.kind === 'ranged' ? bonus(RANGED_WEAPONS) : 0) - d20Penalty,
       damage: withModifier(weapon.damageDice, mod + bonus('damage') + bonus(`damage:${entry.id}`)),
       damageType: weapon.damageType,
       properties: weapon.properties,
