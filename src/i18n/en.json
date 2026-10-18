@@ -346,5 +346,11 @@
   "inventory.rename": "Name of {name}",
   "inventory.notes": "Notes",
   "inventory.notesFor": "Notes on {name}",
-  "spells.concentrateShort": "Conc."
+  "spells.concentrateShort": "Conc.",
+  "actions.manual": "track yourself",
+  "actions.beams": "{count} beams, each its own attack roll",
+  "undo.initiativeRefill": "Initiative: {list}",
+  "initiative.choice": "Use {name} for this Initiative?",
+  "initiative.use": "Use",
+  "undo.initiativeChoice": "{name} used"
 }

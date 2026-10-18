@@ -15,6 +15,8 @@ export interface ReadySession {
   sheet: DerivedSheet;
   /** Store a change. With an undo label it is a state change that shows "label · Undo" and can be undone (spec §8). */
   commit(next: Character, undoLabel?: string): void;
+  /** Like commit, but built from the character as it is when this runs, e.g. from a toast tapped later. */
+  apply(change: (current: Character, sheet: DerivedSheet) => Character, undoLabel?: string): void;
   undo(): void;
   canUndo: boolean;
 }
@@ -174,8 +176,16 @@ export function useCharacterSession(id: string): SessionState {
     [stack, store, undo],
   );
 
+  const apply = useCallback(
+    (change: (current: Character, sheet: DerivedSheet) => Character, undoLabel?: string) => {
+      if (disposed.current || !current.current) return;
+      commit(change(current.current, deriveSheet(current.current, registry)), undoLabel);
+    },
+    [commit, registry],
+  );
+
   const sheet = useMemo(() => (character ? deriveSheet(character, registry) : undefined), [character, registry]);
   if (load.status !== 'ready') return load;
   if (!character || !sheet) return { status: 'loading' };
-  return { status: 'ready', character, sheet, commit, undo, canUndo: undoCount > 0 };
+  return { status: 'ready', character, sheet, commit, apply, undo, canUndo: undoCount > 0 };
 }

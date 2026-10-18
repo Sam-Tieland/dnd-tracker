@@ -50,7 +50,7 @@ function speciesName(character: Character, sheet: DerivedSheet, registry: Conten
   return lineage.length > 0 ? `${species.name} (${lineage.map((f) => f.name).join(', ')})` : species.name;
 }
 
-const attackDamage = (attack: AttackResult): string => [attack.damage, attack.damageType].filter(Boolean).join(' ');
+const attackDamage = (attack: AttackResult): string => [attack.damage, attack.damageType, attack.beams ? `x${attack.beams} beams` : ''].filter(Boolean).join(' ');
 
 function attackBonus(attack: AttackResult): string {
   if (attack.toHit !== undefined) return formatMod(attack.toHit);

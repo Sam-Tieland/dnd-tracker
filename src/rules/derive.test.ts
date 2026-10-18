@@ -648,3 +648,34 @@ describe('deriveSheet: limited uses and narrow bonuses', () => {
     expect([resource(ranger, 'tireless')?.max, resource(ranger, 'natures-veil')?.max]).toEqual([3, 3]);
   });
 });
+
+describe('deriveSheet: lineages, beams and refills', () => {
+  const resource = (sheet: ReturnType<typeof derive>, key: string) => sheet.resources.find((r) => r.key === key);
+
+  it('Forest Gnome casts Speak with Animals Proficiency Bonus times; Rock Gnome has no uses', () => {
+    const gnome = (option: string) =>
+      derive(makeCharacter({ choices: { speciesId: 'srd:species:gnome', levels: levels('wizard', 5), featureOptions: [`srd:feature:gnome:gnomish-lineage:${option}`] } }));
+    expect(resource(gnome('forest-gnome'), 'speak-with-animals')).toMatchObject({ max: 3, recharge: 'long' });
+    expect(resource(gnome('rock-gnome'), 'speak-with-animals')).toBeUndefined();
+  });
+
+  it('Greater Divine Intervention is tracked by hand', () => {
+    expect(resource(derive(makeCharacter({ choices: { levels: levels('cleric', 20) } })), 'greater-divine-intervention')).toMatchObject({ max: 1, recharge: 'manual' });
+  });
+
+  it('Eldritch Blast gets beams instead of more dice, and Agonizing Blast adds Charisma', () => {
+    const warlock = (count: number, featureOptions: string[] = []) =>
+      derive(makeCharacter({
+        choices: {
+          baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 16 },
+          levels: levels('warlock', count),
+          featureOptions,
+          spells: [{ classId: 'srd:class:warlock', spellId: 'srd:spell:eldritch-blast', prepared: true }],
+        },
+      })).attacks.find((a) => a.name === 'Eldritch Blast');
+    expect(warlock(4)?.beams).toBeUndefined();
+    expect(warlock(5)).toMatchObject({ damage: '1d10', beams: 2 });
+    expect(warlock(17)?.beams).toBe(4);
+    expect(warlock(5, ['srd:feature:eldritch-invocation:agonizing-blast'])?.damage).toBe('1d10+3');
+  });
+});

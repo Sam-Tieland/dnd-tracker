@@ -148,6 +148,10 @@ const EVIDENCE: Record<string, string> = {
   'srd:feature:elf:elven-lineage': 'When you reach character levels 3 and 5',
   'srd:feature:goliath:large-form': 'Starting at character level 5',
   'srd:feature:tiefling:fiendish-legacy': 'When you reach character levels 3 and 5',
+  'srd:feature:bard:18:superior-inspiration': 'you regain expended uses of Bardic Inspiration until you have two',
+  'srd:feature:monk:15:perfect-focus': 'you regain expended Focus Points until you have 4',
+  'srd:feature:cleric:20:greater-divine-intervention': "you can't use Divine Intervention again until you finish 2d4 Long Rests",
+  'srd:feature:eldritch-invocation:agonizing-blast': "You can add your Charisma modifier to that spell's damage rolls",
   'srd:feat:archery': '+2 bonus to attack rolls you make with Ranged weapons',
   'srd:feat:magic-initiate': 'You can cast it once without a spell slot',
 };

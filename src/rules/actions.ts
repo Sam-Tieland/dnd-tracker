@@ -133,6 +133,57 @@ export function setResourceUsed(character: Character, key: string, used: number,
   return withState(character, { resourcesUsed: { ...character.state.resourcesUsed, [key]: Math.min(resource.max, whole(used)) } });
 }
 
+/** Uses spent after a refill: all back, or back up to `upTo` left. Never spends uses the character still has. */
+function refilledUsed(max: number, used: number, upTo: number | undefined): number {
+  const left = max - used;
+  const goal = upTo === undefined ? max : Math.min(upTo, max);
+  return left >= goal ? used : max - goal;
+}
+
+/**
+ * Rolling Initiative: the refills that need no choice (Superior Inspiration, Perfect Focus, Evergreen Wild Shape).
+ * Returns the character unchanged when nothing refills, plus the names of what did.
+ */
+export function applyInitiativeRefills(character: Character, sheet: DerivedSheet): { character: Character; refilled: string[] } {
+  const resourcesUsed = { ...character.state.resourcesUsed };
+  const refilled: string[] = [];
+  for (const refill of sheet.initiativeRefills) {
+    if (refill.costKey !== undefined) continue;
+    const resource = sheet.resources.find((r) => r.key === refill.key);
+    if (!resource) continue;
+    const used = refilledUsed(resource.max, resourcesUsed[resource.key] ?? resource.used, refill.upTo);
+    if (used === (resourcesUsed[resource.key] ?? resource.used)) continue;
+    resourcesUsed[resource.key] = used;
+    refilled.push(`${resource.name} ${resource.max - used}/${resource.max}`);
+  }
+  return refilled.length === 0 ? { character, refilled } : { character: withState(character, { resourcesUsed }), refilled };
+}
+
+/** Refills at Initiative that are a choice and still possible: the cost has a use left and the resource is not full. */
+export function initiativeChoices(sheet: DerivedSheet): Array<{ costKey: string; name: string }> {
+  return sheet.initiativeRefills.flatMap((refill) => {
+    const cost = sheet.resources.find((r) => r.key === refill.costKey);
+    const resource = sheet.resources.find((r) => r.key === refill.key);
+    if (!cost || !resource || cost.used >= cost.max) return [];
+    return refilledUsed(resource.max, resource.used, refill.upTo) === resource.used ? [] : [{ costKey: cost.key, name: cost.name }];
+  });
+}
+
+/** Takes a refill that costs a use (Persistent Rage: all Rage back; Uncanny Metabolism: all Focus Points back). */
+export function takeInitiativeRefill(character: Character, sheet: DerivedSheet, costKey: string): Character {
+  const refill = sheet.initiativeRefills.find((r) => r.costKey === costKey);
+  const cost = sheet.resources.find((r) => r.key === costKey);
+  const resource = sheet.resources.find((r) => r.key === refill?.key);
+  if (!refill || !cost || !resource || cost.used >= cost.max) return character;
+  return withState(character, {
+    resourcesUsed: {
+      ...character.state.resourcesUsed,
+      [resource.key]: refilledUsed(resource.max, resource.used, refill.upTo),
+      [cost.key]: cost.used + 1,
+    },
+  });
+}
+
 /** SRD "Short Rest" and "Long Rest": you need at least 1 Hit Point to start one. */
 export function canRest(sheet: DerivedSheet): boolean {
   return sheet.hp.current >= 1;
@@ -189,7 +240,8 @@ export function longRest(character: Character, sheet: DerivedSheet): Character {
     hitDiceSpent: {},
     slotsUsed: {},
     pactSlotsUsed: 0,
-    resourcesUsed: {},
+    // A resource the player restores by hand (Greater Divine Intervention) stays spent.
+    resourcesUsed: Object.fromEntries(sheet.resources.filter((r) => r.recharge === 'manual' && r.used > 0).map((r) => [r.key, r.used])),
     deathSaves: noDeathSaves(),
     exhaustion: Math.max(0, character.state.exhaustion - 1),
     heroicInspiration: sheet.flags.includes('heroic-inspiration-on-long-rest') || character.state.heroicInspiration,

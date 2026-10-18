@@ -85,6 +85,8 @@ export interface AttackResult {
   properties: string[];
   mastery?: string;
   proficient: boolean;
+  /** Eldritch Blast: separate attack rolls, each with this damage. */
+  beams?: number;
 }
 export interface CasterStats {
   classId: string;
@@ -111,9 +113,17 @@ export interface ResourceResult {
   name: string;
   max: number;
   used: number;
-  recharge: 'short' | 'long';
+  recharge: 'short' | 'long' | 'manual';
   shortRestRegain: number;
   pool: boolean;
+}
+
+/** A resource that refills when you roll Initiative; `costKey` makes it a choice that spends that resource. */
+export interface InitiativeRefill {
+  key: string;
+  upTo?: number;
+  costKey?: string;
+  source: string;
 }
 
 export interface DerivedSheet {
@@ -138,6 +148,7 @@ export interface DerivedSheet {
   armorTraining: ArmorTraining[];
   weaponProficiencies: WeaponProficiency[];
   flags: string[];
+  initiativeRefills: InitiativeRefill[];
   bonusParts: BonusPart[];
   warnings: Warning[];
 }

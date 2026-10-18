@@ -2,8 +2,8 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { CONDITIONS } from '../../content/constants';
 import { useI18n } from '../../i18n/i18n';
 import {
-  applyDamage, applyHealing, canRest, concentrationDC, lifeState, recordDeathSave, setConcentration, setConditions, setDeathSaves,
-  setExhaustion, setHeroicInspiration, setTempHp,
+  applyDamage, applyHealing, applyInitiativeRefills, canRest, concentrationDC, initiativeChoices, lifeState, recordDeathSave, setConcentration, setConditions, setDeathSaves,
+  setExhaustion, setHeroicInspiration, setTempHp, takeInitiativeRefill,
 } from '../../rules/actions';
 import { useToast } from '../components/Toast';
 import { WarningList } from '../components/WarningList';
@@ -318,6 +318,25 @@ export function TopBar({ session }: { session: ReadySession }) {
   const { registry } = useAppData();
   const dcs = [...new Set(sheet.spellcasting.classes.map((c) => c.dc))];
   const [storyOpen, setStoryOpen] = useState(false);
+  const toast = useToast();
+  // Rolling Initiative refills what needs no choice, then offers a refill that costs a use (Persistent Rage).
+  const rollInitiative = async () => {
+    const result = await dice.rollD20('Initiative', sheet.initiative);
+    if (!result) return;
+    const label = refillLabel();
+    if (label) session.apply((current, now) => applyInitiativeRefills(current, now).character, label);
+    const choice = initiativeChoices(sheet)[0];
+    if (choice) {
+      toast({
+        message: t('initiative.choice', { name: choice.name }),
+        action: { label: t('initiative.use'), run: () => session.apply((current, now) => takeInitiativeRefill(current, now, choice.costKey), t('undo.initiativeChoice', { name: choice.name })) },
+      });
+    }
+  };
+  const refillLabel = () => {
+    const { refilled } = applyInitiativeRefills(character, sheet);
+    return refilled.length > 0 ? t('undo.initiativeRefill', { list: refilled.join(', ') }) : undefined;
+  };
   // The last damage taken while concentrating, until the save is rolled or Concentration ends.
   const [damage, setDamage] = useState<number>();
   const { speciesId, backgroundId } = character.choices;
@@ -363,7 +382,7 @@ export function TopBar({ session }: { session: ReadySession }) {
             <span>AC</span>
             <strong data-testid="ac">{sheet.ac.value}</strong>
           </div>
-          <button type="button" className="stat" onClick={() => dice.rollD20('Initiative', sheet.initiative)}>
+          <button type="button" className="stat" onClick={rollInitiative}>
             <span>Initiative</span>{' '}
             <strong>{formatMod(sheet.initiative)}</strong>
           </button>

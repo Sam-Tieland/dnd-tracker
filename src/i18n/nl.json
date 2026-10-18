@@ -346,5 +346,11 @@
   "inventory.rename": "Naam van {name}",
   "inventory.notes": "Notities",
   "inventory.notesFor": "Notities bij {name}",
-  "spells.concentrateShort": "Conc."
+  "spells.concentrateShort": "Conc.",
+  "actions.manual": "zelf bijhouden",
+  "actions.beams": "{count} stralen, elk een eigen aanvalsworp",
+  "undo.initiativeRefill": "Initiative: {list}",
+  "initiative.choice": "{name} gebruiken bij deze Initiative?",
+  "initiative.use": "Gebruiken",
+  "undo.initiativeChoice": "{name} gebruikt"
 }

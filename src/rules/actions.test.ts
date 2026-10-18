@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Character } from '../model/character';
 import {
-  applyDamage, applyHealing, canRest, concentrationDC, lifeState, longRest, recordDeathSave, setConditions, setDeathSaves, setExhaustion,
-  setConcentration, setHeroicInspiration, setPactSlotsUsed, setResourceUsed, setSlotsUsed, setTempHp, shortRest, syncHitPoints,
+  applyDamage, applyHealing, applyInitiativeRefills, canRest, concentrationDC, initiativeChoices, lifeState, longRest, recordDeathSave, setConditions, setDeathSaves, setExhaustion,
+  setConcentration, setHeroicInspiration, setPactSlotsUsed, setResourceUsed, setSlotsUsed, setTempHp, shortRest, syncHitPoints, takeInitiativeRefill,
 } from './actions';
 import { deriveSheet } from './derive';
 import { readVendor } from '../../scripts/convert-srd/vendor';
@@ -325,5 +325,30 @@ describe('Tireless', () => {
     expect(shortRest(ranger, sheetOf(ranger), { rolls: [] }).state.exhaustion).toBe(1);
     const fighter = makeCharacter({ choices: { levels: levels('fighter', 10) }, state: { hpCurrent: 50, exhaustion: 2 } });
     expect(shortRest(fighter, sheetOf(fighter), { rolls: [] }).state.exhaustion).toBe(2);
+  });
+});
+
+describe('rolling Initiative', () => {
+  it('Superior Inspiration brings Bardic Inspiration back up to two, never down', () => {
+    const bard = (used: number) => makeCharacter({ choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 18 }, levels: levels('bard', 18) }, state: { hpCurrent: 80, resourcesUsed: { 'bardic-inspiration': used } } });
+    const empty = bard(4);
+    const { character, refilled } = applyInitiativeRefills(empty, sheetOf(empty));
+    expect(character.state.resourcesUsed['bardic-inspiration']).toBe(2);
+    expect(refilled).toEqual(['Bardic Inspiration 2/4']);
+    const full = bard(1);
+    expect(applyInitiativeRefills(full, sheetOf(full))).toEqual({ character: full, refilled: [] });
+  });
+
+  it('Persistent Rage is a choice that gives all Rage back once per Long Rest', () => {
+    const raging = makeCharacter({ choices: { levels: levels('barbarian', 15) }, state: { hpCurrent: 100, resourcesUsed: { rage: 3 } } });
+    expect(initiativeChoices(sheetOf(raging))).toEqual([{ costKey: 'persistent-rage', name: 'Persistent Rage' }]);
+    const after = takeInitiativeRefill(raging, sheetOf(raging), 'persistent-rage');
+    expect(after.state.resourcesUsed).toMatchObject({ rage: 0, 'persistent-rage': 1 });
+    expect(initiativeChoices(sheetOf({ ...after, state: { ...after.state, resourcesUsed: { ...after.state.resourcesUsed, rage: 2 } } }))).toEqual([]);
+  });
+
+  it('a Long Rest leaves a resource that is tracked by hand spent', () => {
+    const cleric = makeCharacter({ choices: { levels: levels('cleric', 20) }, state: { hpCurrent: 100, resourcesUsed: { 'greater-divine-intervention': 1, 'divine-intervention': 1 } } });
+    expect(longRest(cleric, sheetOf(cleric)).state.resourcesUsed).toEqual({ 'greater-divine-intervention': 1 });
   });
 });

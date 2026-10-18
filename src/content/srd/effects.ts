@@ -50,6 +50,7 @@ export const EFFECTS: Record<string, Effect[]> = {
   ],
   'srd:feature:monk:2:uncanny-metabolism': [
     { kind: 'resource', key: 'uncanny-metabolism', name: 'Uncanny Metabolism', max: 1, recharge: 'long' },
+    { kind: 'initiativeRefill', key: 'focus-points', costKey: 'uncanny-metabolism' },
   ],
   'srd:feature:monk:20:body-and-mind': [
     { kind: 'bonus', target: 'ability:dex', value: 4 },
@@ -117,6 +118,7 @@ export const EFFECTS: Record<string, Effect[]> = {
   'srd:feat:defense': [{ kind: 'bonus', target: 'ac', value: 1, when: 'armored' }],
   'srd:feature:barbarian:15:persistent-rage': [
     { kind: 'resource', key: 'persistent-rage', name: 'Persistent Rage', max: 1, recharge: 'long' },
+    { kind: 'initiativeRefill', key: 'rage', costKey: 'persistent-rage' },
   ],
   'srd:feature:cleric:10:divine-intervention': [
     { kind: 'resource', key: 'divine-intervention', name: 'Divine Intervention', max: 1, recharge: 'long' },
@@ -126,6 +128,8 @@ export const EFFECTS: Record<string, Effect[]> = {
   ],
   'srd:feature:druid:20:archdruid': [
     { kind: 'resource', key: 'nature-magician', name: 'Nature Magician', max: 1, recharge: 'long' },
+    // Evergreen Wild Shape: with no uses left, rolling Initiative gives one back.
+    { kind: 'initiativeRefill', key: 'wild-shape', upTo: 1 },
   ],
   'srd:feature:oath-of-devotion:20:holy-nimbus': [
     { kind: 'resource', key: 'holy-nimbus', name: 'Holy Nimbus', max: 1, recharge: 'long' },
@@ -169,6 +173,12 @@ export const EFFECTS: Record<string, Effect[]> = {
     { kind: 'resource', key: 'fiendish-legacy-3', name: 'Fiendish Legacy (level 3 spell)', max: fromLevel(3), recharge: 'long' },
     { kind: 'resource', key: 'fiendish-legacy-5', name: 'Fiendish Legacy (level 5 spell)', max: fromLevel(5), recharge: 'long' },
   ],
+  'srd:feature:bard:18:superior-inspiration': [{ kind: 'initiativeRefill', key: 'bardic-inspiration', upTo: 2 }],
+  'srd:feature:monk:15:perfect-focus': [{ kind: 'initiativeRefill', key: 'focus-points', upTo: 4 }],
+  'srd:feature:cleric:20:greater-divine-intervention': [
+    { kind: 'resource', key: 'greater-divine-intervention', name: 'Greater Divine Intervention (Wish, 2d4 Long Rests)', max: 1, recharge: 'manual' },
+  ],
+  'srd:feature:eldritch-invocation:agonizing-blast': [{ kind: 'bonus', target: 'damage:warlock-cantrips', value: { mod: 'cha' } }],
   'srd:feat:archery': [
     { kind: 'bonus', target: 'attack:ranged-weapons', value: 2 },
   ],

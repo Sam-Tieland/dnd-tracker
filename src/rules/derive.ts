@@ -60,7 +60,7 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   const attacks = [
     ...computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
     computeUnarmedStrike(abilities, pb, bonus, d20Penalty, martialArtsDie),
-    ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings, stats),
+    ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings, stats, bonus),
   ];
   multiclassWarnings(classLevels, registry, abilities, warnings);
 
@@ -85,6 +85,9 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
     armorTraining: [...prof.armor],
     weaponProficiencies: [...prof.weapons],
     flags: effects.flatMap((e) => (e.kind === 'flag' ? [e.flag] : [])),
+    initiativeRefills: features.flatMap((f) =>
+      f.effects.flatMap((e) => (e.kind === 'initiativeRefill' ? [{ key: e.key, upTo: e.upTo, costKey: e.costKey, source: f.name }] : [])),
+    ),
     bonusParts,
     warnings,
   };

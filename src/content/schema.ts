@@ -41,7 +41,8 @@ export const WeaponProficiencySchema = z.enum(['simple', 'martial', 'martial-lig
 export type WeaponProficiency = z.infer<typeof WeaponProficiencySchema>;
 export const ProgressionSchema = z.enum(['full', 'half', 'third', 'pact']);
 export type Progression = z.infer<typeof ProgressionSchema>;
-const RechargeSchema = z.enum(['short', 'long']);
+/** `manual`: no rest restores it, the player does (Greater Divine Intervention's 2d4 Long Rests). */
+const RechargeSchema = z.enum(['short', 'long', 'manual']);
 
 const PROFICIENCY_TARGET = new RegExp(
   `^(skill:(${SKILL_ALT})|save:(${ABILITY_ALT})|armor:(${ArmorTrainingSchema.options.join('|')})|(weapon|tool):[a-z0-9-]+)$`,
@@ -75,6 +76,11 @@ export const EffectSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({ kind: z.literal('halfProficiency') }),
   z.strictObject({ kind: z.literal('flag'), flag: z.enum(['heroic-inspiration-on-long-rest', 'exhaustion-down-on-short-rest']) }),
+  /**
+   * When you roll Initiative, regain uses of resource `key`: up to `upTo` left (all when absent). With `costKey` the
+   * refill is a choice that spends one use of that resource (Persistent Rage, Uncanny Metabolism).
+   */
+  z.strictObject({ kind: z.literal('initiativeRefill'), key: z.string(), upTo: z.number().int().min(1).optional(), costKey: z.string().optional() }),
   /** Extra cantrips known for one class, on top of its Cantrips column (Thaumaturge, Magician). */
   z.strictObject({ kind: z.literal('extraCantrips'), classId: z.string(), count: z.number().int().min(1) }),
 ]);

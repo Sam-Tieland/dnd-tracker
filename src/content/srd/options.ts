@@ -4,6 +4,7 @@ import type { Effect, FeatureDef } from '../schema';
 const DIVINE_ORDER = 'srd:feature:cleric:1:divine-order';
 const PRIMAL_ORDER = 'srd:feature:druid:1:primal-order';
 const ELVEN_LINEAGE = 'srd:feature:elf:elven-lineage';
+const GNOMISH_LINEAGE = 'srd:feature:gnome:gnomish-lineage';
 
 const option = (parentId: string, name: string, text: string, effects: Effect[]): FeatureDef => ({
   id: `${parentId}:${slugify(name)}`,
@@ -47,6 +48,10 @@ export const OPTION_FEATURES: FeatureDef[] = [
     'You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Wizard spell list.',
     [],
   ),
+  option(GNOMISH_LINEAGE, 'Forest Gnome', 'You know the _Minor Illusion_ cantrip. You also always have the _Speak with Animals_ spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.', [
+    { kind: 'resource', key: 'speak-with-animals', name: 'Speak with Animals (Forest Gnome)', max: { pb: true }, recharge: 'long' },
+  ]),
+  option(GNOMISH_LINEAGE, 'Rock Gnome', 'You know the _Mending_ and _Prestidigitation_ cantrips.', []),
   option(ELVEN_LINEAGE, 'Wood Elf', 'Your Speed increases to 35 feet. You also know the Druidcraft cantrip.', [{ kind: 'bonus', target: 'speed', value: 5 }]),
 ];
 

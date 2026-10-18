@@ -24,6 +24,11 @@ export function ActionsTab({ session }: { session: ReadySession }) {
               <li key={`${a.id}-${index}`} className="attack">
                 <span className="attack-name">
                   {a.name}
+                  {a.beams && (
+                    <span className="muted" title={t('actions.beams', { count: a.beams })}>
+                      {' '}×{a.beams}
+                    </span>
+                  )}
                   {!a.proficient && <span className="muted"> ({t('actions.notProficient')})</span>}
                 </span>
                 {a.toHit !== undefined ? (
@@ -64,7 +69,7 @@ export function ActionsTab({ session }: { session: ReadySession }) {
               return (
                 <li key={r.key} className="row resource">
                   <span className="resource-name">
-                    {r.name} <span className="muted">({r.recharge === 'short' ? 'Short Rest' : 'Long Rest'})</span>
+                    {r.name} <span className="muted">({r.recharge === 'short' ? 'Short Rest' : r.recharge === 'long' ? 'Long Rest' : t('actions.manual')})</span>
                   </span>
                   <button type="button" aria-label={t('actions.use', { name: r.name })} disabled={left === 0} onClick={() => commit(setResourceUsed(character, r.key, r.used + 1, sheet), `${r.name} ${left - 1}/${r.max}`)}>
                     −

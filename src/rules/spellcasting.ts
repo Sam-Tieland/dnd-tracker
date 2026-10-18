@@ -3,6 +3,7 @@ import type { ContentRegistry } from '../content/registry';
 import type { Effect, Progression } from '../content/schema';
 import type { Character } from '../model/character';
 import type { BonusFn } from './bonuses';
+import { withModifier } from './combat';
 import { parseColumnNumber } from './formula';
 import type { AbilityResult, AttackResult, CasterStats, ClassLevel, SpellcastingResult, Warning } from './types';
 import { unknownContent, warnOnce } from './warnings';
@@ -126,7 +127,12 @@ export function computeSpellcasting(
   return { classes, slots, pact };
 }
 
-/** Damage cantrips the character knows, scaled at character levels 5, 11 and 17. */
+/** SRD Eldritch Blast, Cantrip Upgrade: "two beams at level 5, three beams at level 11, and four beams at level 17". */
+export const BEAM_CANTRIPS: ReadonlySet<string> = new Set(['srd:spell:eldritch-blast']);
+/** Bonus target for the damage of Warlock cantrips (Agonizing Blast). */
+export const WARLOCK_CANTRIP_DAMAGE = 'damage:warlock-cantrips';
+
+/** Damage cantrips the character knows, scaled at character levels 5, 11 and 17; Eldritch Blast gets beams instead. */
 export function computeCantripAttacks(
   character: Character,
   registry: ContentRegistry,
@@ -134,6 +140,7 @@ export function computeCantripAttacks(
   totalLevel: number,
   warnings: Warning[],
   stats: SpellStatsFn,
+  bonus: BonusFn = () => 0,
 ): AttackResult[] {
   const attacks: AttackResult[] = [];
   for (const known of character.choices.spells) {
@@ -147,7 +154,11 @@ export function computeCantripAttacks(
     // borrows another class's.
     const own = known.ability ? stats(known.ability) : spellcasting.classes.find((c) => c.classId === known.classId);
     if (!own) warnOnce(warnings, { code: 'cantrip-without-caster', detail: spell.id });
-    const tier = spell.cantrip.scales ? 1 + [5, 11, 17].filter((l) => totalLevel >= l).length : 1;
+    const steps = 1 + [5, 11, 17].filter((l) => totalLevel >= l).length;
+    const tier = spell.cantrip.scales ? steps : 1;
+    const beams = BEAM_CANTRIPS.has(spell.id) && steps > 1 ? steps : undefined;
+    // Agonizing Blast: the Charisma modifier on a Warlock cantrip's damage (the player picks which one; this adds it to each).
+    const extra = known.classId === 'srd:class:warlock' && !known.ability ? bonus(WARLOCK_CANTRIP_DAMAGE) : 0;
     const dice = /^(\d+)d(\d+)$/.exec(spell.cantrip.damageDice);
     attacks.push({
       id: `${spell.id}@${known.classId}`,
@@ -156,10 +167,11 @@ export function computeCantripAttacks(
       toHit: spell.cantrip.attackType === 'attack' ? own?.attack : undefined,
       saveDC: spell.cantrip.attackType === 'save' ? own?.dc : undefined,
       saveAbility: spell.cantrip.saveAbility,
-      damage: dice ? `${Number(dice[1]) * tier}d${dice[2]}` : spell.cantrip.damageDice,
+      damage: withModifier(dice ? `${Number(dice[1]) * tier}d${dice[2]}` : spell.cantrip.damageDice, extra),
       damageType: spell.cantrip.damageType,
       properties: [],
       proficient: true,
+      ...(beams ? { beams } : {}),
     });
   }
   return attacks;
