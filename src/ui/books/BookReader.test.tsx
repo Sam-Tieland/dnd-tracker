@@ -247,11 +247,18 @@ describe('BookReader', () => {
     await waitFor(() => expect(lastRender()?.pdfPage).toBe(1));
     expect(pageLabel()).toBe('pdf-blz. 1');
     expect(screen.getByText('Geen inhoudsopgave voor deze PDF')).toBeTruthy();
+    expect(screen.getByTestId('index-mismatch').textContent).toContain("Deze PDF heeft 200 pagina's; de inhoudsopgave verwacht 194.");
     await user.type(screen.getByRole('textbox', { name: 'Ga naar blz.' }), '150{Enter}');
     await waitFor(() => expect(lastRender()?.pdfPage).toBe(150));
     expect(pageLabel()).toBe('pdf-blz. 150');
     await user.type(screen.getByRole('textbox', { name: 'Ga naar blz.' }), '201{Enter}');
     expect(await screen.findByText('Pagina 201 staat niet in dit boek')).toBeTruthy();
+  });
+
+  it('shows no mismatch notice when the index fits or is missing', async () => {
+    renderApp('#/books/tce', await setup({ books: [['tce', 20]], index: tceIndex(SPREADS, 20) }));
+    await waitFor(() => expect(lastRender()?.pdfPage).toBe(1));
+    expect(screen.queryByTestId('index-mismatch')).toBeNull();
   });
 
   it('switches books from the top bar', async () => {

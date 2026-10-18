@@ -231,6 +231,8 @@ export function BookReader({ bookId: wanted, bookPage }: { bookId?: BookId; book
   const available: BookAvailability = Object.fromEntries(
     loaded.books.map((b) => [b.bookId, pageMapFits(loaded.index, b.bookId, b.pdfPages) ? 'ok' : 'mismatch']),
   );
+  // The index knows this book but was made for a PDF with another page count: say why the table of contents is off.
+  const indexedPages = indexBook ? undefined : loaded.index?.books.find((b) => b.bookId === meta.bookId)?.pdfPages;
   const showPanel = !narrow || panelOpen;
   const failed = doc && 'error' in doc && doc.bookId === bookId ? doc.error : undefined;
 
@@ -308,6 +310,11 @@ export function BookReader({ bookId: wanted, bookPage }: { bookId?: BookId; book
             </button>
           </span>
         </header>
+        {indexedPages !== undefined && (
+          <p className="book-notice" role="status" data-testid="index-mismatch">
+            {t('books.mismatch', { pdf: meta.pdfPages, expected: indexedPages })}
+          </p>
+        )}
         {notice && (
           <p className="book-notice" role="status">
             {notice}
