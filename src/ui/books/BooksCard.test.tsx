@@ -11,11 +11,18 @@ const pdfState = vi.hoisted(() => ({ pages: 194 }));
 vi.mock('./pdf', () => ({
   openPdf: async () => ({ pageCount: pdfState.pages, destroy: async () => undefined }),
 }));
-const saveState = vi.hoisted(() => ({ fail: undefined as Error | undefined }));
+const saveState = vi.hoisted(() => ({ fail: undefined as Error | undefined, failNextList: false }));
 vi.mock('../../storage/books', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../storage/books')>();
   return {
     ...actual,
+    listBooks: async (...args: Parameters<typeof actual.listBooks>) => {
+      if (saveState.failNextList) {
+        saveState.failNextList = false;
+        throw new Error('list failed');
+      }
+      return actual.listBooks(...args);
+    },
     saveBook: async (...args: Parameters<typeof actual.saveBook>) => {
       if (saveState.fail) throw saveState.fail;
       return actual.saveBook(...args);
@@ -49,6 +56,7 @@ const row = (bookId: 'tce' | 'xge' | 'phb-2024', name: string, pdfPages: number)
 beforeEach(() => {
   pdfState.pages = 194;
   saveState.fail = undefined;
+  saveState.failNextList = false;
 });
 
 describe('recognise', () => {
@@ -147,20 +155,16 @@ describe('BooksCard', () => {
     const user = userEvent.setup();
     const changed = vi.fn();
     window.addEventListener(BOOKS_CHANGED, changed);
-    const original = Object.getOwnPropertyDescriptor(navigator, 'storage');
-    Object.defineProperty(navigator, 'storage', {
-      configurable: true,
-      value: { persist: () => Promise.reject(new Error('nope')), estimate: () => Promise.reject(new Error('nope')) },
-    });
+    await user.upload(await screen.findByTestId('book-input'), pdfFile("Tasha's Cauldron of Everything.pdf"));
+    const dialog = await screen.findByRole('dialog');
+    saveState.failNextList = true; // the refresh after the save rejects
     try {
-      await user.upload(await screen.findByTestId('book-input'), pdfFile("Tasha's Cauldron of Everything.pdf"));
-      await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Save' }));
+      await user.click(within(dialog).getByRole('button', { name: 'Save' }));
       expect(await screen.findByText('Book saved.')).toBeTruthy();
       expect(changed).toHaveBeenCalled();
+      expect(screen.queryByText(/Saving the book failed/)).toBeNull();
       expect((await listBooks(db)).map((b) => b.bookId)).toEqual(['tce']);
     } finally {
-      if (original) Object.defineProperty(navigator, 'storage', original);
-      else delete (navigator as unknown as Record<string, unknown>).storage;
       window.removeEventListener(BOOKS_CHANGED, changed);
     }
   });
