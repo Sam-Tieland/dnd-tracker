@@ -119,6 +119,7 @@
   "dice.history": "Last rolls",
   "sheet.broken": "This character cannot be loaded: {error}",
   "sheet.edit": "Edit",
+  "sheet.portrait": "Portrait of {name}, open the story",
   "sheet.story": "Story",
   "story.title": "The story of {name}",
   "story.empty": "No story yet. Write down who your character is, where they come from and what drives them.",

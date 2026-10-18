@@ -38,6 +38,17 @@ export function StoryDialog({ session, onClose }: { session: ReadySession; onClo
           />
         </label>
         <div className="story-side">
+          {(character.details.portrait || character.details.factionSymbol) && (
+            <div className="story-pictures">
+              {character.details.portrait && <img className="story-portrait" src={character.details.portrait} alt={t('form.portrait')} />}
+              {character.details.factionSymbol && (
+                <figure className="story-faction">
+                  <img src={character.details.factionSymbol} alt={t('form.factionSymbol')} />
+                  {character.details.factionName && <figcaption>{character.details.factionName}</figcaption>}
+                </figure>
+              )}
+            </div>
+          )}
           {(['personality', 'appearance'] as const).map((field) => (
             <label key={field} className="field">
               {t(`form.${field}`)}

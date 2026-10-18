@@ -119,6 +119,7 @@
   "dice.history": "Laatste worpen",
   "sheet.broken": "Dit character kan niet worden geladen: {error}",
   "sheet.edit": "Bewerken",
+  "sheet.portrait": "Portret van {name}, open het verhaal",
   "sheet.story": "Verhaal",
   "story.title": "Het verhaal van {name}",
   "story.empty": "Nog geen verhaal. Schrijf op wie je character is, waar het vandaan komt en wat het drijft.",

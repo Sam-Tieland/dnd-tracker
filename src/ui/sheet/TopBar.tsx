@@ -243,6 +243,23 @@ function DiceSettings() {
 /** Hit point dice left per die size, "d8 2/3", as the Short Rest spends them. */
 const hitDiceText = (sheet: ReadySession['sheet']) => sheet.hitDice.map((hd) => `d${hd.die} ${hd.total - hd.spent}/${hd.total}`).join(' · ') || '–';
 
+/**
+ * The portrait in a round gold frame beside the name, with the faction symbol as a small seal on its rim; a tap opens
+ * the story, where both are shown large. Without any picture there is no medallion.
+ */
+function Medallion({ details, name, onOpen }: { details: ReadySession['character']['details']; name: string; onOpen: () => void }) {
+  const { t } = useI18n();
+  const main = details.portrait ?? details.factionSymbol;
+  if (!main) return null;
+  const seal = details.portrait ? details.factionSymbol : undefined;
+  return (
+    <button type="button" className="medallion" aria-label={t('sheet.portrait', { name })} onClick={onOpen}>
+      <img src={main} alt="" />
+      {seal && <img className="medallion-seal" src={seal} alt="" />}
+    </button>
+  );
+}
+
 /** Spec §8: name and classes, HP as the life flask with big buttons, and the numbers you call out at the table. */
 export function TopBar({ session }: { session: ReadySession }) {
   const { character, sheet } = session;
@@ -256,6 +273,7 @@ export function TopBar({ session }: { session: ReadySession }) {
         <a className="button" href={hrefFor({ name: 'list' })} aria-label={t('nav.back')}>
           ←
         </a>
+        <Medallion details={character.details} name={character.name || t('common.unnamed')} onOpen={() => setStoryOpen(true)} />
         <div className="identity">
           <h1>{character.name || t('common.unnamed')}</h1>
           <span className="muted">

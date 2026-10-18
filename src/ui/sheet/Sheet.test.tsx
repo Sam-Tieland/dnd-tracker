@@ -208,6 +208,28 @@ describe('sheet', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
+  it('shows the portrait with the faction seal beside the name and opens the story with both pictures', async () => {
+    const db = testDb();
+    const portrait = 'data:image/jpeg;base64,/9j/4AAQ';
+    const factionSymbol = 'data:image/png;base64,iVBORw0KGgo=';
+    await saveCharacter(db, { ...kael({ state: { hpCurrent: 40 } }), details: { portrait, factionSymbol, factionName: 'Night Guard' } });
+    renderApp('#/c/test', db);
+    await screen.findByTestId('hp');
+    const user = userEvent.setup();
+    const medallion = topBar().getByRole('button', { name: 'Portrait of Test, open the story' });
+    expect([...medallion.querySelectorAll('img')].map((img) => img.getAttribute('src'))).toEqual([portrait, factionSymbol]);
+    await user.click(medallion);
+    const story = within(screen.getByRole('dialog', { name: /^The story of / }));
+    expect(story.getByAltText('Character portrait').getAttribute('src')).toBe(portrait);
+    expect(story.getByAltText('Faction symbol').getAttribute('src')).toBe(factionSymbol);
+    expect(story.getByText('Night Guard')).toBeTruthy();
+  });
+
+  it('shows no medallion without a picture', async () => {
+    await openKael();
+    expect(topBar().queryByRole('button', { name: /^Portrait of/ })).toBeNull();
+  });
+
   describe('a forgotten dice setting (Ruling 15)', () => {
     it('shows an Advantage chip in the top bar that clears the mode', async () => {
       const { user } = await openKael();
