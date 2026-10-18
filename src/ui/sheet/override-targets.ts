@@ -1,6 +1,7 @@
 import { ABILITIES, SKILL_IDS } from '../../content/constants';
 import type { ContentRegistry } from '../../content/registry';
 import type { Character } from '../../model/character';
+import { UNARMED_STRIKE_ID } from '../../rules/combat';
 import { abilityName, titleCase } from '../format';
 
 export interface TargetOption {
@@ -31,6 +32,8 @@ export function overrideTargets(character: Character, registry: ContentRegistry)
       { value: `save:${a}`, label: `${abilityName(a)} save` },
     ]),
     ...SKILL_IDS.map((s) => ({ value: `skill:${s}`, label: titleCase(s) })),
+    { value: `attack:${UNARMED_STRIKE_ID}`, label: 'Attack (Unarmed Strike)' },
+    { value: `damage:${UNARMED_STRIKE_ID}`, label: 'Damage (Unarmed Strike)' },
     ...weapons.flatMap((w) => {
       const name = w.customName || registry.get(w.itemId ?? '')?.name || w.id;
       return [

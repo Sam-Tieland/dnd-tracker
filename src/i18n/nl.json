@@ -257,5 +257,22 @@
   "pdf.error.not-pdf": "Dit bestand is geen PDF.",
   "pdf.error.not-sheet": "Deze PDF is niet het invulbare 5E-characterblad.",
   "pdf.busy": "PDF maken…",
-  "pdf.shareRetry": "Delen werd geblokkeerd. Tik op Delen om de PDF te delen."
+  "pdf.shareRetry": "Delen werd geblokkeerd. Tik op Delen om de PDF te delen.",
+  "spells.alwaysPrepared": "Altijd voorbereid",
+  "spells.alwaysPreparedHelp": "Altijd voorbereid (telt niet mee, zoals Domain Spells)",
+  "spells.concentrate": "Concentreren op {name}",
+  "spells.concentrating": "Concentratie",
+  "concentration.label": "Concentratie",
+  "concentration.end": "Concentratie stoppen",
+  "concentration.save": "Con save DC {dc}",
+  "concentration.kept": "Concentratie gehouden ({total} tegen DC {dc})",
+  "undo.concentrationOn": "Concentratie op {name}",
+  "undo.concentrationOff": "Concentratie op {name} gestopt",
+  "undo.concentrationLost": "Concentratie verbroken: {name} ({total} tegen DC {dc})",
+  "sheet.xp": "{xp} XP",
+  "inventory.name": "Naam",
+  "inventory.rename": "Naam van {name}",
+  "inventory.notes": "Notities",
+  "inventory.notesFor": "Notities bij {name}",
+  "spells.concentrateShort": "Conc."
 }

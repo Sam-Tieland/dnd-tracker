@@ -1,4 +1,5 @@
 import { ABILITY_BY_NAME, type Ability } from '../content/constants';
+import type { Character } from '../model/character';
 import type { DerivedSheet } from '../rules/types';
 
 /** +3 / +0 / -1, as on a character sheet. */
@@ -18,6 +19,17 @@ export function titleCase(slug: string): string {
     .split('-')
     .map((word, i) => (i > 0 && word === 'of' ? word : word.charAt(0).toUpperCase() + word.slice(1)))
     .join(' ');
+}
+
+/** Armor and weapon training, tools and languages, as "Other Proficiencies & Languages" on the paper sheet. */
+export function proficiencyGroups(character: Character, sheet: DerivedSheet): Array<{ label: string; values: string[] }> {
+  const plain = (id: string) => titleCase(id.replace(/^.*:/, ''));
+  return [
+    { label: 'Armor', values: sheet.armorTraining.map(titleCase) },
+    { label: 'Weapons', values: sheet.weaponProficiencies.map(titleCase) },
+    { label: 'Tools', values: character.choices.toolProficiencies.map(plain) },
+    { label: 'Languages', values: character.choices.languages.map(plain) },
+  ].filter((group) => group.values.length > 0);
 }
 
 /** "Fighter 3 (Champion) / Wizard 2" */

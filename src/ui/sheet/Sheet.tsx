@@ -35,7 +35,7 @@ export function Sheet({ id }: { id: string }) {
       </main>
     );
   }
-  const abilitiesTab: SheetTab = { id: 'abilities', label: t('tab.abilities'), render: (s) => <AbilityColumn sheet={s.sheet} /> };
+  const abilitiesTab: SheetTab = { id: 'abilities', label: t('tab.abilities'), render: (s) => <AbilityColumn character={s.character} sheet={s.sheet} /> };
   // On a wide screen the spells have their own card, so they are not a tab as well.
   const tabs = narrow ? [abilitiesTab, ...sheetTabs(t)] : sheetTabs(t).filter((x) => x.id !== 'spells');
   const current = tabs.find((x) => x.id === tab) ?? tabs.find((x) => x.id !== 'abilities') ?? tabs[0];
@@ -49,7 +49,7 @@ export function Sheet({ id }: { id: string }) {
       {!narrow && (
         <aside className="area-abil card">
           <Section>
-            <AbilityColumn sheet={session.sheet} />
+            <AbilityColumn character={session.character} sheet={session.sheet} />
           </Section>
         </aside>
       )}

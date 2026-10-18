@@ -28,6 +28,10 @@
 .top-row { align-items: flex-start; }
 .top-row > .button, .top-row > button { min-width: 40px; min-height: 40px; padding: 0 0.6rem; }
 .identity .muted { font-style: italic; }
+.identity .origin { display: block; font-size: 0.85rem; }
+/* The spell held in Concentration, with the Con save after damage */
+.concentration { gap: 8px; padding: 4px 10px; border: 1px dashed var(--gold); border-radius: 8px; }
+.concentration strong { font-family: var(--font-display); font-weight: 400; color: var(--accent); }
 /* The portrait in a gold frame, the faction symbol as a seal on its rim */
 .top-row > .medallion { position: relative; flex: none; width: 56px; height: 56px; min-width: 0; padding: 0; border-radius: 50%; border: 3px solid var(--gold); background: var(--parchment); box-shadow: 0 2px 6px rgb(0 0 0 / 35%); }
 .medallion > img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
@@ -119,6 +123,10 @@ button.stat { border-radius: 6px; }
 .dot.on { background: var(--coin); border-color: #8a5f14; }
 .dot.double { box-shadow: 0 0 0 1.5px #f1e2bf, 0 0 0 3px #8a5f14; }
 .passive { margin: 4px 0 0; font-style: italic; color: var(--muted); }
+.proficiencies { margin: 8px 0 0; display: grid; gap: 3px; font-size: 0.85rem; }
+.proficiencies div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 6px; }
+.proficiencies dt { color: var(--muted); font-variant: small-caps; }
+.proficiencies dd { margin: 0; }
 .passive strong { font-family: var(--font-display); font-weight: 400; font-style: normal; font-size: 1.3rem; color: #3a200c; }
 
 /* --- Spell slots as brass coins; a spent slot is an empty ring. The button keeps a full tap target around the coin. --- */
@@ -207,6 +215,11 @@ body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bo
 .inventory { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
 .inventory th, .inventory td { padding: 0.25rem 0.4rem; text-align: left; border-bottom: 1px solid var(--border); }
 .inventory input[type='number'] { width: 5rem; }
+.item-name { all: unset; cursor: pointer; text-decoration: underline dotted color-mix(in srgb, currentColor 40%, transparent); }
+.item-name:focus-visible { outline: 2px solid var(--gold); }
+.item-details td { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+.item-details label { display: grid; gap: 0.15rem; margin-top: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+.item-details input, .item-details textarea { width: 100%; color: var(--text); }
 .coins label { display: inline-flex; flex-direction: column; gap: 0.2rem; }
 .coins input { width: 6rem; }
 .feature { border-bottom: 1px solid var(--border); padding: 0.25rem 0; }

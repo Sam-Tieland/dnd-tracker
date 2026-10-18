@@ -4,7 +4,7 @@ import type { Character } from '../model/character';
 import { computeAbilities } from './abilities';
 import { collectBonusParts, equippedArmor, makeBonus } from './bonuses';
 import { computeInitiative, computeSaves, computeSkills } from './checks';
-import { computeArmorClass, computeHitDice, computeHpMax, computeSpeed, computeWeaponAttacks } from './combat';
+import { computeArmorClass, computeHitDice, computeHpMax, computeSpeed, computeUnarmedStrike, computeWeaponAttacks } from './combat';
 import { collectFeatures } from './features';
 import { parseColumnNumber, type FormulaContext } from './formula';
 import { getClassLevels, proficiencyBonus } from './levels';
@@ -53,9 +53,13 @@ export function deriveSheet(character: Character, registry: ContentRegistry): De
   }
   const sources = spellcastingSources(classLevels, registry, effects);
   const stats = makeSpellStats(abilities, pb, bonus, d20Penalty);
-  const spellcasting = computeSpellcasting(character, registry, sources, stats);
+  const spellcasting = computeSpellcasting(character, registry, sources, stats, effects);
+  const monk = classLevels.find((cl) => cl.classId === 'srd:class:monk');
+  const martialArtsDie =
+    monk && !equipment.armor && !equipment.shield ? registry.getOf('class', monk.classId)?.levels[monk.level - 1]?.columns['martial-arts'] : undefined;
   const attacks = [
     ...computeWeaponAttacks(character, registry, abilities, prof, pb, bonus, d20Penalty),
+    computeUnarmedStrike(abilities, pb, bonus, d20Penalty, martialArtsDie),
     ...computeCantripAttacks(character, registry, spellcasting, totalLevel, warnings, stats),
   ];
   multiclassWarnings(classLevels, registry, abilities, warnings);

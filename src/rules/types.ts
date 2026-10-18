@@ -73,7 +73,7 @@ export interface ArmorClassResult {
 }
 export interface AttackResult {
   id: string;
-  kind: 'weapon' | 'cantrip';
+  kind: 'weapon' | 'unarmed' | 'cantrip';
   name: string;
   toHit?: number;
   saveDC?: number;

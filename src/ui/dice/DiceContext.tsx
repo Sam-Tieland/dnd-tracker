@@ -102,8 +102,8 @@ export function DiceProvider({ children, rng = cryptoRng }: { children: ReactNod
         return result;
       };
       try {
-        if (!physical) return record(roll(expression, { rng, critical: crit }), false);
-        parseRoll(expression);
+        // A roll without dice, such as an Unarmed Strike's flat damage, has nothing to throw.
+        if (!physical || parseRoll(expression).terms.length === 0) return record(roll(expression, { rng, critical: crit }), false);
       } catch (error) {
         if (!(error instanceof DiceError)) throw error;
         toast({ message: t('dice.invalid', { expression }), error: true });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readVendor } from '../../../scripts/convert-srd/vendor';
 import { deriveSheet } from '../../rules/derive';
 import { levels, makeCharacter, registry } from '../../rules/testing/fixtures';
-import { addSpell, MAGIC_INITIATE_ABILITIES, MAGIC_INITIATE_LISTS, playColumns, removeSpell, setPrepared } from './spell-logic';
+import { addSpell, MAGIC_INITIATE_ABILITIES, MAGIC_INITIATE_LISTS, playColumns, removeSpell, setAlwaysPrepared, setPrepared } from './spell-logic';
 
 const fireBolt = { classId: 'srd:class:wizard', spellId: 'srd:spell:fire-bolt', prepared: true };
 
@@ -36,5 +36,15 @@ describe('playColumns', () => {
       { key: 'srd:class:barbarian:rage-damage', label: 'Barbarian: Rage Damage', value: '+2' },
       { key: 'srd:class:barbarian:weapon-mastery', label: 'Barbarian: Weapon Mastery', value: '3' },
     ]);
+  });
+});
+
+describe('setAlwaysPrepared', () => {
+  const spells = [{ classId: 'srd:class:cleric', spellId: 'srd:spell:sleep', prepared: false }];
+
+  it('marks a spell as always prepared, which also prepares it, and takes the mark off again', () => {
+    const always = setAlwaysPrepared(spells, 0, true);
+    expect(always).toEqual([{ classId: 'srd:class:cleric', spellId: 'srd:spell:sleep', prepared: true, alwaysPrepared: true }]);
+    expect(setAlwaysPrepared(always, 0, false)).toEqual([{ classId: 'srd:class:cleric', spellId: 'srd:spell:sleep', prepared: true }]);
   });
 });

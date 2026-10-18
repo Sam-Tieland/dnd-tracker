@@ -7,7 +7,7 @@ type Detail = keyof Character['details'];
 
 /**
  * The character's story, opened from the sheet: the backstory as a page to read and write on, with personality,
- * appearance and alignment beside it. Every change is saved as you type, so there is nothing to confirm; Close,
+ * appearance, alignment, ideals, bonds, flaws, allies, faction and treasure beside it. Every change is saved as you type, so there is nothing to confirm; Close,
  * Escape and the backdrop only close the page.
  */
 export function StoryDialog({ session, onClose }: { session: ReadySession; onClose: () => void }) {
@@ -58,6 +58,24 @@ export function StoryDialog({ session, onClose }: { session: ReadySession; onClo
           <label className="field">
             Alignment
             <input value={character.details.alignment ?? ''} onChange={(e) => set('alignment')(e.target.value)} />
+          </label>
+          {(['ideals', 'bonds', 'flaws'] as const).map((field) => (
+            <label key={field} className="field">
+              {t(`form.${field}`)}
+              <textarea rows={2} value={character.details[field] ?? ''} onChange={(e) => set(field)(e.target.value)} />
+            </label>
+          ))}
+          <label className="field">
+            {t('form.allies')}
+            <textarea rows={3} value={character.details.allies ?? ''} onChange={(e) => set('allies')(e.target.value)} />
+          </label>
+          <label className="field">
+            {t('form.factionName')}
+            <input value={character.details.factionName ?? ''} onChange={(e) => set('factionName')(e.target.value)} />
+          </label>
+          <label className="field">
+            {t('form.treasure')}
+            <textarea rows={3} value={character.details.treasure ?? ''} onChange={(e) => set('treasure')(e.target.value)} />
           </label>
         </div>
         <div className="dialog-actions">

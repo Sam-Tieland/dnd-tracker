@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Character } from '../model/character';
 import {
-  applyDamage, applyHealing, canRest, lifeState, longRest, recordDeathSave, setConditions, setDeathSaves, setExhaustion,
-  setHeroicInspiration, setPactSlotsUsed, setResourceUsed, setSlotsUsed, setTempHp, shortRest, syncHitPoints,
+  applyDamage, applyHealing, canRest, concentrationDC, lifeState, longRest, recordDeathSave, setConditions, setDeathSaves, setExhaustion,
+  setConcentration, setHeroicInspiration, setPactSlotsUsed, setResourceUsed, setSlotsUsed, setTempHp, shortRest, syncHitPoints,
 } from './actions';
 import { deriveSheet } from './derive';
 import { readVendor } from '../../scripts/convert-srd/vendor';
@@ -295,5 +295,26 @@ describe('syncHitPoints', () => {
     const synced = syncHitPoints(same, sheetOf(before), sheetOf(same));
     expect(synced.state.hpCurrent).toBe(0);
     expect(synced.state.deathSaves).toEqual({ successes: 1, failures: 2 });
+  });
+});
+
+describe('concentration', () => {
+  it('the save DC is 10 or half the damage, at most 30 (SRD Concentration)', () => {
+    expect(glossary).toContain('The DC equals 10 or half the damage taken (round down), whichever number is higher, up to a maximum DC of 30.');
+    expect([concentrationDC(7), concentrationDC(21), concentrationDC(23), concentrationDC(100)]).toEqual([10, 10, 11, 30]);
+  });
+
+  it('a new spell replaces the old one, and ending it removes the field', () => {
+    const blessing = setConcentration(atFull(), 'srd:spell:bless');
+    expect(setConcentration(blessing, 'srd:spell:hold-person').state.concentration).toBe('srd:spell:hold-person');
+    expect('concentration' in setConcentration(blessing, undefined).state).toBe(false);
+  });
+
+  it('ends at 0 hit points and with an Incapacitating condition, but not from damage alone', () => {
+    const blessing = setConcentration(atFull(), 'srd:spell:bless');
+    expect(applyDamage(blessing, 5, sheetOf(blessing)).state.concentration).toBe('srd:spell:bless');
+    expect(applyDamage(blessing, 40, sheetOf(blessing)).state.concentration).toBeUndefined();
+    expect(setConditions(blessing, ['prone']).state.concentration).toBe('srd:spell:bless');
+    expect(setConditions(blessing, ['stunned']).state.concentration).toBeUndefined();
   });
 });
