@@ -1,3 +1,4 @@
+import { sep } from 'node:path';
 import { ABILITIES, type Ability } from '../../src/content/constants';
 import { contentId, slugify } from '../../src/content/ids';
 import type { ContentRegistry } from '../../src/content/registry';
@@ -190,4 +191,9 @@ export function toUserContent(subclasses: readonly BookSubclass[], registry: Con
     result.added.push(label);
   }
   return result;
+}
+
+/** True when the (resolved, absolute) path lies inside the repository folder; private output must never go there. */
+export function isInsideRepo(target: string, repo: string): boolean {
+  return target.toLowerCase().startsWith(repo.toLowerCase() + sep);
 }

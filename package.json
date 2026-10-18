@@ -15,6 +15,7 @@
     "convert:srd": "tsx scripts/convert-srd/index.ts",
     "icons": "tsx scripts/make-icons.ts",
     "boek": "tsx scripts/boek-naar-import.ts",
+    "boeken": "tsx scripts/boeken-inhoud.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {
