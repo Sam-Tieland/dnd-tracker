@@ -11,7 +11,11 @@ const pdfState = vi.hoisted(() => ({ pages: 194 }));
 vi.mock('./pdf', () => ({
   openPdf: async () => ({ pageCount: pdfState.pages, destroy: async () => undefined }),
 }));
-const saveState = vi.hoisted(() => ({ fail: undefined as Error | undefined, failNextList: false }));
+const saveState = vi.hoisted(() => ({
+  fail: undefined as Error | undefined,
+  failNextList: false,
+  hold: undefined as Promise<void> | undefined,
+}));
 vi.mock('../../storage/books', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../storage/books')>();
   return {
@@ -24,6 +28,7 @@ vi.mock('../../storage/books', async (importOriginal) => {
       return actual.listBooks(...args);
     },
     saveBook: async (...args: Parameters<typeof actual.saveBook>) => {
+      await saveState.hold;
       if (saveState.fail) throw saveState.fail;
       return actual.saveBook(...args);
     },
@@ -57,6 +62,7 @@ beforeEach(() => {
   pdfState.pages = 194;
   saveState.fail = undefined;
   saveState.failNextList = false;
+  saveState.hold = undefined;
 });
 
 describe('recognise', () => {
@@ -127,6 +133,31 @@ describe('BooksCard', () => {
     expect(screen.queryByText(/Tasha's Cauldron of Everything\.pdf/)).toBeNull();
   });
 
+  it('recognises a quota error that Dexie wrapped', async () => {
+    const { db } = renderApp('#/settings');
+    const user = userEvent.setup();
+    const inner = Object.assign(new Error('full'), { name: 'QuotaExceededError' });
+    saveState.fail = Object.assign(new Error('Dexie wrapped it'), { name: 'AbortError', inner });
+    await user.upload(await screen.findByTestId('book-input'), pdfFile("Tasha's Cauldron of Everything.pdf"));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Save' }));
+    expect(await screen.findByText(/too little space/)).toBeTruthy();
+    expect(await listBooks(db)).toEqual([]);
+  });
+
+  it('shows that the book is being saved', async () => {
+    let release: () => void = () => undefined;
+    saveState.hold = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    renderApp('#/settings');
+    const user = userEvent.setup();
+    await user.upload(await screen.findByTestId('book-input'), pdfFile("Tasha's Cauldron of Everything.pdf"));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Save' }));
+    expect(await screen.findByText('Saving…')).toBeTruthy();
+    release();
+    await waitFor(() => expect(screen.queryByText('Saving…')).toBeNull());
+  });
+
   it('imports the table of contents', async () => {
     const { db } = renderApp('#/settings');
     const user = userEvent.setup();
@@ -185,13 +216,21 @@ describe('BooksCard', () => {
     expect(await screen.findByText(/This PDF has 200 pages; the table of contents expects 194/)).toBeTruthy();
   });
 
-  it('removes a book', async () => {
+  it('removes a book only after confirming', async () => {
     const db = testDb();
     await saveBook(db, row('tce', 'tce.pdf', 194));
     renderApp('#/settings', db);
     const user = userEvent.setup();
     await screen.findByText(/tce\.pdf/);
-    await user.click(screen.getByRole('button', { name: 'Remove' }));
+    const button = screen.getByRole('button', { name: "Remove Tasha's Cauldron of Everything from this device" });
+    await user.click(button);
+    const dialog = await screen.findByRole('dialog', { name: 'Remove book' });
+    expect(within(dialog).getByText(/Remove Tasha's Cauldron of Everything from this device\?/)).toBeTruthy();
+    expect((await listBooks(db)).map((b) => b.bookId)).toEqual(['tce']);
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect((await listBooks(db)).map((b) => b.bookId)).toEqual(['tce']);
+    await user.click(button);
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Remove' }));
     await waitFor(async () => expect(await listBooks(db)).toEqual([]));
     expect(screen.queryByText(/tce\.pdf/)).toBeNull();
   });

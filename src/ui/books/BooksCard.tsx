@@ -25,6 +25,11 @@ interface Pending {
 
 const MB = 1024 * 1024;
 const mb = (bytes: number) => (bytes / MB).toFixed(1);
+/** Dexie wraps the browser's error, so the quota error can sit one level down in `inner`. */
+const isQuotaError = (error: unknown): boolean => {
+  const named = (e: unknown) => e instanceof Error && e.name === 'QuotaExceededError';
+  return named(error) || (typeof error === 'object' && error !== null && 'inner' in error && named((error as { inner: unknown }).inner));
+};
 const changed = () => window.dispatchEvent(new Event(BOOKS_CHANGED));
 
 /** The player's own book PDFs and table of contents, kept on this device only. */
@@ -38,6 +43,7 @@ export function BooksCard() {
   const [index, setIndex] = useState<BookIndex>();
   const [pending, setPending] = useState<Pending>();
   const [saving, setSaving] = useState(false);
+  const [toRemove, setToRemove] = useState<BookId>();
   const [unknown, setUnknown] = useState<string[]>([]);
   const [storage, setStorage] = useState<{ used?: number; total?: number; persisted?: boolean }>({});
 
@@ -91,7 +97,7 @@ export function BooksCard() {
       changed();
       toast({ message: t('books.saved') });
     } catch (error) {
-      const full = error instanceof Error && error.name === 'QuotaExceededError';
+      const full = isQuotaError(error);
       const reason = error instanceof Error ? error.message : String(error);
       setPending(undefined);
       toast({ message: full ? t('books.noSpace') : t('books.failed', { reason }), error: true });
@@ -101,6 +107,7 @@ export function BooksCard() {
   };
 
   const remove = async (bookId: BookId) => {
+    setToRemove(undefined);
     try {
       await deleteBook(db, bookId);
       await refresh();
@@ -147,7 +154,7 @@ export function BooksCard() {
               <strong>{BOOKS[id].title}</strong>:{' '}
               {book ? t('books.fileInfo', { name: book.name, mb: mb(book.size) }) : <span className="muted">{t('books.notOnDevice')}</span>}{' '}
               {book && (
-                <button type="button" onClick={() => void remove(id)}>
+                <button type="button" aria-label={t('books.removeLabel', { title: BOOKS[id].title })} onClick={() => setToRemove(id)}>
                   {t('books.remove')}
                 </button>
               )}
@@ -206,6 +213,19 @@ export function BooksCard() {
         hidden
         onChange={(e) => void importIndex(e.target.files?.[0])}
       />
+      {toRemove && (
+        <Dialog
+          title={t('books.removeTitle')}
+          onClose={() => setToRemove(undefined)}
+          actions={
+            <button type="button" className="danger" onClick={() => void remove(toRemove)}>
+              {t('books.remove')}
+            </button>
+          }
+        >
+          <p>{t('books.removeConfirm', { title: BOOKS[toRemove].title })}</p>
+        </Dialog>
+      )}
       {pending && (
         <Dialog
           title={t('books.which')}
@@ -231,6 +251,11 @@ export function BooksCard() {
             ))}
           </select>
           {existing && <p>{t('books.replaces', { name: existing.name })}</p>}
+          {saving && (
+            <p className="muted" role="status">
+              {t('books.saving')}
+            </p>
+          )}
         </Dialog>
       )}
     </section>
