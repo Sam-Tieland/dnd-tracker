@@ -89,6 +89,9 @@ const BookIndexBookSchema = z
       if (r.fromPdf > r.toPdf) {
         ctx.addIssue({ code: 'custom', path: ['pageMap', i], message: 'fromPdf after toPdf' });
       }
+      if (r.toPdf > book.pdfPages) {
+        ctx.addIssue({ code: 'custom', path: ['pageMap', i, 'toPdf'], message: 'toPdf beyond pdfPages' });
+      }
       for (let j = 0; j < i; j++) {
         const o = book.pageMap[j]!;
         const pdfOverlap = r.fromPdf <= o.toPdf && o.fromPdf <= r.toPdf;
@@ -100,11 +103,19 @@ const BookIndexBookSchema = z
     }
   });
 
-export const BookIndexSchema: z.ZodType<BookIndex> = z.strictObject({
-  format: z.literal('dnd-tracker-book-index'),
-  version: z.literal(1),
-  books: z.array(BookIndexBookSchema),
-});
+export const BookIndexSchema: z.ZodType<BookIndex> = z
+  .strictObject({
+    format: z.literal('dnd-tracker-book-index'),
+    version: z.literal(1),
+    books: z.array(BookIndexBookSchema),
+  })
+  .superRefine((index, ctx) => {
+    const seen = new Set<string>();
+    for (const [i, b] of index.books.entries()) {
+      if (seen.has(b.bookId)) ctx.addIssue({ code: 'custom', path: ['books', i, 'bookId'], message: 'duplicate bookId' });
+      seen.add(b.bookId);
+    }
+  });
 
 export type PdfSpot = { pdfPage: number; half: 'whole' | 'left' | 'right' };
 

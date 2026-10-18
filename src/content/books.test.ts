@@ -176,4 +176,15 @@ describe('BookIndexSchema', () => {
       BookIndexSchema.safeParse(wrap({ ...tce, entries: [{ ...tce.entries[0]!, extra: 1 }] })).success,
     ).toBe(false);
   });
+
+  it('rejects the same book twice', () => {
+    const twice = { format: 'dnd-tracker-book-index', version: 1, books: [tce, tce] };
+    expect(BookIndexSchema.safeParse(twice).success).toBe(false);
+  });
+
+  it('rejects a range that runs past the pdf page count', () => {
+    const pastEnd = { ...tce, pdfPages: 15 }; // the second range ends at pdf 20
+    expect(BookIndexSchema.safeParse(wrap(pastEnd)).success).toBe(false);
+    expect(BookIndexSchema.safeParse(wrap({ ...tce, pdfPages: 20 })).success).toBe(true);
+  });
 });
