@@ -471,6 +471,30 @@ describe('deriveSheet: spellcasting and resources', () => {
   });
 });
 
+describe('deriveSheet: feature owners', () => {
+  it('gives class and subclass features their owner id', () => {
+    const sheet = derive(makeCharacter({
+      choices: {
+        speciesId: 'srd:species:dwarf',
+        backgroundId: 'srd:background:acolyte',
+        levels: [level('cleric'), level('cleric'), level('cleric', { subclassId: 'srd:subclass:life-domain' })],
+      },
+    }));
+    const owner = (id: string) => {
+      const feature = sheet.features.find((f) => f.id === id);
+      expect(feature, id).toBeDefined();
+      return feature?.ownerId;
+    };
+    expect(owner('srd:feature:cleric:2:channel-divinity')).toBe('srd:class:cleric');
+    expect(owner('srd:feature:life-domain:3:disciple-of-life')).toBe('srd:subclass:life-domain');
+    const trait = sheet.features.find((f) => f.origin === 'species');
+    expect(trait?.ownerId).toBe('srd:species:dwarf');
+    const feat = sheet.features.find((f) => f.origin === 'feat');
+    expect(feat).toBeDefined();
+    expect(feat?.ownerId).toBeUndefined();
+  });
+});
+
 describe('deriveSheet: conditions and armor training', () => {
   it('Grappled, Paralyzed, Petrified, Restrained and Unconscious set Speed to 0', () => {
     for (const condition of ['grappled', 'paralyzed', 'petrified', 'restrained', 'unconscious']) {

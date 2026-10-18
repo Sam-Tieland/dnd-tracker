@@ -26,7 +26,7 @@ function collectFeats(character: Character, registry: ContentRegistry, warnings:
 export function collectFeatures(character: Character, registry: ContentRegistry, classLevels: ClassLevel[], warnings: Warning[]): ActiveFeature[] {
   const features: ActiveFeature[] = [];
   const seen = new Set<string>();
-  const add = (id: string, origin: FeatureOrigin, ownerName?: string, level?: number) => {
+  const add = (id: string, origin: FeatureOrigin, ownerName?: string, level?: number, ownerId?: string) => {
     if (seen.has(id)) return;
     seen.add(id);
     const def = registry.getOf('feature', id);
@@ -41,6 +41,7 @@ export function collectFeatures(character: Character, registry: ContentRegistry,
       effects: def.effects,
       origin,
       ownerName: ownerName ?? def.optionGroup ?? '',
+      ownerId,
       level,
       placeholder: def.source === 'skeleton' && def.name === '',
     });
@@ -49,15 +50,15 @@ export function collectFeatures(character: Character, registry: ContentRegistry,
   for (const cl of classLevels) {
     const cls = registry.getOf('class', cl.classId);
     if (!cls) continue;
-    for (const row of cls.levels.slice(0, cl.level)) for (const id of row.featureIds) add(id, 'class', cls.name, row.level);
+    for (const row of cls.levels.slice(0, cl.level)) for (const id of row.featureIds) add(id, 'class', cls.name, row.level, cls.id);
     const sub = cl.subclassId ? registry.getOf('subclass', cl.subclassId) : undefined;
-    if (sub) for (const f of sub.features) if (f.level <= cl.level) add(f.featureId, 'subclass', sub.name, f.level);
+    if (sub) for (const f of sub.features) if (f.level <= cl.level) add(f.featureId, 'subclass', sub.name, f.level, sub.id);
   }
 
   const { speciesId, featureOptions } = character.choices;
   if (speciesId) {
     const species = registry.getOf('species', speciesId);
-    if (species) for (const id of species.traitIds) add(id, 'species', species.name);
+    if (species) for (const id of species.traitIds) add(id, 'species', species.name, undefined, species.id);
     else unknownContent(warnings, speciesId);
   }
   for (const id of featureOptions) {

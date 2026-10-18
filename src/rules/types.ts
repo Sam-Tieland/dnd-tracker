@@ -41,6 +41,8 @@ export interface ActiveFeature {
   effects: Effect[];
   origin: FeatureOrigin;
   ownerName: string;
+  /** Class, subclass or species id of the owner; absent for feats and options. */
+  ownerId?: string;
   level?: number;
   /** An unfilled skeleton feature. */
   placeholder: boolean;
