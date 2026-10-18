@@ -55,8 +55,8 @@ const entry = (id: string, title: string, type: BookEntry['type'], bookPage: num
 const TCE_ENTRIES = [
   entry('a', 'Chapter A', 'chapter', 4),
   entry('a1', 'Section A One', 'section', 6, 'a'),
-  entry('dom', 'Twilight Test Domain', 'subclass', 34),
-  entry('sanct', 'Twilight Test Sanctuary', 'feature', 35, 'dom'),
+  entry('dom', 'Test Domain', 'subclass', 14),
+  entry('sanct', 'Test Gift', 'feature', 15, 'dom'),
 ];
 const makeIndex = (books: Array<{ bookId: BookId; pdfPages: number; pageMap: PageRange[]; entries: BookEntry[] }>): BookIndex => ({
   format: 'dnd-tracker-book-index',
@@ -196,31 +196,31 @@ describe('BookReader', () => {
   it('searches all books and opens a hit', async () => {
     const index = makeIndex([
       { bookId: 'tce', pdfPages: 20, pageMap: ALL_SPREADS, entries: TCE_ENTRIES },
-      { bookId: 'xge', pdfPages: 30, pageMap: ALL_SPREADS, entries: [entry('x', 'Twilight Test Grove', 'section', 12)] },
+      { bookId: 'xge', pdfPages: 30, pageMap: ALL_SPREADS, entries: [entry('x', 'Test Grove', 'section', 12)] },
     ]);
     renderApp('#/books/tce', await setup({ books: [['tce', 20], ['xge', 30]], index }));
     const user = userEvent.setup();
-    await user.type(await screen.findByRole('searchbox', { name: 'Zoeken in je boeken' }), 'twilight');
-    const hit = await screen.findByRole('link', { name: /Twilight Test Sanctuary/ });
-    expect(hit.textContent).toContain("Tasha's · feature · blz. 35");
-    expect(screen.getByRole('link', { name: /Twilight Test Grove/ }).textContent).toContain("Xanathar's");
+    await user.type(await screen.findByRole('searchbox', { name: 'Zoeken in je boeken' }), 'test');
+    const hit = await screen.findByRole('link', { name: /Test Gift/ });
+    expect(hit.textContent).toContain("Tasha's · feature · blz. 15");
+    expect(screen.getByRole('link', { name: /Test Grove/ }).textContent).toContain("Xanathar's");
     await user.click(hit);
-    expect(window.location.hash).toBe('#/books/tce/35');
-    await waitFor(() => expect(lastRender()?.pdfPage).toBe(19));
-    expect(pageLabel()).toBe('blz. 34–35');
+    expect(window.location.hash).toBe('#/books/tce/15');
+    await waitFor(() => expect(lastRender()?.pdfPage).toBe(9));
+    expect(pageLabel()).toBe('blz. 14–15');
   });
 
   it('marks hits in books that are not on this device', async () => {
     const index = makeIndex([
       { bookId: 'tce', pdfPages: 20, pageMap: ALL_SPREADS, entries: TCE_ENTRIES },
-      { bookId: 'xge', pdfPages: 30, pageMap: ALL_SPREADS, entries: [entry('x', 'Twilight Test Grove', 'section', 12)] },
+      { bookId: 'xge', pdfPages: 30, pageMap: ALL_SPREADS, entries: [entry('x', 'Test Grove', 'section', 12)] },
     ]);
     renderApp('#/books/tce', await setup({ books: [['tce', 20]], index }));
     const user = userEvent.setup();
-    await user.type(await screen.findByRole('searchbox', { name: 'Zoeken in je boeken' }), 'twilight');
-    await screen.findByRole('link', { name: /Twilight Test Sanctuary/ });
-    expect(screen.queryByRole('link', { name: /Twilight Test Grove/ })).toBeNull();
-    const grove = screen.getAllByRole('listitem').find((li) => li.textContent?.startsWith('Twilight Test Grove'))!;
+    await user.type(await screen.findByRole('searchbox', { name: 'Zoeken in je boeken' }), 'test');
+    await screen.findByRole('link', { name: /Test Gift/ });
+    expect(screen.queryByRole('link', { name: /Test Grove/ })).toBeNull();
+    const grove = screen.getAllByRole('listitem').find((li) => li.textContent?.startsWith('Test Grove'))!;
     expect(within(grove).getByText(/niet op dit apparaat/)).toBeTruthy();
     expect(grove.className).toContain('unavailable');
   });

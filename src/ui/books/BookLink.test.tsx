@@ -32,29 +32,29 @@ async function setup(opts: { index?: BookIndex; books?: Array<[BookId, number]> 
 
 describe('BookLink', () => {
   it('links to the page of a feature', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])])), books: [['tce', 20]] });
-    renderWithProviders(<BookLink contentIds={['feat:a']} label="Sanctuary" />, db);
-    const link = await screen.findByRole('link', { name: "Lees Sanctuary in Tasha's Cauldron of Everything, blz. 35" });
-    expect(link.getAttribute('href')).toBe('#/books/tce/35');
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a'])])), books: [['tce', 20]] });
+    renderWithProviders(<BookLink contentIds={['feat:a']} label="Test Gift" />, db);
+    const link = await screen.findByRole('link', { name: "Lees Test Gift in Tasha's Cauldron of Everything, blz. 15" });
+    expect(link.getAttribute('href')).toBe('#/books/tce/15');
     expect(link.textContent).toBe('In boek');
   });
 
   it('offers a choice when a feature is in two books', async () => {
     const db = await setup({
-      index: index(book('xge', [entry('x', 12, ['feat:a'])]), book('tce', [entry('e', 35, ['feat:a'])])),
+      index: index(book('xge', [entry('x', 12, ['feat:a'])]), book('tce', [entry('e', 15, ['feat:a'])])),
       books: [['tce', 20]],
     });
     const user = userEvent.setup();
     renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
     await user.click(await screen.findByRole('button', { name: 'In boek' }));
-    expect(screen.getByRole('link', { name: "Tasha's Cauldron of Everything blz. 35" }).getAttribute('href')).toBe('#/books/tce/35');
+    expect(screen.getByRole('link', { name: "Tasha's Cauldron of Everything blz. 15" }).getAttribute('href')).toBe('#/books/tce/15');
     expect(screen.getByRole('button', { name: "Xanathar's Guide to Everything blz. 12" })).toBeTruthy();
     await user.keyboard('{Escape}');
-    expect(screen.queryByRole('link', { name: /blz. 35/ })).toBeNull();
+    expect(screen.queryByRole('link', { name: /blz. 15/ })).toBeNull();
   });
 
   it('says which book to add when it is missing', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])])) });
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a'])])) });
     const user = userEvent.setup();
     renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
     await user.click(await screen.findByRole('button', { name: 'In boek' }));
@@ -64,21 +64,21 @@ describe('BookLink', () => {
   });
 
   it('shows nothing without a known page', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])])), books: [['tce', 20]] });
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a'])])), books: [['tce', 20]] });
     const { container } = renderWithProviders(<BookLink contentIds={['feat:other']} label="A" />, db);
     await new Promise((r) => setTimeout(r, 50));
     expect(container.querySelector('.book-link, .book-link-wrap')).toBeNull();
   });
 
   it('hides spots of a book whose pdf does not fit the index', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])], 20)), books: [['tce', 21]] });
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a'])], 20)), books: [['tce', 21]] });
     const { container } = renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
     await new Promise((r) => setTimeout(r, 50));
     await waitFor(() => expect(container.querySelector('.book-link, .book-link-wrap')).toBeNull());
   });
 
   it('loads the index once for several links', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a', 'feat:b'])])), books: [['tce', 20]] });
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a', 'feat:b'])])), books: [['tce', 20]] });
     const spy = vi.spyOn(storage, 'loadBookIndex');
     renderWithProviders(
       <>
@@ -94,7 +94,7 @@ describe('BookLink', () => {
   });
 
   it('reloads after BOOKS_CHANGED', async () => {
-    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])])) });
+    const db = await setup({ index: index(book('tce', [entry('e', 15, ['feat:a'])])) });
     const user = userEvent.setup();
     renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
     await user.click(await screen.findByRole('button', { name: 'In boek' }));
@@ -102,6 +102,6 @@ describe('BookLink', () => {
     act(() => {
       window.dispatchEvent(new Event(BOOKS_CHANGED));
     });
-    expect((await screen.findByRole('link', { name: /blz. 35/ })).getAttribute('href')).toBe('#/books/tce/35');
+    expect((await screen.findByRole('link', { name: /blz. 15/ })).getAttribute('href')).toBe('#/books/tce/15');
   });
 });

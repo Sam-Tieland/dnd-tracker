@@ -68,8 +68,8 @@ describe('parseBookFile', () => {
   });
 
   it('uses the 2024 level of an older feature', () => {
-    const md = file("class: Cleric\nsubclass: Twilight Domain\nbron: Tasha's\nregels: 2014", '# Twilight Domain\n\nX.\n\n## Level 3 (was 1): Eyes of Night\n\nY.');
-    expect(parseBookFile('cleric-twilight.md', md).subclass?.features[0]).toMatchObject({ level: 3, name: 'Eyes of Night' });
+    const md = file("class: Cleric\nsubclass: Test Domain\nbron: Tasha's\nregels: 2014", '# Test Domain\n\nX.\n\n## Level 3 (was 1): Test Gift\n\nY.');
+    expect(parseBookFile('cleric-test-domain.md', md).subclass?.features[0]).toMatchObject({ level: 3, name: 'Test Gift' });
   });
 
   it('keeps an unknown usage line in the text and warns', () => {
@@ -110,16 +110,16 @@ describe('toUserContent', () => {
   });
 
   it('adds a subclass from another book under its own name', () => {
-    const md = file("class: Cleric\nsubclass: Twilight Domain\nbron: Tasha's\nregels: 2014", '# Twilight Domain\n\nX.\n\n## Level 3 (was 1): Eyes of Night\n\nY.\n\n## Level 6: Steps of Night\n\nZ.');
+    const md = file("class: Cleric\nsubclass: Test Domain\nbron: Tasha's\nregels: 2014", '# Test Domain\n\nX.\n\n## Level 3 (was 1): Test Gift\n\nY.\n\n## Level 6: Test Step\n\nZ.');
     const result = toUserContent([parsed(md)], registry);
-    expect(result.added).toEqual(["Cleric: Twilight Domain (Tasha's)"]);
+    expect(result.added).toEqual(["Cleric: Test Domain (Tasha's)"]);
     expect(validateUserContent(result.items).issues).toEqual([]);
     const user = createRegistry(loadBuiltinContent(), result.items);
-    const sub = user.list('subclass').find((s) => s.name === "Twilight Domain (Tasha's)");
+    const sub = user.list('subclass').find((s) => s.name === "Test Domain (Tasha's)");
     expect(sub?.classId).toBe('srd:class:cleric');
     expect(sub?.features.map((f) => [f.level, user.getOf('feature', f.featureId)?.name])).toEqual([
-      [3, 'Eyes of Night'],
-      [6, 'Steps of Night'],
+      [3, 'Test Gift'],
+      [6, 'Test Step'],
     ]);
   });
 
@@ -142,8 +142,8 @@ describe('toUserContent', () => {
 
   it('gives same-named features on different levels their own resource', () => {
     const md = file(
-      "class: Cleric\nsubclass: Twilight Domain\nbron: Tasha's\nregels: 2014",
-      '# T\n\nX.\n\n## Level 3: Twilight Sanctuary\n\nGebruik: 1 per Long Rest\n\nA.\n\n## Level 17: Twilight Sanctuary\n\nGebruik: 2 per Long Rest\n\nB.',
+      "class: Cleric\nsubclass: Test Domain\nbron: Tasha's\nregels: 2014",
+      '# T\n\nX.\n\n## Level 3: Test Haven\n\nGebruik: 1 per Long Rest\n\nA.\n\n## Level 17: Test Haven\n\nGebruik: 2 per Long Rest\n\nB.',
     );
     const keys = toUserContent([parsed(md)], registry).items.flatMap((i) => ('effects' in i ? i.effects : [])).map((e) => (e.kind === 'resource' ? e.key : ''));
     expect(new Set(keys).size).toBe(2);

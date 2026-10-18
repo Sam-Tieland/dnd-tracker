@@ -26,7 +26,7 @@
 
 ## Review Focus
 
-1. **Boekpagina op de rechterhelft van een spread** (Tasha's blz. 35 staat rechts op pdf 18): opent pdf 18 en zet de rechterhelft in beeld; de bovenbalk toont "blz. 35". Test: Task 1 (`maps a book page on the right half of a spread`) en Task 5 (`opens a right-hand spread page scrolled to the right half`).
+1. **Boekpagina op de rechterhelft van een spread** (een verzonnen blz. 15 staat rechts op pdf 12): opent pdf 12 en zet de rechterhelft in beeld; de bovenbalk toont "blz. 15". Test: Task 1 (`maps a book page on the right half of a spread`) en Task 5 (`opens a right-hand spread page scrolled to the right half`).
 2. **"Ga naar blz." met een pagina die niet bestaat** (0, 999, een ongenummerde plaatpagina, tekst): melding "Pagina N staat niet in dit boek", het boek blijft waar het was. Test: Task 5 (`go to a page that is not in the book`).
 3. **"In boek" terwijl het boek niet op dit apparaat staat**: de knop is er, tikken geeft de melding met de weg naar Instellingen → Boeken; nooit stil. Test: Task 6 (`says which book to add when it is missing`).
 4. **Opslaan mislukt halverwege (vol, `QuotaExceededError`)**: melding met de reden, geen halve rij, eerdere versie van dat boek blijft. Test: Task 2 (`keeps the old book when saving the new one fails`) en Task 4 (`reports a full device`).
@@ -90,21 +90,21 @@ const tce: BookIndexBook = {
   pageMap: [ { fromPdf: 3, toPdf: 10, firstBook: 4, perPdfPage: 1 }, { fromPdf: 11, toPdf: 20, firstBook: 12, perPdfPage: 2 } ],
   entries: [
     { id: 'c1', title: 'Chapter A', type: 'chapter', bookPage: 4, contentIds: [] },
-    { id: 's1', title: 'Twilight Test Domain', type: 'subclass', bookPage: 34, parentId: 'c1', contentIds: ['user:subclass:x', 'skeleton:subclass:x'] },
-    { id: 'f1', title: 'Twilight Test Sanctuary', type: 'feature', bookPage: 35, parentId: 's1', contentIds: ['user:feature:x-fill-2'] },
+    { id: 's1', title: 'Test Domain', type: 'subclass', bookPage: 14, parentId: 'c1', contentIds: ['user:subclass:x', 'skeleton:subclass:x'] },
+    { id: 'f1', title: 'Test Gift', type: 'feature', bookPage: 15, parentId: 's1', contentIds: ['user:feature:x-fill-2'] },
   ],
 };
 ```
 
   - `maps a single page`: `toPdfSpot(tce, 4)` → `{ pdfPage: 3, half: 'whole' }`; `toPdfSpot(tce, 10)` → `{ pdfPage: 9, half: 'whole' }`.
   - `maps a book page on the left half of a spread`: `toPdfSpot(tce, 12)` → `{ pdfPage: 11, half: 'left' }`; `toPdfSpot(tce, 30)` → `{ pdfPage: 20, half: 'left' }`.
-  - (De nep-entries op blz. 34/35 vallen buiten deze paginakaart; voor de tests van Task 5 en 6 die een pagina openen, gebruik `pageMap` `[{ fromPdf: 3, toPdf: 20, firstBook: 2, perPdfPage: 2 }]`, waarmee blz. 34 → pdf 19 links en blz. 35 → pdf 19 rechts.)
+  - (De nep-entries op blz. 14/15 vallen buiten deze paginakaart; voor de tests van Task 5 en 6 die een pagina openen, gebruik `pageMap` `[{ fromPdf: 3, toPdf: 20, firstBook: 2, perPdfPage: 2 }]`, waarmee blz. 14 → pdf 9 links en blz. 15 → pdf 9 rechts.)
   - `maps a book page on the right half of a spread`: `toPdfSpot(tce, 13)` → `{ pdfPage: 11, half: 'right' }`; `toPdfSpot(tce, 31)` → `{ pdfPage: 20, half: 'right' }`.
   - `returns nothing for pages outside the map`: `toPdfSpot(tce, 0)`, `(tce, 3)`, `(tce, 32)`, `(tce, 11)` (gat tussen 10 en 12) → `undefined`; `toBookPage(tce, 1)` → `undefined`.
   - `names the book pages of a pdf page`: `toBookPage(tce, 3)` → `{ first: 4, last: 4 }`; `toBookPage(tce, 11)` → `{ first: 12, last: 13 }`.
-  - `searches names case-insensitively across books`: `searchIndex(index, 'twiLIGHT')` geeft eerst `s1` dan `f1`; volgorde: titels die met de zoekterm beginnen eerst, dan op type-volgorde van `BOOK_ENTRY_TYPES`, dan titel. `searchIndex(index, '  ')` → `[]`. Een term midden in een woord (`'light'`) vindt ook.
+  - `searches names case-insensitively across books`: `searchIndex(index, 'tEST dOMAIN')` geeft `s1` en `p1` (beide beginnen met de term), `'gift'` alleen `f1`; volgorde: titels die met de zoekterm beginnen eerst, dan op type-volgorde van `BOOK_ENTRY_TYPES`, dan titel. `searchIndex(index, '  ')` → `[]`. Een term midden in een woord (`'gift'`) vindt ook.
   - `builds the table of contents tree`: `tocTree(tce)` → één wortel `c1` met kind `s1` met kind `f1`.
-  - `finds every spot of a content id`: met een tweede boek `phb-2024` dat ook `skeleton:subclass:x` op blz. 70 heeft: `spotsFor(index, 'skeleton:subclass:x')` → `[{ bookId: 'phb-2024', bookPage: 70 }, { bookId: 'tce', bookPage: 34 }]` (volgorde van `BOOK_IDS`).
+  - `finds every spot of a content id`: met een tweede boek `phb-2024` dat ook `skeleton:subclass:x` op blz. 20 heeft: `spotsFor(index, 'skeleton:subclass:x')` → `[{ bookId: 'phb-2024', bookPage: 20 }, { bookId: 'tce', bookPage: 14 }]` (volgorde van `BOOK_IDS`).
   - `lists unknown content ids`: `unknownContentIds(index, (id) => id.startsWith('user:'))` → `['skeleton:subclass:x']`.
   - `rejects a broken index`: `BookIndexSchema.safeParse` faalt bij: onbekend `bookId`, `parentId` die niet bestaat, dubbele `entry.id` in één boek, overlappende ranges, `perPdfPage: 3`, extra veld op een entry.
 
@@ -280,7 +280,7 @@ Gedrag (schets versie A met zoekbalk):
   - `opens the requested book page`: `#/books/tce/13` met nepindex → `render` met pdf 11; bovenbalk "blz. 12–13".
   - `opens a right-hand spread page scrolled to the right half`: zelfde, scrollLeft van de leesruimte = `scrollForHalf('right', …)`.
   - `go to a page that is not in the book`: "999" → melding "Pagina 999 staat niet in dit boek"; `render` niet opnieuw aangeroepen.
-  - `searches all books and opens a hit`: typ "twilight" → hit "Twilight Test Sanctuary · Tasha's · blz. 35" → klik → hash `#/books/tce/35`.
+  - `searches all books and opens a hit`: typ "test" → hit "Test Gift · Tasha's · blz. 15" → klik → hash `#/books/tce/15`.
   - `marks hits in books that are not on this device`.
   - `remembers where you were`: blader naar volgende, wacht debounce → `loadReading` heeft `pdfPage` + 1; opnieuw openen op `#/books` → dezelfde pagina.
   - `reads by pdf page when the index does not fit`: bewaard boek met 200 pagina's, index verwacht 194 → "pdf-blz. 1", melding in het paneel.
@@ -392,4 +392,4 @@ Door Claude in de hoofdsessie, niet door een subagent zonder deze context. Alles
 - [ ] **Step 2:** e2e draaien met een tijdelijke config op een andere poort — groen. `npm run build` en controleer dat `dist/sw.js` de pdf-worker precachet (`grep pdf.worker dist/sw.js`).
 - [ ] **Step 3:** Volledige suite, `npm run typecheck`, `npm run build` — groen. Commit: `test: boek lezen vanaf de sheet, van begin tot eind`.
 - [ ] **Step 4:** Eindreview van de branch, daarna met Sams OK `main` fast-forwarden en pushen (publiceert via de workflow "Testen en publiceren").
-- [ ] **Step 5:** Sam test op de iPad als geïnstalleerde PWA: alle drie de boeken toevoegen, `boeken-inhoud.json` importeren, *Twilight Domain* openen vanaf Grobbs sheet (na zijn level 3) of via zoeken, bladeren en knijpen, app sluiten en heropenen (leesplek en boeken nog aanwezig), vliegtuigmodus (lezen werkt offline). Bevindingen worden een vervolgtaak.
+- [ ] **Step 5:** Sam test op de iPad als geïnstalleerde PWA: alle drie de boeken toevoegen, `boeken-inhoud.json` importeren, een subklasse openen vanaf Grobbs sheet (na zijn level 3) of via zoeken, bladeren en knijpen, app sluiten en heropenen (leesplek en boeken nog aanwezig), vliegtuigmodus (lezen werkt offline). Bevindingen worden een vervolgtaak.

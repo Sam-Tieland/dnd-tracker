@@ -22,17 +22,17 @@ const tce: BookIndexBook = {
     { id: 'c1', title: 'Chapter A', type: 'chapter', bookPage: 4, contentIds: [] },
     {
       id: 's1',
-      title: 'Twilight Test Domain',
+      title: 'Test Domain',
       type: 'subclass',
-      bookPage: 34,
+      bookPage: 14,
       parentId: 'c1',
       contentIds: ['user:subclass:x', 'skeleton:subclass:x'],
     },
     {
       id: 'f1',
-      title: 'Twilight Test Sanctuary',
+      title: 'Test Gift',
       type: 'feature',
-      bookPage: 35,
+      bookPage: 15,
       parentId: 's1',
       contentIds: ['user:feature:x-fill-2'],
     },
@@ -44,7 +44,7 @@ const phb: BookIndexBook = {
   pdfPages: 10,
   pageMap: [{ fromPdf: 1, toPdf: 10, firstBook: 1, perPdfPage: 1 }],
   entries: [
-    { id: 'p1', title: 'Test Domain Overview', type: 'subclass', bookPage: 70, contentIds: ['skeleton:subclass:x'] },
+    { id: 'p1', title: 'Test Domain Overview', type: 'subclass', bookPage: 20, contentIds: ['skeleton:subclass:x'] },
   ],
 };
 
@@ -79,9 +79,9 @@ describe('page mapping', () => {
 
 describe('search and tree', () => {
   it('searches names case-insensitively across books', () => {
-    expect(searchIndex(index, 'twiLIGHT').map((h) => h.entry.id)).toEqual(['s1', 'f1']);
+    expect(searchIndex(index, 'tEST dOMAIN').map((h) => h.entry.id)).toEqual(['s1', 'p1']);
     expect(searchIndex(index, '  ')).toEqual([]);
-    expect(searchIndex(index, 'light').map((h) => h.entry.id)).toEqual(['s1', 'f1']);
+    expect(searchIndex(index, 'gift').map((h) => h.entry.id)).toEqual(['f1']);
   });
 
   describe('ordering', () => {
@@ -131,8 +131,8 @@ describe('search and tree', () => {
 describe('content ids', () => {
   it('finds every spot of a content id', () => {
     expect(spotsFor(index, 'skeleton:subclass:x')).toEqual([
-      { bookId: 'phb-2024', bookPage: 70 },
-      { bookId: 'tce', bookPage: 34 },
+      { bookId: 'phb-2024', bookPage: 20 },
+      { bookId: 'tce', bookPage: 14 },
     ]);
   });
 
