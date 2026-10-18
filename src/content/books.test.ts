@@ -84,10 +84,35 @@ describe('search and tree', () => {
     expect(searchIndex(index, 'light').map((h) => h.entry.id)).toEqual(['s1', 'f1']);
   });
 
-  it('orders prefix matches first, then type, then title', () => {
-    const ids = searchIndex(index, 'domain').map((h) => h.entry.id);
-    expect(ids).toEqual(['p1', 's1']);
-    expect(searchIndex(index, 'test').map((h) => h.entry.id)).toEqual(['p1', 's1', 'f1']);
+  describe('ordering', () => {
+    const mk = (entries: BookIndexBook['entries']): BookIndex => ({
+      format: 'dnd-tracker-book-index',
+      version: 1,
+      books: [{ ...tce, entries }],
+    });
+    const e = (id: string, title: string, type: BookIndexBook['entries'][number]['type']) => ({
+      id,
+      title,
+      type,
+      bookPage: 4,
+      contentIds: [],
+    });
+    const order = (i: BookIndex, q: string) => searchIndex(i, q).map((h) => h.entry.id);
+
+    it('puts prefix matches before earlier-typed non-prefix matches', () => {
+      const i = mk([e('chap', 'A Test Realm', 'chapter'), e('feat', 'Test Gift', 'feature')]);
+      expect(order(i, 'test')).toEqual(['feat', 'chap']);
+    });
+
+    it('orders by entry type when prefix status is equal', () => {
+      const i = mk([e('f', 'Test Gift', 'feature'), e('c', 'Test Realm', 'chapter')]);
+      expect(order(i, 'test')).toEqual(['c', 'f']);
+    });
+
+    it('orders by title when prefix status and type are equal', () => {
+      const i = mk([e('b', 'Test Beta', 'spell'), e('a', 'Test Alpha', 'spell')]);
+      expect(order(i, 'test')).toEqual(['a', 'b']);
+    });
   });
 
   it('respects the limit', () => {
