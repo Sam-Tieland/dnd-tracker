@@ -24,7 +24,8 @@ function Rollers() {
   );
 }
 
-async function openPanel() {
+/** Real dice are on by default; `appRolls` switches them off for the tests of the app's own rolls. */
+async function openPanel({ appRolls = false } = {}) {
   renderWithProviders(
     <DiceProvider rng={middle}>
       <Rollers />
@@ -33,26 +34,27 @@ async function openPanel() {
   );
   const user = userEvent.setup();
   await user.click(await screen.findByRole('button', { name: 'Dice' }));
+  if (appRolls) await user.click(screen.getByLabelText('I roll real dice'));
   return user;
 }
 
 describe('dice panel', () => {
   it('rolls free notation and shows each die', async () => {
-    const user = await openPanel();
+    const user = await openPanel({ appRolls: true });
     await user.type(screen.getByLabelText('Dice notation'), '2d6+3');
     await user.click(screen.getByRole('button', { name: 'Roll' }));
     expect(screen.getAllByText('2d6+3: 4 + 4 + 3').length).toBeGreaterThan(0);
   });
 
   it('a d20 test with Advantage shows both dice', async () => {
-    const user = await openPanel();
+    const user = await openPanel({ appRolls: true });
     await user.click(screen.getByRole('button', { name: 'Advantage' }));
     await user.click(screen.getByRole('button', { name: 'attack' }));
     expect(screen.getAllByText('d20 Advantage (11, 11) +5').length).toBeGreaterThan(0);
   });
 
   it('Critical doubles the damage dice once and then switches off', async () => {
-    const user = await openPanel();
+    const user = await openPanel({ appRolls: true });
     await user.click(screen.getByRole('button', { name: 'Critical' }));
     await user.click(screen.getByRole('button', { name: 'damage' }));
     expect(screen.getAllByText('1d8+3: 5 + 5 + 3').length).toBeGreaterThan(0);
@@ -60,15 +62,19 @@ describe('dice panel', () => {
   });
 
   it('shows a message for notation it cannot roll, instead of rolling something else', async () => {
-    const user = await openPanel();
+    const user = await openPanel({ appRolls: true });
     await user.type(screen.getByLabelText('Dice notation'), '2d6 3');
     await user.click(screen.getByRole('button', { name: 'Roll' }));
     expect(await screen.findByText('Cannot roll "2d6 3"')).toBeTruthy();
   });
 
+  it('starts with real dice on', async () => {
+    await openPanel();
+    expect(screen.getByLabelText('I roll real dice')).toHaveProperty('checked', true);
+  });
+
   it('with real dice, asks for the d20 the player rolled and adds the bonus', async () => {
     const user = await openPanel();
-    await user.click(screen.getByLabelText('I roll real dice'));
     await user.click(screen.getByRole('button', { name: 'attack' }));
     const dialog = await screen.findByRole('dialog', { name: 'Longsword: attack' });
     await user.type(within(dialog).getByLabelText('d20'), '17');
@@ -80,7 +86,6 @@ describe('dice panel', () => {
 
   it('with real dice and Advantage, asks for both d20s and keeps the higher', async () => {
     const user = await openPanel();
-    await user.click(screen.getByLabelText('I roll real dice'));
     await user.click(screen.getByRole('button', { name: 'Advantage' }));
     await user.click(screen.getByRole('button', { name: 'attack' }));
     const dialog = await screen.findByRole('dialog');
@@ -91,7 +96,6 @@ describe('dice panel', () => {
 
   it('with real dice, a Critical Hit asks for the doubled damage dice and refuses an impossible total', async () => {
     const user = await openPanel();
-    await user.click(screen.getByLabelText('I roll real dice'));
     await user.click(screen.getByRole('button', { name: 'Critical' }));
     await user.click(screen.getByRole('button', { name: 'damage' }));
     const dialog = await screen.findByRole('dialog');
@@ -106,7 +110,6 @@ describe('dice panel', () => {
 
   it('with real dice, the app can still roll one, and Cancel rolls nothing', async () => {
     const user = await openPanel();
-    await user.click(screen.getByLabelText('I roll real dice'));
     await user.click(screen.getByRole('button', { name: 'attack' }));
     await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Let the app roll' }));
     expect(screen.getAllByText('d20 (11) +5').length).toBeGreaterThan(0);
