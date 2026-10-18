@@ -4,6 +4,7 @@ import type { Settings } from '../../storage/settings';
 import { deleteSheetTemplate, loadSheetTemplate, saveSheetTemplate } from '../../storage/sheet-template';
 import { useToast } from '../components/Toast';
 import { useAppData } from '../data';
+import { BooksCard } from '../books/BooksCard';
 import { checkTemplate, TemplateError } from '../pdf/fill-sheet';
 import { hrefFor } from '../router';
 import { ImportButton } from '../ImportButton';
@@ -125,6 +126,7 @@ export function SettingsScreen() {
         <ImportButton />
       </section>
       <SheetTemplateCard />
+      <BooksCard />
       <section className="card">
         <a className="button" href={hrefFor({ name: 'credits' })}>
           {t('settings.credits')}
