@@ -3,6 +3,8 @@ import type { ActiveFeature } from '../../rules/types';
 export interface FeatureGroup {
   key: string;
   title: string;
+  /** Id of the class, subclass or species behind the group (not for feats). */
+  ownerId?: string;
   features: ActiveFeature[];
 }
 
@@ -15,7 +17,7 @@ export function groupFeatures(features: readonly ActiveFeature[]): FeatureGroup[
     const key = `${feature.origin}:${title}`;
     let group = groups.find((g) => g.key === key);
     if (!group) {
-      group = { key, title, features: [] };
+      group = { key, title, ownerId: feature.ownerId, features: [] };
       groups.push(group);
     }
     group.features.push(feature);

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Character } from '../../model/character';
 import { kael } from '../../rules/testing/fixtures';
+import { saveBook, saveBookIndex } from '../../storage/books';
 import { loadCharacter, saveCharacter } from '../../storage/characters';
 import { renderApp, setMatchMedia, testDb } from '../testing/render';
 import { resetUndoStacks, whenSaved } from './session';
@@ -280,5 +281,32 @@ describe('sheet', () => {
       expect(screen.getByRole('button', { name: 'Short Rest' }).hasAttribute('disabled')).toBe(false);
       expect(screen.getByRole('button', { name: /Damage/ }).hasAttribute('disabled')).toBe(false);
     });
+  });
+
+  it('shows In boek next to the subclass and inside a feature', async () => {
+    const db = testDb();
+    await saveCharacter(db, kael({ state: { hpCurrent: 40 } }));
+    await saveBook(db, { bookId: 'tce', name: 'tce.pdf', size: 1, pdfPages: 20, blob: new Blob(['x']), addedAt: 'now' });
+    await saveBookIndex(db, {
+      format: 'dnd-tracker-book-index',
+      version: 1,
+      books: [
+        {
+          bookId: 'tce',
+          pdfPages: 20,
+          pageMap: [{ fromPdf: 1, toPdf: 20, firstBook: 1, perPdfPage: 1 }],
+          entries: [
+            { id: 's', title: 'Test Subclass', type: 'subclass', bookPage: 7, contentIds: ['srd:subclass:champion'] },
+            { id: 'f', title: 'Test Feature', type: 'feature', bookPage: 8, contentIds: ['srd:feature:champion:3:improved-critical'] },
+          ],
+        },
+      ],
+    });
+    renderApp('#/c/test', db);
+    await screen.findByTestId('hp');
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: 'Features' }));
+    const links = await screen.findAllByRole('link', { name: /Read .* in Tasha's Cauldron of Everything, p\. \d/ });
+    expect(links.map((l) => l.getAttribute('href'))).toEqual(['#/books/tce/7', '#/books/tce/8']);
   });
 });

@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n/i18n';
 import { optionsFor } from '../../rules/choices';
 import { NumberInput } from '../components/NumberInput';
 import { WarningList } from '../components/WarningList';
+import { BookLink } from '../books/BookLink';
 import { useAppData } from '../data';
 import { formatMod, plainParagraphs } from '../format';
 import { groupFeatures } from './feature-groups';
@@ -100,7 +101,10 @@ export function FeaturesTab({ session }: { session: ReadySession }) {
       <WarningList warnings={sheet.warnings} />
       {groupFeatures(sheet.features).map((group) => (
         <section key={group.key}>
-          <h2>{group.title}</h2>
+          <div className="group-head">
+            <h2>{group.title}</h2>
+            {group.ownerId !== undefined && <BookLink contentIds={[group.ownerId]} label={group.title} />}
+          </div>
           {group.features.map((feature) => {
             const picked = optionsFor(registry, feature.id).filter((o) => chosen.has(o.id));
             const hasOptions = optionsFor(registry, feature.id).length > 0;
@@ -113,6 +117,11 @@ export function FeaturesTab({ session }: { session: ReadySession }) {
                     <span className={picked.length > 0 ? 'muted' : 'warning'}> · {picked.length > 0 ? picked.map((o) => o.name).join(', ') : t('features.chooseOption')}</span>
                   )}
                 </summary>
+                {!feature.placeholder && (
+                  <div className="feature-book">
+                    <BookLink contentIds={[feature.id]} label={feature.name} />
+                  </div>
+                )}
                 {feature.placeholder ? (
                   <p className="muted">{t('features.placeholderHelp')}</p>
                 ) : (

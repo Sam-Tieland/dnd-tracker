@@ -225,3 +225,16 @@ body:has(.dice-panel) .toast-region { bottom: calc(4rem + env(safe-area-inset-bo
   .dialog.story { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "main" "side" "actions"; }
   .story-text { min-height: 34vh; min-height: 34dvh; }
 }
+
+/* "In book" next to a group title and at the top of an opened feature. */
+.group-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.feature-book { display: flex; justify-content: flex-end; }
+.book-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.book-link-wrap { position: relative; display: inline-block; }
+.book-link-menu {
+  position: absolute; right: 0; top: 100%; z-index: 10; margin: 0.25rem 0 0; padding: 0.25rem; list-style: none;
+  display: flex; flex-direction: column; gap: 0.25rem; min-width: 14rem;
+  background: var(--parchment); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+}
+.book-link-menu .button, .book-link-menu button { width: 100%; justify-content: flex-start; text-align: left; }
+.book-link-missing { color: var(--muted); }
