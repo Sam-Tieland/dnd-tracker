@@ -52,7 +52,7 @@ describe('deriveSheet: Kael (Fighter 3 Champion / Wizard 2)', () => {
   });
 
   it('computes weapon attacks', () => {
-    expect(sheet.attacks).toEqual([
+    expect(sheet.attacks.filter((a) => a.kind === 'weapon')).toEqual([
       {
         id: 'i3', kind: 'weapon', name: 'Longsword', toHit: 6, damage: '1d8+3', damageType: 'Slashing',
         properties: ['Versatile (1d10)'], mastery: 'Sap', proficient: true,
@@ -104,11 +104,17 @@ describe('deriveSheet: unarmored classes', () => {
   });
 
   it('Monk: proficient with Light martial weapons only', () => {
-    const attacks = monk([item('a', 'srd:weapon:shortsword'), item('b', 'srd:weapon:longsword')]).attacks;
+    const attacks = monk([item('a', 'srd:weapon:shortsword'), item('b', 'srd:weapon:longsword')]).attacks.filter((a) => a.kind === 'weapon');
     expect(attacks.map((a) => [a.name, a.toHit, a.damage, a.proficient])).toEqual([
       ['Shortsword', 6, '1d6+3', true],
       ['Longsword', 0, '1d8', false],
     ]);
+  });
+
+  it('Monk: Unarmed Strike uses the Martial Arts die and Dexterity, but not with a shield', () => {
+    expect(monk().attacks.find((a) => a.kind === 'unarmed')).toMatchObject({ name: 'Unarmed Strike', toHit: 6, damage: '1d8+3', proficient: true });
+    // A wielded shield ends Martial Arts: back to 1 + Strength (+0) and Strength to hit.
+    expect(monk([item('s', 'srd:armor:shield')]).attacks.find((a) => a.kind === 'unarmed')).toMatchObject({ toHit: 3, damage: '1' });
   });
 
   it('Barbarian: Unarmored Defense with a shield, Fast Movement except in heavy armor', () => {
@@ -189,7 +195,7 @@ describe('deriveSheet: special rules', () => {
         item('d', 'srd:weapon:longbow'),
       ],
     }));
-    expect(rogue.attacks.map((a) => [a.name, a.proficient])).toEqual([
+    expect(rogue.attacks.filter((a) => a.kind === 'weapon').map((a) => [a.name, a.proficient])).toEqual([
       ['Rapier', true],
       ['Hand Crossbow', true],
       ['Longsword', false],
@@ -237,6 +243,18 @@ describe('deriveSheet: level 20 capstones and Roving', () => {
 });
 
 describe('deriveSheet: edge cases', () => {
+  it('everyone has an Unarmed Strike: Strength + PB to hit, 1 + Strength damage, overrides and Exhaustion count', () => {
+    const sheet = derive(makeCharacter({
+      choices: { baseAbilities: { str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, levels: levels('fighter', 1) },
+      state: { exhaustion: 1 },
+      overrides: [{ id: 'o1', target: 'damage:unarmed-strike', value: 1, reason: 'Gauntlets' }],
+    }));
+    expect(sheet.attacks.find((a) => a.kind === 'unarmed')).toEqual({
+      id: 'unarmed-strike', kind: 'unarmed', name: 'Unarmed Strike', toHit: 3 + 2 - 2, damage: '5', damageType: 'Bludgeoning',
+      properties: ['Grapple/Shove DC 13'], proficient: true,
+    });
+  });
+
   it('works for a freshly created character', () => {
     expect(derive(makeCharacter())).toMatchObject({
       totalLevel: 0,
@@ -247,7 +265,7 @@ describe('deriveSheet: edge cases', () => {
       initiative: 0,
       passivePerception: 10,
       features: [],
-      attacks: [],
+      attacks: [{ id: 'unarmed-strike', kind: 'unarmed', toHit: 2, damage: '1' }],
       warnings: [],
     });
   });
@@ -316,7 +334,7 @@ describe('deriveSheet: spellcasting and resources', () => {
     const cleric = derive(makeCharacter({
       choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 }, levels: levels('cleric', 1), spells: [{ classId: 'srd:class:cleric', spellId: 'srd:spell:sacred-flame', prepared: true }] },
     }));
-    expect(cleric.attacks[0]).toMatchObject({ name: 'Sacred Flame', saveDC: 13, saveAbility: 'dex', toHit: undefined, damage: '1d8' });
+    expect(cleric.attacks.find((a) => a.kind === 'cantrip')).toMatchObject({ name: 'Sacred Flame', saveDC: 13, saveAbility: 'dex', toHit: undefined, damage: '1d8' });
   });
 
   it.each<[number, string]>([
@@ -528,6 +546,13 @@ describe('deriveSheet: choices that change numbers', () => {
     const wise = derive(cleric(['srd:feature:cleric:1:divine-order:thaumaturge'], 14));
     expect([wise.skills.arcana.bonus, wise.skills.religion.bonus, wise.skills.history.bonus]).toEqual([2, 2, 0]);
     expect(derive(cleric(['srd:feature:cleric:1:divine-order:thaumaturge'], 8)).skills.arcana.bonus).toBe(1);
+  });
+
+  it('Thaumaturge and Magician know one extra cantrip (3 + 1 for a level 1 Cleric, 2 + 1 for a Druid)', () => {
+    expect(derive(cleric(['srd:feature:cleric:1:divine-order:thaumaturge'])).spellcasting.classes[0].cantripsMax).toBe(4);
+    expect(derive(cleric(['srd:feature:cleric:1:divine-order:protector'])).spellcasting.classes[0].cantripsMax).toBe(3);
+    const druid = derive(makeCharacter({ choices: { levels: levels('druid', 1), featureOptions: ['srd:feature:druid:1:primal-order:magician'] } }));
+    expect(druid.spellcasting.classes[0].cantripsMax).toBe(3);
   });
 
   it('Primal Order Warden and Magician', () => {

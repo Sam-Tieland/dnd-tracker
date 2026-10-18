@@ -1,15 +1,26 @@
 import { useState } from 'react';
 import type { Ability } from '../../content/constants';
 import { useI18n } from '../../i18n/i18n';
+import { setConcentration } from '../../rules/actions';
 import { useAppData } from '../data';
 import { abilityName, formatMod, plainParagraphs } from '../format';
 import type { ReadySession } from './session';
 import { SpellSlots } from './SpellSlots';
-import { addSpell, MAGIC_INITIATE_ABILITIES, MAGIC_INITIATE_LISTS, removeSpell, setPrepared, type SpellEntry } from './spell-logic';
+import { addSpell, MAGIC_INITIATE_ABILITIES, MAGIC_INITIATE_LISTS, removeSpell, setAlwaysPrepared, setPrepared, type SpellEntry } from './spell-logic';
 
 type Indexed = { entry: SpellEntry; index: number };
 
-function SpellList({ items, onPrepare, onRemove }: { items: Indexed[]; onPrepare: (index: number, on: boolean) => void; onRemove: (index: number) => void }) {
+interface SpellListActions {
+  onPrepare(index: number, on: boolean): void;
+  onAlways(index: number, on: boolean): void;
+  onRemove(index: number): void;
+  /** The spell id the character concentrates on, and a toggle for it. */
+  concentration?: string;
+  onConcentrate(spellId: string, on: boolean): void;
+}
+
+function SpellList({ items, actions }: { items: Indexed[]; actions: SpellListActions }) {
+  const { onPrepare, onAlways, onRemove, concentration, onConcentrate } = actions;
   const { registry } = useAppData();
   const { t } = useI18n();
   if (items.length === 0) return <p className="muted">{t('spells.none')}</p>;
@@ -20,12 +31,18 @@ function SpellList({ items, onPrepare, onRemove }: { items: Indexed[]; onPrepare
         const spell = registry.getOf('spell', entry.spellId);
         const name = spell?.name ?? t('common.unknown', { id: entry.spellId });
         const tags = spell
-          ? [spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`, spell.school, ...(spell.concentration ? ['Concentration'] : []), ...(spell.ritual ? ['Ritual'] : []), ...(entry.ability ? [abilityName(entry.ability)] : [])]
+          ? [spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`, spell.school, ...(spell.concentration ? ['Concentration'] : []), ...(spell.ritual ? ['Ritual'] : []), ...(entry.ability ? [abilityName(entry.ability)] : []), ...(entry.alwaysPrepared ? [t('spells.alwaysPrepared')] : [])]
           : [];
         return (
           <li key={`${entry.classId}|${entry.spellId}|${entry.ability ?? ''}`} className="spell-row">
             {spell && spell.level > 0 && (
-              <input type="checkbox" aria-label={t('spells.prepared', { name })} checked={entry.prepared} onChange={(e) => onPrepare(index, e.target.checked)} />
+              <input
+                type="checkbox"
+                aria-label={t('spells.prepared', { name })}
+                checked={entry.prepared || entry.alwaysPrepared === true}
+                disabled={entry.alwaysPrepared === true}
+                onChange={(e) => onPrepare(index, e.target.checked)}
+              />
             )}
             <details>
               <summary>
@@ -41,9 +58,26 @@ function SpellList({ items, onPrepare, onRemove }: { items: Indexed[]; onPrepare
                       {p}
                     </p>
                   ))}
+                  {spell.level > 0 && (
+                    <label className="option">
+                      <input type="checkbox" checked={entry.alwaysPrepared === true} onChange={(e) => onAlways(index, e.target.checked)} />
+                      {t('spells.alwaysPreparedHelp')}
+                    </label>
+                  )}
                 </>
               )}
             </details>
+            {spell?.concentration && (
+              <button
+                type="button"
+                className={concentration === spell.id ? 'chip' : undefined}
+                aria-pressed={concentration === spell.id}
+                aria-label={t('spells.concentrate', { name })}
+                onClick={() => onConcentrate(spell.id, concentration !== spell.id)}
+              >
+                {concentration === spell.id ? t('spells.concentrating') : t('spells.concentrateShort')}
+              </button>
+            )}
             <button type="button" aria-label={t('spells.remove', { name })} onClick={() => onRemove(index)}>
               ×
             </button>
@@ -154,6 +188,18 @@ export function SpellsTab({ session }: { session: ReadySession }) {
   const isCantrip = (spellId: string) => registry.getOf('spell', spellId)?.level === 0;
   const prepare = (index: number, on: boolean) => setSpells(setPrepared(spells, index, on));
   const remove = (index: number) => setSpells(removeSpell(spells, index));
+  const spellName = (spellId: string) => registry.getOf('spell', spellId)?.name ?? spellId;
+  const actions: SpellListActions = {
+    onPrepare: prepare,
+    onAlways: (index, on) => setSpells(setAlwaysPrepared(spells, index, on)),
+    onRemove: remove,
+    concentration: character.state.concentration,
+    onConcentrate: (spellId, on) =>
+      commit(
+        setConcentration(character, on ? spellId : undefined),
+        on ? t('undo.concentrationOn', { name: spellName(spellId) }) : t('undo.concentrationOff', { name: spellName(spellId) }),
+      ),
+  };
   return (
     <div className="spells-tab">
       <SpellSlots session={session} />
@@ -161,7 +207,7 @@ export function SpellsTab({ session }: { session: ReadySession }) {
       {sheet.spellcasting.classes.map((c) => {
         const own = indexed.filter(({ entry }) => entry.classId === c.classId && !entry.ability);
         const cantrips = own.filter(({ entry }) => isCantrip(entry.spellId)).length;
-        const prepared = own.filter(({ entry }) => entry.prepared && !isCantrip(entry.spellId)).length;
+        const prepared = own.filter(({ entry }) => entry.prepared && !entry.alwaysPrepared && !isCantrip(entry.spellId)).length;
         return (
           <section key={c.classId} className="card">
             <h2>{c.name}</h2>
@@ -171,7 +217,7 @@ export function SpellsTab({ session }: { session: ReadySession }) {
             <p className="muted">
               Cantrips {cantrips}/{c.cantripsMax ?? '–'} · Prepared {prepared}/{c.preparedMax ?? '–'}
             </p>
-            <SpellList items={own} onPrepare={prepare} onRemove={remove} />
+            <SpellList items={own} actions={actions} />
             <AddClassSpell classId={c.classId} className={c.name} onAdd={(spellId) => setSpells(addSpell(spells, { classId: c.classId, spellId, prepared: true }))} />
           </section>
         );
@@ -179,7 +225,7 @@ export function SpellsTab({ session }: { session: ReadySession }) {
       <section className="card">
         <h2>{t('spells.other')}</h2>
         <p className="muted">{t('spells.otherHelp')}</p>
-        <SpellList items={indexed.filter(({ entry }) => entry.ability !== undefined || !casters.has(entry.classId))} onPrepare={prepare} onRemove={remove} />
+        <SpellList items={indexed.filter(({ entry }) => entry.ability !== undefined || !casters.has(entry.classId))} actions={actions} />
         <AddFeatSpell onAdd={(entry) => setSpells(addSpell(spells, entry))} />
       </section>
     </div>

@@ -1,14 +1,16 @@
 import { ABILITIES, SKILL_IDS } from '../../content/constants';
+import type { Character } from '../../model/character';
 import type { DerivedSheet } from '../../rules/types';
 import { useDice } from '../dice/DiceContext';
-import { abilityName, formatMod, titleCase } from '../format';
+import { abilityName, formatMod, proficiencyGroups, titleCase } from '../format';
 
 /**
  * Spec §8: the six abilities as on the 2024 sheet, each block holding its own Saving Throw and Skills, so everything
  * that rolls on Wisdom is in one place. Tapping a number rolls it (spec §10).
  */
-export function AbilityColumn({ sheet }: { sheet: DerivedSheet }) {
+export function AbilityColumn({ character, sheet }: { character: Character; sheet: DerivedSheet }) {
   const dice = useDice();
+  const proficiencies = proficiencyGroups(character, sheet);
   return (
     <div className="ability-column">
       <div className="ability-blocks">
@@ -51,6 +53,16 @@ export function AbilityColumn({ sheet }: { sheet: DerivedSheet }) {
       <p className="passive">
         Passive Perception <strong>{sheet.passivePerception}</strong>
       </p>
+      {proficiencies.length > 0 && (
+        <dl className="proficiencies" aria-label="Other Proficiencies & Languages">
+          {proficiencies.map((group) => (
+            <div key={group.label}>
+              <dt>{group.label}</dt>
+              <dd>{group.values.join(', ')}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { CHARACTER_SCHEMA_VERSION, MigrationError, migrateCharacter } from './mi
 
 describe('migrateCharacter', () => {
   it('migrates the version 1 fixture to the current version unchanged apart from the version', () => {
-    expect(migrateCharacter(v1)).toEqual({ ...v1, schemaVersion: 3 });
+    expect(migrateCharacter(v1)).toEqual({ ...v1, schemaVersion: 4 });
   });
 
   it('keeps the sheet details and pictures of schema 3', () => {
@@ -19,6 +19,16 @@ describe('migrateCharacter', () => {
     const character = createCharacter({ id: 'c1', name: 'Kael' });
     expect(() => migrateCharacter({ ...character, details: { portrait: 'https://example.com/a.png' } })).toThrow(MigrationError);
     expect(() => migrateCharacter({ ...character, details: { portrait: `data:image/png;base64,${'A'.repeat(400_000)}` } })).toThrow(MigrationError);
+  });
+
+  it('keeps concentration and always prepared spells of schema 4', () => {
+    const character = createCharacter({ id: 'c1', name: 'Grobb' });
+    const casting = {
+      ...character,
+      state: { ...character.state, concentration: 'srd:spell:bless' },
+      choices: { ...character.choices, spells: [{ classId: 'srd:class:cleric', spellId: 'srd:spell:sleep', prepared: true, alwaysPrepared: true }] },
+    };
+    expect(migrateCharacter(casting)).toEqual(casting);
   });
 
   it('keeps a level note', () => {
@@ -35,7 +45,7 @@ describe('migrateCharacter', () => {
     const current = createCharacter({ id: 'c1', name: 'Kael', now: '2026-10-16T10:00:00.000Z' });
     const { name, ...rest } = current;
     const v0 = { ...rest, naam: name, schemaVersion: 0 };
-    const migrations = { 0: ({ naam, ...raw }: Record<string, unknown>) => ({ ...raw, name: naam }), 1: (raw: Record<string, unknown>) => raw, 2: (raw: Record<string, unknown>) => raw };
+    const migrations = { 0: ({ naam, ...raw }: Record<string, unknown>) => ({ ...raw, name: naam }), 1: (raw: Record<string, unknown>) => raw, 2: (raw: Record<string, unknown>) => raw, 3: (raw: Record<string, unknown>) => raw };
     expect(migrateCharacter(v0, migrations)).toEqual(current);
   });
 

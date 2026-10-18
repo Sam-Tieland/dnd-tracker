@@ -329,5 +329,22 @@
   "reader.type.spell": "spell",
   "reader.type.feat": "feat",
   "reader.type.species": "species",
-  "reader.type.background": "background"
+  "reader.type.background": "background",
+  "spells.alwaysPrepared": "Altijd voorbereid",
+  "spells.alwaysPreparedHelp": "Altijd voorbereid (telt niet mee, zoals Domain Spells)",
+  "spells.concentrate": "Concentreren op {name}",
+  "spells.concentrating": "Concentratie",
+  "concentration.label": "Concentratie",
+  "concentration.end": "Concentratie stoppen",
+  "concentration.save": "Con save DC {dc}",
+  "concentration.kept": "Concentratie gehouden ({total} tegen DC {dc})",
+  "undo.concentrationOn": "Concentratie op {name}",
+  "undo.concentrationOff": "Concentratie op {name} gestopt",
+  "undo.concentrationLost": "Concentratie verbroken: {name} ({total} tegen DC {dc})",
+  "sheet.xp": "{xp} XP",
+  "inventory.name": "Naam",
+  "inventory.rename": "Naam van {name}",
+  "inventory.notes": "Notities",
+  "inventory.notesFor": "Notities bij {name}",
+  "spells.concentrateShort": "Conc."
 }

@@ -1,6 +1,6 @@
 import { CharacterSchema, type Character } from '../model/character';
 
-export const CHARACTER_SCHEMA_VERSION = 3;
+export const CHARACTER_SCHEMA_VERSION = 4;
 
 export type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 
@@ -10,6 +10,8 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
   1: (raw) => raw,
   // Schema 3 only adds optional details from the official sheet (player, XP, looks, ideals, allies, pictures...).
   2: (raw) => raw,
+  // Schema 4 only adds the optional state.concentration and spells[].alwaysPrepared.
+  3: (raw) => raw,
 };
 
 export type MigrationErrorCode = 'invalid' | 'newer-version';

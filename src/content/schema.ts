@@ -75,6 +75,8 @@ export const EffectSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({ kind: z.literal('halfProficiency') }),
   z.strictObject({ kind: z.literal('flag'), flag: z.enum(['heroic-inspiration-on-long-rest']) }),
+  /** Extra cantrips known for one class, on top of its Cantrips column (Thaumaturge, Magician). */
+  z.strictObject({ kind: z.literal('extraCantrips'), classId: z.string(), count: z.number().int().min(1) }),
 ]);
 export type Effect = z.infer<typeof EffectSchema>;
 

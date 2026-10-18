@@ -8,6 +8,24 @@ const withState = (character: Character, patch: Partial<Character['state']>): Ch
 /** Whole, non-negative amounts; NaN and Infinity count as 0 so they never reach the character state. */
 const whole = (value: number) => (Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0);
 const noDeathSaves = () => ({ successes: 0, failures: 0 });
+const withoutConcentration = (character: Character): Character => {
+  if (character.state.concentration === undefined) return character;
+  const { concentration: _ended, ...state } = character.state;
+  return { ...character, state };
+};
+
+/** SRD Rules Glossary, Concentration: these conditions are or include Incapacitated, which ends Concentration. */
+export const INCAPACITATING_CONDITIONS: readonly string[] = ['incapacitated', 'paralyzed', 'petrified', 'stunned', 'unconscious'];
+
+/** SRD Concentration: the Constitution save after damage has DC 10 or half the damage (round down), at most 30. */
+export function concentrationDC(damage: number): number {
+  return Math.min(30, Math.max(10, Math.floor(whole(damage) / 2)));
+}
+
+/** Starts Concentration on a spell (ending the one before, SRD "Another Concentration Effect"), or ends it. */
+export function setConcentration(character: Character, spellId: string | undefined): Character {
+  return spellId === undefined ? withoutConcentration(character) : withState(character, { concentration: spellId });
+}
 
 /**
  * SRD "Dropping to 0 Hit Points": three failures, or Exhaustion level 6, is death. Three successes is Stable; the app
@@ -47,7 +65,10 @@ export function applyDamage(character: Character, amount: number, sheet: Derived
       deathSaves = { successes: 0, failures: 3 };
     }
   }
-  return withState(character, { hpTemp: character.state.hpTemp - fromTemp, hpCurrent: Math.max(0, shown - toHp), deathSaves });
+  const hpCurrent = Math.max(0, shown - toHp);
+  const next = withState(character, { hpTemp: character.state.hpTemp - fromTemp, hpCurrent, deathSaves });
+  // At 0 hit points the character is Unconscious, so Incapacitated: Concentration ends.
+  return hpCurrent === 0 && max > 0 ? withoutConcentration(next) : next;
 }
 
 /** Healing up to the maximum; being above 0 hit points resets death saves. */
@@ -82,7 +103,8 @@ export function recordDeathSave(character: Character, natural: number, sheet: De
 }
 
 export function setConditions(character: Character, conditions: readonly string[]): Character {
-  return withState(character, { conditions: [...new Set(conditions)] });
+  const next = withState(character, { conditions: [...new Set(conditions)] });
+  return conditions.some((c) => INCAPACITATING_CONDITIONS.includes(c)) ? withoutConcentration(next) : next;
 }
 
 /** Exhaustion levels 0–6 (SRD Rules Glossary). */

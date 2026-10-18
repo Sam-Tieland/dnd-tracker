@@ -19,6 +19,14 @@ export function setPrepared(spells: readonly SpellEntry[], index: number, prepar
   return spells.map((s, i) => (i === index ? { ...s, prepared } : s));
 }
 
+export function setAlwaysPrepared(spells: readonly SpellEntry[], index: number, always: boolean): SpellEntry[] {
+  return spells.map((s, i) => {
+    if (i !== index) return s;
+    const { alwaysPrepared: _old, ...rest } = s;
+    return always ? { ...rest, prepared: true, alwaysPrepared: true } : rest;
+  });
+}
+
 /** SRD Magic Initiate: the Cleric, Druid or Wizard spell list, with Intelligence, Wisdom or Charisma (checked in the test). */
 export const MAGIC_INITIATE_LISTS = ['srd:class:cleric', 'srd:class:druid', 'srd:class:wizard'];
 export const MAGIC_INITIATE_ABILITIES: Ability[] = ['int', 'wis', 'cha'];

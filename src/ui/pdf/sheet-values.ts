@@ -3,7 +3,7 @@ import type { ContentRegistry } from '../../content/registry';
 import type { Character, InventoryItem } from '../../model/character';
 import { deriveSheet } from '../../rules/derive';
 import type { AttackResult, DerivedSheet } from '../../rules/types';
-import { classSummary, formatMod, titleCase } from '../format';
+import { classSummary, formatMod, proficiencyGroups } from '../format';
 import {
   ABILITY_FIELDS,
   COMBAT_FIELDS,
@@ -83,18 +83,6 @@ function featureLines(sheet: DerivedSheet, registry: ContentRegistry): string[] 
   const lines = owners.map((o) => (o.owner ? `${o.owner}: ${o.names.join(', ')}` : o.names.join(', ')));
   const masteries = [...new Set(sheet.attacks.filter((a) => a.mastery).map((a) => `${a.name} (${a.mastery})`))];
   if (masteries.length > 0) lines.push(`Weapon Mastery: ${masteries.join(', ')}`);
-  return lines;
-}
-
-function proficiencyLines(character: Character, sheet: DerivedSheet): string[] {
-  const lines: string[] = [];
-  const add = (label: string, values: string[]) => {
-    if (values.length > 0) lines.push(`${label}: ${values.join(', ')}`);
-  };
-  add('Armor', sheet.armorTraining.map(titleCase));
-  add('Weapons', sheet.weaponProficiencies.map(titleCase));
-  add('Tools', character.choices.toolProficiencies.map((t) => titleCase(t.replace(/^.*:/, ''))));
-  add('Languages', character.choices.languages.map((l) => titleCase(l.replace(/^.*:/, ''))));
   return lines;
 }
 
@@ -189,11 +177,15 @@ export function sheetValues(character: Character, registry: ContentRegistry): Sh
   });
   const attackLines = sheet.attacks.slice(WEAPON_ROWS.length).map(attackLine);
   const first = sheet.spellcasting.classes[0];
-  if (first) attackLines.push(`Spell save DC ${first.dc}, spell attack ${formatMod(first.attack)} (${first.ability.toUpperCase()})`);
-  put(COMBAT_FIELDS.attacks, attackLines.join('\n'));
+  // The spell page has room for one class; with more, every class gets its own line here.
+  const casters = sheet.spellcasting.classes;
+  for (const c of casters) {
+    const line = `spell save DC ${c.dc}, spell attack ${formatMod(c.attack)} (${c.ability.toUpperCase()})`;
+    attackLines.push(casters.length > 1 ? `${c.name}: ${line}` : line.charAt(0).toUpperCase() + line.slice(1));
+  }
 
   // Text blocks
-  put(COMBAT_FIELDS.proficiencies, proficiencyLines(character, sheet).join('\n'));
+  put(COMBAT_FIELDS.proficiencies, proficiencyGroups(character, sheet).map((g) => `${g.label}: ${g.values.join(', ')}`).join('\n'));
   put(
     COMBAT_FIELDS.equipment,
     character.inventory
@@ -229,15 +221,20 @@ export function sheetValues(character: Character, registry: ContentRegistry): Sh
     if (!spell || seen.has(entry.spellId)) continue;
     seen.add(entry.spellId);
     const key = (spell.level === 0 ? 'cantrips' : String(spell.level)) as SpellKey;
-    (perLevel[key] ??= []).push({ name: spell.name, prepared: entry.prepared });
+    (perLevel[key] ??= []).push({ name: spell.name, prepared: entry.prepared || entry.alwaysPrepared === true });
   }
+  const overflow: string[] = [];
   for (const key of Object.keys(SPELL_LINES) as SpellKey[]) {
     SPELL_LINES[key].forEach((line, index) => {
       const spell = perLevel[key]?.[index];
       put(line.name, spell?.name ?? '');
       if (spell?.prepared && key !== 'cantrips') tick(line.prepared);
     });
+    // Spells beyond the lines of their level go with the attacks, so none is lost from the sheet.
+    for (const spell of perLevel[key]?.slice(SPELL_LINES[key].length) ?? []) overflow.push(`${spell.name} (${key === 'cantrips' ? 'cantrip' : `level ${key}`})`);
   }
+  if (overflow.length > 0) attackLines.push(`More spells: ${overflow.join(', ')}`);
+  put(COMBAT_FIELDS.attacks, attackLines.join('\n'));
 
   for (const field of Object.keys(text)) text[field] = toWinAnsi(text[field]);
   return { text, checks, images };

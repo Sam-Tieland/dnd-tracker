@@ -2,10 +2,12 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { CONDITIONS } from '../../content/constants';
 import { useI18n } from '../../i18n/i18n';
 import {
-  applyDamage, applyHealing, canRest, lifeState, recordDeathSave, setConditions, setDeathSaves, setExhaustion,
-  setHeroicInspiration, setTempHp,
+  applyDamage, applyHealing, canRest, concentrationDC, lifeState, recordDeathSave, setConcentration, setConditions, setDeathSaves,
+  setExhaustion, setHeroicInspiration, setTempHp,
 } from '../../rules/actions';
+import { useToast } from '../components/Toast';
 import { WarningList } from '../components/WarningList';
+import { useAppData } from '../data';
 import { useDice } from '../dice/DiceContext';
 import { classSummary, formatMod, titleCase } from '../format';
 import { hrefFor } from '../router';
@@ -13,7 +15,8 @@ import { LongRestDialog, ShortRestDialog } from './RestDialogs';
 import type { ReadySession } from './session';
 import { StoryDialog } from './StoryDialog';
 
-function HitPoints({ session }: { session: ReadySession }) {
+/** `onDamage` gets the damage taken, so a Concentration save can be offered right after. */
+function HitPoints({ session, onDamage }: { session: ReadySession; onDamage: (amount: number) => void }) {
   const { character, sheet, commit } = session;
   const { t } = useI18n();
   const [amount, setAmount] = useState('');
@@ -50,6 +53,7 @@ function HitPoints({ session }: { session: ReadySession }) {
           disabled={dead || !isNumber || value === 0}
           onClick={() => {
             commit(applyDamage(character, value, sheet, { critical }), t('undo.damage', { amount: value }));
+            onDamage(value);
             done();
           }}
         >
@@ -142,6 +146,51 @@ function DeathSaves({ session }: { session: ReadySession }) {
       )}
       <button type="button" onClick={() => commit(setDeathSaves(character, 0, 0), t('undo.deathSavesReset'))}>
         {t('sheet.resetDeathSaves')}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * SRD Concentration: the spell held, a Constitution save after damage (DC 10 or half the damage, at most 30) and a
+ * tap to end it. A failed save ends Concentration with an Undo, so a wrong roll can be taken back.
+ */
+function Concentration({ session, damage, onDone }: { session: ReadySession; damage?: number; onDone: () => void }) {
+  const { character, sheet, commit } = session;
+  const { registry } = useAppData();
+  const { t } = useI18n();
+  const dice = useDice();
+  const toast = useToast();
+  const spellId = character.state.concentration;
+  if (!spellId) return null;
+  const name = registry.getOf('spell', spellId)?.name ?? spellId;
+  const dc = damage !== undefined ? concentrationDC(damage) : undefined;
+  const save = async () => {
+    if (dc === undefined) return;
+    const result = await dice.rollD20('Concentration (Con save)', sheet.saves.con.bonus);
+    if (!result) return;
+    onDone();
+    if (result.total >= dc) toast({ message: t('concentration.kept', { total: result.total, dc }) });
+    else commit(setConcentration(character, undefined), t('undo.concentrationLost', { name, total: result.total, dc }));
+  };
+  return (
+    <div className="concentration row" role="group" aria-label={t('concentration.label')}>
+      <strong>{t('concentration.label')}</strong>
+      <span>{name}</span>
+      {dc !== undefined && (
+        <button type="button" className="danger" onClick={save}>
+          {t('concentration.save', { dc })}
+        </button>
+      )}
+      <button
+        type="button"
+        aria-label={t('concentration.end')}
+        onClick={() => {
+          onDone();
+          commit(setConcentration(character, undefined), t('undo.concentrationOff', { name }));
+        }}
+      >
+        ×
       </button>
     </div>
   );
@@ -266,8 +315,18 @@ export function TopBar({ session }: { session: ReadySession }) {
   const { character, sheet } = session;
   const { t } = useI18n();
   const dice = useDice();
+  const { registry } = useAppData();
   const dcs = [...new Set(sheet.spellcasting.classes.map((c) => c.dc))];
   const [storyOpen, setStoryOpen] = useState(false);
+  // The last damage taken while concentrating, until the save is rolled or Concentration ends.
+  const [damage, setDamage] = useState<number>();
+  const { speciesId, backgroundId } = character.choices;
+  const origin = [
+    speciesId ? registry.getOf('species', speciesId)?.name : undefined,
+    backgroundId ? registry.getOf('background', backgroundId)?.name : undefined,
+    character.details.alignment,
+    character.details.xp ? t('sheet.xp', { xp: character.details.xp }) : undefined,
+  ].filter((part): part is string => !!part && part.trim() !== '');
   return (
     <header className="top-bar card">
       <div className="row top-row">
@@ -280,6 +339,7 @@ export function TopBar({ session }: { session: ReadySession }) {
           <span className="muted">
             {classSummary(sheet) || '–'} · Level {sheet.totalLevel}
           </span>
+          {origin.length > 0 && <span className="muted origin">{origin.join(' · ')}</span>}
         </div>
         <button type="button" aria-label={t('undo.last')} disabled={!session.canUndo} onClick={session.undo}>
           ↶
@@ -297,7 +357,7 @@ export function TopBar({ session }: { session: ReadySession }) {
       </div>
       {storyOpen && <StoryDialog session={session} onClose={() => setStoryOpen(false)} />}
       <div className="head-main">
-        <HitPoints session={session} />
+        <HitPoints session={session} onDamage={(amount) => setDamage(character.state.concentration ? amount : undefined)} />
         <div className="vitals">
           <div className="stat" title={sheet.ac.source}>
             <span>AC</span>
@@ -327,6 +387,7 @@ export function TopBar({ session }: { session: ReadySession }) {
           </div>
         </div>
       </div>
+      <Concentration session={session} damage={damage} onDone={() => setDamage(undefined)} />
       <DeathSaves session={session} />
       <WarningList warnings={sheet.warnings} />
     </header>

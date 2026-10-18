@@ -329,5 +329,22 @@
   "reader.type.spell": "spell",
   "reader.type.feat": "feat",
   "reader.type.species": "species",
-  "reader.type.background": "background"
+  "reader.type.background": "background",
+  "spells.alwaysPrepared": "Always prepared",
+  "spells.alwaysPreparedHelp": "Always prepared (does not count, like Domain Spells)",
+  "spells.concentrate": "Concentrate on {name}",
+  "spells.concentrating": "Concentrating",
+  "concentration.label": "Concentration",
+  "concentration.end": "End concentration",
+  "concentration.save": "Con save DC {dc}",
+  "concentration.kept": "Concentration kept ({total} against DC {dc})",
+  "undo.concentrationOn": "Concentrating on {name}",
+  "undo.concentrationOff": "Concentration on {name} ended",
+  "undo.concentrationLost": "Concentration lost: {name} ({total} against DC {dc})",
+  "sheet.xp": "{xp} XP",
+  "inventory.name": "Name",
+  "inventory.rename": "Name of {name}",
+  "inventory.notes": "Notes",
+  "inventory.notesFor": "Notes on {name}",
+  "spells.concentrateShort": "Conc."
 }

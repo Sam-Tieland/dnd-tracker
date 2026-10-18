@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createCharacter } from '../../model/character';
-import { kael, makeCharacter, registry } from '../../rules/testing/fixtures';
+import { kael, levels, makeCharacter, registry } from '../../rules/testing/fixtures';
 import { SPELL_LINES } from './sheet-fields';
 import { sheetValues } from './sheet-values';
 
@@ -127,6 +127,26 @@ describe('sheetValues', () => {
     expect(text['FactionName']).toBe('Night Guard');
     expect(text['Treasure']).toBe('A silver locket');
     expect(images).toEqual({ 'CHARACTER IMAGE': portrait });
+  });
+
+  it('gives every spellcasting class its own DC line when there is more than one', () => {
+    const both = makeCharacter({ choices: { baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 14 }, levels: [...levels('cleric', 1), ...levels('sorcerer', 1)] } });
+    const lines = sheetValues(both, registry).text['AttacksSpellcasting'].split('\n');
+    expect(lines).toContain('Cleric: spell save DC 13, spell attack +5 (WIS)');
+    expect(lines).toContain('Sorcerer: spell save DC 12, spell attack +4 (CHA)');
+  });
+
+  it('puts spells beyond the lines of their level with the attacks and ticks always prepared spells', () => {
+    const cantrips = registry.list('spell').filter((s) => s.level === 0 && s.classes.includes('srd:class:wizard'));
+    expect(cantrips.length).toBeGreaterThan(SPELL_LINES.cantrips.length);
+    const many = cantrips.map((s) => ({ classId: 'srd:class:wizard', spellId: s.id, prepared: true }));
+    const sleep = { classId: 'srd:class:wizard', spellId: 'srd:spell:sleep', prepared: false, alwaysPrepared: true };
+    const wizard = makeCharacter({ choices: { levels: levels('wizard', 1), spells: [...many, sleep] } });
+    const { text, checks } = sheetValues(wizard, registry);
+    const extra = cantrips.slice(SPELL_LINES.cantrips.length).map((s) => `${s.name} (cantrip)`);
+    expect(text['AttacksSpellcasting']).toContain(`More spells: ${extra.join(', ')}`);
+    expect(text[SPELL_LINES['1'][0].name]).toBe('Sleep');
+    expect(checks).toContain(SPELL_LINES['1'][0].prepared);
   });
 
   it('handles an empty character', () => {

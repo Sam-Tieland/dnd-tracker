@@ -84,6 +84,35 @@ export function withModifier(dice: string, modifier: number): string {
   return `${dice}${modifier > 0 ? '+' : '-'}${Math.abs(modifier)}`;
 }
 
+export const UNARMED_STRIKE_ID = 'unarmed-strike';
+
+/**
+ * SRD Rules Glossary "Unarmed Strike": everyone has it, Strength modifier + Proficiency Bonus to hit and 1 + Strength
+ * modifier Bludgeoning damage. A Monk without armor or a Shield uses the Martial Arts die and the better of Strength
+ * and Dexterity (SRD Monk, Martial Arts). Grapple and Shove use 8 + Strength modifier + PB, shown with the attack.
+ */
+export function computeUnarmedStrike(
+  abilities: Abilities,
+  pb: number,
+  bonus: BonusFn,
+  d20Penalty: number,
+  martialArtsDie: string | undefined,
+): AttackResult {
+  const mod = martialArtsDie ? Math.max(abilities.str.mod, abilities.dex.mod) : abilities.str.mod;
+  const extra = bonus('damage') + bonus(`damage:${UNARMED_STRIKE_ID}`);
+  const damage = martialArtsDie ? withModifier(martialArtsDie, mod + extra) : String(Math.max(0, 1 + mod + extra));
+  return {
+    id: UNARMED_STRIKE_ID,
+    kind: 'unarmed',
+    name: 'Unarmed Strike',
+    toHit: mod + pb + bonus('attack') + bonus(`attack:${UNARMED_STRIKE_ID}`) - d20Penalty,
+    damage,
+    damageType: 'Bludgeoning',
+    properties: [`Grapple/Shove DC ${8 + mod + pb}`],
+    proficient: true,
+  };
+}
+
 export function computeWeaponAttacks(
   character: Character,
   registry: ContentRegistry,

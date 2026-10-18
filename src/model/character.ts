@@ -29,7 +29,7 @@ export const LevelChoiceSchema = z.strictObject({
 
 export const CharacterSchema = z.strictObject({
   id: z.string().min(1),
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
   name: z.string(),
@@ -71,8 +71,13 @@ export const CharacterSchema = z.strictObject({
     languages: z.array(z.string()),
     toolProficiencies: z.array(z.string()),
     featureOptions: z.array(z.string()),
-    /** `ability` is set for spells from a feat such as Magic Initiate; `classId` is then the spell list. */
-    spells: z.array(z.strictObject({ classId: z.string(), spellId: z.string(), prepared: z.boolean(), ability: AbilitySchema.optional() })),
+    /**
+     * `ability` is set for spells from a feat such as Magic Initiate; `classId` is then the spell list. `alwaysPrepared`
+     * marks a spell a feature keeps prepared (Domain Spells, Oath Spells): it never counts against the class's maximum.
+     */
+    spells: z.array(
+      z.strictObject({ classId: z.string(), spellId: z.string(), prepared: z.boolean(), ability: AbilitySchema.optional(), alwaysPrepared: z.boolean().optional() }),
+    ),
   }),
   state: z.strictObject({
     hpCurrent: z.number().int(),
@@ -85,6 +90,8 @@ export const CharacterSchema = z.strictObject({
     conditions: z.array(z.string()),
     exhaustion: z.number().int().min(0).max(6),
     heroicInspiration: z.boolean(),
+    /** The spell the character is concentrating on, by spell id. */
+    concentration: z.string().optional(),
   }),
   inventory: z.array(
     z.strictObject({
@@ -117,7 +124,7 @@ export function createCharacter(input: NewCharacterInput = {}): Character {
   const now = input.now ?? new Date().toISOString();
   return {
     id: input.id ?? crypto.randomUUID(),
-    schemaVersion: 3,
+    schemaVersion: 4,
     createdAt: now,
     updatedAt: now,
     name: input.name ?? '',

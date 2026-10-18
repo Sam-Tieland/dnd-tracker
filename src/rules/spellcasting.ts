@@ -88,7 +88,19 @@ export function makeSpellStats(abilities: Record<Ability, AbilityResult>, pb: nu
   };
 }
 
-export function computeSpellcasting(character: Character, registry: ContentRegistry, sources: CasterSource[], stats: SpellStatsFn): SpellcastingResult {
+/** The Cantrips column plus `extraCantrips` effects for that class; a class without the column stays without a maximum. */
+function withExtraCantrips(max: number | undefined, classId: string, effects: Effect[]): number | undefined {
+  if (max === undefined) return undefined;
+  return effects.reduce((total, e) => (e.kind === 'extraCantrips' && e.classId === classId ? total + e.count : total), max);
+}
+
+export function computeSpellcasting(
+  character: Character,
+  registry: ContentRegistry,
+  sources: CasterSource[],
+  stats: SpellStatsFn,
+  effects: Effect[] = [],
+): SpellcastingResult {
   const classes: CasterStats[] = sources.map((source) => {
     const cls = registry.getOf('class', source.classId);
     const row = cls?.levels[source.classLevel - 1];
@@ -100,7 +112,7 @@ export function computeSpellcasting(character: Character, registry: ContentRegis
       progression: source.progression,
       ...stats(source.ability),
       preparedMax: column('prepared-spells'),
-      cantripsMax: column('cantrips'),
+      cantripsMax: withExtraCantrips(column('cantrips'), source.classId, effects),
     };
   });
   const slots = slotsForCasterLevel(casterLevel(sources)).map((max, index) => ({

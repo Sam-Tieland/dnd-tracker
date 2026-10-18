@@ -47,8 +47,8 @@ describe('export', () => {
     const good = JSON.parse(serializeExport(buildCharacterExport(character, registry, userItems, NOW)));
     const v1File = { ...good, characters: [{ ...good.characters[0], schemaVersion: 1 }] };
     const parsed = parseExportFile(JSON.stringify(v1File));
-    expect(parsed.characters[0].schemaVersion).toBe(3);
-    expect(parsed.characters[0]).toEqual({ ...character, schemaVersion: 3 });
+    expect(parsed.characters[0].schemaVersion).toBe(4);
+    expect(parsed.characters[0]).toEqual({ ...character, schemaVersion: 4 });
   });
 
   it('rejects anything that is not a valid export, as a whole', () => {

@@ -311,3 +311,51 @@ describe('sheet', () => {
     expect(links.map((l) => l.getAttribute('href'))).toEqual(['#/books/tce/7', '#/books/tce/8']);
   });
 });
+
+describe('sheet: what the paper sheet has', () => {
+  async function open(character: Character) {
+    const db = testDb();
+    await saveCharacter(db, character);
+    const view = renderApp('#/c/test', db);
+    await screen.findByTestId('hp');
+    return { ...view, user: userEvent.setup() };
+  }
+
+  it('shows armor and weapon training, tools and languages, plus species, background and XP in the head', async () => {
+    const base = kael({ state: { hpCurrent: 40 }, choices: { languages: ['common', 'draconic'] } });
+    await open({ ...base, details: { alignment: 'Lawful Good', xp: '6500' } });
+    const list = screen.getByLabelText('Other Proficiencies & Languages');
+    expect(within(list).getByText('Common, Draconic')).toBeTruthy();
+    expect(within(list).getByText('Armor')).toBeTruthy();
+    expect(topBar().getByText('Human · Soldier · Lawful Good · 6500 XP')).toBeTruthy();
+  });
+
+  it('everyone has an Unarmed Strike', async () => {
+    await open(kael({ state: { hpCurrent: 40 } }));
+    expect(screen.getByText('Unarmed Strike')).toBeTruthy();
+  });
+
+  it('after damage offers the Concentration save, and a failed save ends Concentration with an Undo', async () => {
+    const { db, user } = await open(kael({ state: { hpCurrent: 40, concentration: 'srd:spell:bless' } }));
+    const bar = () => screen.queryByRole('group', { name: 'Concentration' });
+    expect(within(bar()!).getByText('Bless')).toBeTruthy();
+    await damage(user, '24');
+    await user.click(within(bar()!).getByRole('button', { name: 'Con save DC 12' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByRole('textbox'), '1');
+    await user.click(within(dialog).getByRole('button', { name: 'Fill in' }));
+    await waitFor(() => expect(bar()).toBeNull());
+    await waitFor(async () => expect((await loadCharacter(db, 'test'))?.state.concentration).toBeUndefined());
+    await user.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(within(bar()!).getByText('Bless')).toBeTruthy();
+  });
+
+  it('renames an item, and the attack takes the new name', async () => {
+    const { user } = await open(kael({ state: { hpCurrent: 40 } }));
+    await user.click(screen.getByRole('tab', { name: 'Inventory' }));
+    await user.click(screen.getByText('Longsword'));
+    await user.type(screen.getByLabelText('Name of Longsword'), 'Oath');
+    await user.click(screen.getByRole('tab', { name: 'Actions' }));
+    expect(screen.getByText('Oath')).toBeTruthy();
+  });
+});

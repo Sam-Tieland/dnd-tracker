@@ -5,7 +5,7 @@ describe('createCharacter', () => {
   it('creates a valid empty character', () => {
     const character = createCharacter({ id: 'c1', name: 'Kael', now: '2026-10-15T10:00:00.000Z' });
     expect(CharacterSchema.parse(character)).toEqual(character);
-    expect(character).toMatchObject({ id: 'c1', name: 'Kael', schemaVersion: 3, createdAt: '2026-10-15T10:00:00.000Z' });
+    expect(character).toMatchObject({ id: 'c1', name: 'Kael', schemaVersion: 4, createdAt: '2026-10-15T10:00:00.000Z' });
     expect(character.choices.baseAbilities).toEqual({ str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
     expect(character.choices.levels).toEqual([]);
   });
