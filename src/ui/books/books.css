@@ -1,0 +1,81 @@
+/*
+ * The book reader: one parchment sheet on the oak table, filling the screen. The bar sits on top, contents and search
+ * on the left (behind a button on a phone), the scanned page on the right on the lightest paper.
+ */
+.book-reader {
+  height: 100vh; height: 100dvh; display: flex;
+  padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+}
+.book-frame {
+  flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem;
+  background: var(--parchment); color: var(--text); border-radius: 6px; padding: 0.5rem; box-shadow: var(--card-shadow);
+}
+.book-bar { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+.book-choice { max-width: 18rem; font-family: var(--font-display); font-size: 1.1rem; }
+.book-page-label { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.book-tools { display: flex; align-items: center; gap: 0.35rem; margin-left: auto; flex-wrap: wrap; }
+.book-tools > button { font-size: 1.3rem; padding: 0 0.6rem; }
+.book-goto { display: flex; gap: 0.25rem; }
+.book-goto input { width: 7.5rem; }
+.book-notice { margin: 0; color: var(--warning); }
+
+.book-body { flex: 1; min-height: 0; display: flex; gap: 0.5rem; position: relative; }
+.book-side {
+  width: 30%; max-width: 340px; min-width: 220px; overflow: auto; overscroll-behavior: contain;
+  background: var(--surface-2); border-radius: 4px; padding: 0.5rem;
+}
+.book-side-inner { display: flex; flex-direction: column; gap: 0.4rem; }
+.book-search { width: 100%; }
+.book-hint { font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 0.4rem; margin: 0.25rem 0 0; }
+
+.book-toc, .book-hits { list-style: none; margin: 0; padding: 0; }
+.book-toc .book-toc { padding-left: 1rem; }
+.book-toc-row { display: flex; align-items: stretch; }
+.book-toc-toggle { background: transparent; border-color: transparent; padding: 0; flex: none; }
+.book-toc-spacer { width: var(--tap); flex: none; }
+.book-link {
+  flex: 1; min-width: 0; min-height: var(--tap); display: flex; flex-direction: column; justify-content: center;
+  padding: 0.25rem 0.4rem; border-radius: 4px; color: var(--text); text-decoration: none;
+}
+.book-toc .book-link { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.book-link small { color: var(--muted); white-space: nowrap; }
+.book-hits .book-link small { white-space: normal; }
+a.book-link:active, a.book-link.on { background: var(--accent-soft); }
+@media (hover: hover) and (pointer: fine) {
+  a.book-link:hover { background: var(--accent-soft); }
+}
+.book-hit mark { background: var(--parchment-top); color: inherit; box-shadow: 0 -2px 0 var(--gold) inset; }
+.book-hit.unavailable .book-link { opacity: 0.55; }
+
+.book-view {
+  flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+}
+/* Centred while it fits, scrollable from the left edge once it is wider than the reading area. */
+.book-sheet { margin: 0 auto; transform-origin: 50% 0; }
+.book-sheet canvas { display: block; }
+.book-empty { flex: 1; margin: 0; padding: 2rem; text-align: center; color: var(--muted); }
+
+/* Phone: the panel slides over the page and closes after a choice. */
+.book-reader.narrow .book-side {
+  position: absolute; inset: 0 auto 0 0; z-index: 5; width: min(88%, 360px); max-width: none; min-width: 0;
+  box-shadow: var(--shadow-lg);
+  transition: transform 240ms var(--ease-out);
+  @starting-style { transform: translateX(-100%); }
+}
+/* Two rows on a phone: back, book and page; then the tools, with the go-to field taking what is left. */
+.book-reader.narrow .book-choice { flex: 1; min-width: 0; }
+.book-reader.narrow .book-tools { margin-left: 0; flex: 1 1 100%; min-width: 0; flex-wrap: nowrap; }
+.book-reader.narrow .book-goto { flex: 1; min-width: 0; }
+.book-reader.narrow .book-goto input { width: auto; flex: 1; min-width: 0; }
+/* With one field, Enter (or the keyboard's Go key) submits; the button only takes room on a phone. */
+.book-reader.narrow .book-goto button { display: none; }
+.book-panel-toggle { font-size: 1.1rem; }
+.book-panel-text { font-size: 1rem; }
+@media (max-width: 600px) {
+  .book-panel-text { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-reader.narrow .book-side { @starting-style { transform: none; } }
+}

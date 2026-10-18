@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from 'react';
 import { detectLanguage, I18nProvider } from '../i18n/i18n';
 import type { TrackerDb } from '../storage/db';
 import { UpdatePrompt } from './UpdatePrompt';
+import { BookReader } from './books/BookReader';
 import { Section } from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { AppDataProvider, useAppData } from './data';
@@ -55,6 +56,8 @@ function Screen() {
       return <CharacterForm id={route.id} />;
     case 'sheet':
       return <Sheet id={route.id} />;
+    case 'books':
+      return <BookReader bookId={route.bookId} bookPage={route.bookPage} />;
     default:
       return <CharacterList />;
   }
@@ -62,8 +65,9 @@ function Screen() {
 
 function Screens() {
   const route = useRoute();
+  // The reader stays open while you jump between books and pages, so pdf.js is not loaded again for every link.
   return (
-    <Section key={hrefFor(route)}>
+    <Section key={route.name === 'books' ? '#/books' : hrefFor(route)}>
       <Screen />
     </Section>
   );

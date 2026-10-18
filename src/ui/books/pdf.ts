@@ -85,9 +85,12 @@ export async function openPdf(blob: Blob): Promise<PdfHandle> {
       canvas.height = Math.floor(viewport.height);
       canvas.style.width = `${base.width * cssScale}px`;
       canvas.style.height = `${base.height * cssScale}px`;
-      await guard(page.render({ canvas, viewport }).promise);
-      // Frees the page's decoded images, so memory does not grow over a long book.
-      page.cleanup();
+      try {
+        await guard(page.render({ canvas, viewport }).promise);
+      } finally {
+        // Frees the page's decoded images, so memory does not grow over a long book (also after a failed render).
+        page.cleanup();
+      }
     },
     async destroy() {
       await task.destroy();

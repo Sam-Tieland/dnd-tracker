@@ -69,9 +69,14 @@ export function CharacterList() {
         </svg>
         {t('list.title')}
       </h1>
-      <a className="button" href={hrefFor({ name: 'settings' })}>
-        {t('nav.settings')}
-      </a>
+      <div className="row">
+        <a className="button" href={hrefFor({ name: 'books' })}>
+          {t('nav.books')}
+        </a>
+        <a className="button" href={hrefFor({ name: 'settings' })}>
+          {t('nav.settings')}
+        </a>
+      </div>
     </header>
   );
   if (loadError !== undefined) {
