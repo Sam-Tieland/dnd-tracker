@@ -1,13 +1,15 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { BookEntry, BookId, BookIndex } from '../../content/books';
+import * as storage from '../../storage/books';
 import { saveBook, saveBookIndex } from '../../storage/books';
 import type { TrackerDb } from '../../storage/db';
 import { DEFAULT_SETTINGS, saveSettings } from '../../storage/settings';
 import { renderWithProviders, testDb } from '../testing/render';
 import { BookLink } from './BookLink';
+import { BOOKS_CHANGED } from './recognise';
 
 const entry = (id: string, bookPage: number, contentIds: string[]): BookEntry => ({ id, title: `Entry ${id}`, type: 'feature', bookPage, contentIds });
 const book = (bookId: BookId, entries: BookEntry[], pdfPages = 20) => ({
@@ -73,5 +75,33 @@ describe('BookLink', () => {
     const { container } = renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
     await new Promise((r) => setTimeout(r, 50));
     await waitFor(() => expect(container.querySelector('.book-link, .book-link-wrap')).toBeNull());
+  });
+
+  it('loads the index once for several links', async () => {
+    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a', 'feat:b'])])), books: [['tce', 20]] });
+    const spy = vi.spyOn(storage, 'loadBookIndex');
+    renderWithProviders(
+      <>
+        <BookLink contentIds={['feat:a']} label="A" />
+        <BookLink contentIds={['feat:b']} label="B" />
+        <BookLink contentIds={['feat:a']} label="C" />
+      </>,
+      db,
+    );
+    expect(await screen.findAllByRole('link')).toHaveLength(3);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+
+  it('reloads after BOOKS_CHANGED', async () => {
+    const db = await setup({ index: index(book('tce', [entry('e', 35, ['feat:a'])])) });
+    const user = userEvent.setup();
+    renderWithProviders(<BookLink contentIds={['feat:a']} label="A" />, db);
+    await user.click(await screen.findByRole('button', { name: 'In boek' }));
+    await saveBook(db, { bookId: 'tce', name: 'tce.pdf', size: 1, pdfPages: 20, blob: new Blob(['x']), addedAt: 'now' });
+    act(() => {
+      window.dispatchEvent(new Event(BOOKS_CHANGED));
+    });
+    expect((await screen.findByRole('link', { name: /blz. 35/ })).getAttribute('href')).toBe('#/books/tce/35');
   });
 });
