@@ -9,12 +9,12 @@ export const SettingsSchema = z.object({
   persistRequested: z.boolean().catch(false),
   lastExportAt: z.iso.datetime().nullable().catch(null),
   /** On: every roll asks what the player rolled with real dice, instead of rolling in the app. */
-  physicalDice: z.boolean().catch(false),
+  physicalDice: z.boolean().catch(true),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
-export const DEFAULT_SETTINGS: Settings = { language: null, theme: 'auto', persistRequested: false, lastExportAt: null, physicalDice: false };
+export const DEFAULT_SETTINGS: Settings = { language: null, theme: 'auto', persistRequested: false, lastExportAt: null, physicalDice: true };
 
 const KEY = 'app';
 

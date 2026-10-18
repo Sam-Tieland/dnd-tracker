@@ -177,9 +177,10 @@ describe('sheet', () => {
     await user.click(screen.getByRole('button', { name: 'Short Rest' }));
     await user.click(screen.getByRole('button', { name: 'One more d10' }));
     await user.click(screen.getByRole('button', { name: 'Roll and rest' }));
-    const hp = Number(screen.getByTestId('hp').textContent!.split('/')[0]);
-    expect(hp).toBeGreaterThanOrEqual(23);
-    expect(hp).toBeLessThanOrEqual(32);
+    // Real dice are on by default: the player fills in the d10 they rolled.
+    const die = within(await screen.findByRole('dialog', { name: 'Hit Point Die (d10)' }));
+    await user.type(die.getByLabelText('1d10'), '7{Enter}');
+    await waitFor(() => expect(screen.getByTestId('hp').textContent!.split('/')[0]).toBe('29'));
   });
 
   it('keeps notes', async () => {
