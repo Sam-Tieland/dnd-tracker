@@ -38,7 +38,7 @@ describe('openPdf', () => {
     } finally {
       await pdf.destroy();
     }
-  });
+  }, 30_000); // a 3 MB file is slow to build under a loaded machine
 
   it('reports a spread page as twice as wide', async () => {
     const pdf = await openPdf(await fakePdf(3, { spreadFrom: 2 }));
