@@ -118,3 +118,19 @@ describe('dice panel', () => {
     expect(screen.queryByText(/1d8\+3/)).toBeNull();
   });
 });
+
+describe('books button next to the dice', () => {
+  it('shows Books while the dice are folded and hides it while they are open', async () => {
+    renderWithProviders(
+      <DiceProvider rng={middle}>
+        <DicePanel />
+      </DiceProvider>,
+    );
+    const user = userEvent.setup();
+    expect((await screen.findByRole('link', { name: 'Books' })).getAttribute('href')).toBe('#/books');
+    await user.click(screen.getByRole('button', { name: 'Dice' }));
+    expect(screen.queryByRole('link', { name: 'Books' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Dice' }));
+    expect(screen.getByRole('link', { name: 'Books' })).toBeTruthy();
+  });
+});

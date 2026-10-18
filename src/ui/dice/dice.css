@@ -1,5 +1,7 @@
 .dice-panel { position: sticky; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding: 0.25rem 1rem calc(0.25rem + env(safe-area-inset-bottom)); box-shadow: 0 -6px 20px rgb(0 0 0 / 6%); }
-.dice-latest { width: 100%; justify-content: flex-start; border: none; background: transparent; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dice-bar { display: flex; align-items: center; gap: 0.5rem; }
+.dice-books { flex: none; }
+.dice-latest { flex: 1; min-width: 0; justify-content: flex-start; border: none; background: transparent; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 /* The bar spans the screen, so it gives only a hair when pressed instead of the buttons' 0.97. */
 @media (prefers-reduced-motion: no-preference) {
   .dice-latest:not(:disabled):active { transform: scale(0.99); }

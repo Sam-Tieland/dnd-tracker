@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { D20Mode } from '../../dice/dice';
 import { useI18n } from '../../i18n/i18n';
+import { hrefFor } from '../router';
 import { useDice } from './DiceContext';
 import './dice.css';
 
@@ -15,21 +16,29 @@ export function DicePanel() {
   const latest = dice.history[0];
   return (
     <aside className="dice-panel" aria-label={t('dice.title')}>
-      <button type="button" className="dice-latest" aria-expanded={dice.open} onClick={() => dice.setOpen(!dice.open)}>
-        {latest ? (
-          // Keyed on the roll, so every new roll mounts fresh and plays its entrance, also when the total repeats.
-          <span key={latest.id} className="dice-result">
-            <strong className={latest.natural20 ? 'nat20' : latest.natural1 ? 'nat1' : undefined}>{latest.total}</strong>
-            <span>{latest.label}</span>
-            <span className="muted">
-              {latest.detail}
-              {latest.manual && ` · ${t('dice.manualMark')}`}
+      <div className="dice-bar">
+        <button type="button" className="dice-latest" aria-expanded={dice.open} onClick={() => dice.setOpen(!dice.open)}>
+          {latest ? (
+            // Keyed on the roll, so every new roll mounts fresh and plays its entrance, also when the total repeats.
+            <span key={latest.id} className="dice-result">
+              <strong className={latest.natural20 ? 'nat20' : latest.natural1 ? 'nat1' : undefined}>{latest.total}</strong>
+              <span>{latest.label}</span>
+              <span className="muted">
+                {latest.detail}
+                {latest.manual && ` · ${t('dice.manualMark')}`}
+              </span>
             </span>
-          </span>
-        ) : (
-          t('dice.title')
+          ) : (
+            t('dice.title')
+          )}
+        </button>
+        {/* Only while the dice are folded: open, the bar belongs to the dice. */}
+        {!dice.open && (
+          <a className="button dice-books" href={hrefFor({ name: 'books' })}>
+            {t('nav.books')}
+          </a>
         )}
-      </button>
+      </div>
       {dice.open && (
         <div className="dice-body">
           <div className="row" role="group" aria-label={t('dice.mode')}>
