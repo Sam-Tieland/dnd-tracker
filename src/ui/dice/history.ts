@@ -8,6 +8,8 @@ export interface DiceEntry {
   detail: string;
   natural20?: boolean;
   natural1?: boolean;
+  /** Rolled with real dice and filled in by the player. */
+  manual?: boolean;
 }
 
 export const HISTORY_LIMIT = 20;

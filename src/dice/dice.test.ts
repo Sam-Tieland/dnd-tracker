@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readVendor } from '../../scripts/convert-srd/vendor';
-import { cryptoRng, DiceError, parseRoll, roll, rollAbilityScore, rollD20, rollDie, type Rng } from './dice';
+import { cryptoRng, d20FromFaces, DiceError, manualTerms, parseRoll, roll, rollAbilityScore, rollD20, rollDie, rollFromTotals, type Rng } from './dice';
 
 /** An RNG that makes successive dice of `sides` show the given faces. */
 const faces = (sides: number, ...values: number[]): Rng => {
@@ -81,5 +81,42 @@ describe('rollAbilityScore', () => {
     expect(readVendor('character-creation.md')).toContain('Roll four d6s and record the total of the highest three dice.');
     expect(rollAbilityScore(faces(6, 1, 4, 6, 3))).toBe(13);
     expect(rollAbilityScore(faces(6, 6, 6, 6, 6))).toBe(18);
+  });
+});
+
+describe('real dice', () => {
+  it('a d20 test from rolled faces keeps the right die', () => {
+    expect(d20FromFaces([14], 5)).toMatchObject({ kept: 14, total: 19, natural20: false });
+    expect(d20FromFaces([9, 14], 5, 'advantage')).toMatchObject({ rolls: [9, 14], kept: 14, total: 19 });
+    expect(d20FromFaces([9, 14], 5, 'disadvantage')).toMatchObject({ kept: 9, total: 14 });
+    expect(d20FromFaces([20], 0)).toMatchObject({ natural20: true });
+    expect(d20FromFaces([1], 0)).toMatchObject({ natural1: true });
+  });
+
+  it('refuses faces a d20 cannot show, or the wrong number of dice', () => {
+    expect(() => d20FromFaces([21], 0)).toThrow(DiceError);
+    expect(() => d20FromFaces([0], 0)).toThrow(DiceError);
+    expect(() => d20FromFaces([2.5], 0)).toThrow(DiceError);
+    expect(() => d20FromFaces([12], 0, 'advantage')).toThrow(DiceError);
+  });
+
+  it('lists the dice to roll per term, doubled on a Critical Hit', () => {
+    expect(manualTerms('2d6+1d8+3')).toEqual([
+      { count: 2, sides: 6, sign: 1 },
+      { count: 1, sides: 8, sign: 1 },
+    ]);
+    expect(manualTerms('1d8+3', true)).toEqual([{ count: 2, sides: 8, sign: 1 }]);
+  });
+
+  it('adds the counted totals per term and the modifier', () => {
+    expect(rollFromTotals('2d6+1d8+3', [9, 5])).toMatchObject({ total: 17, modifier: 3 });
+    expect(rollFromTotals('1d8+3', [13], true).total).toBe(16);
+    expect(rollFromTotals('1d6-1d4', [5, 3]).total).toBe(2);
+  });
+
+  it('refuses a total the dice cannot make', () => {
+    expect(() => rollFromTotals('2d6', [1])).toThrow(DiceError);
+    expect(() => rollFromTotals('2d6', [13])).toThrow(DiceError);
+    expect(() => rollFromTotals('2d6', [7, 3])).toThrow(DiceError);
   });
 });

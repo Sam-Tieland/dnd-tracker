@@ -21,7 +21,10 @@ export function DicePanel() {
           <span key={latest.id} className="dice-result">
             <strong className={latest.natural20 ? 'nat20' : latest.natural1 ? 'nat1' : undefined}>{latest.total}</strong>
             <span>{latest.label}</span>
-            <span className="muted">{latest.detail}</span>
+            <span className="muted">
+              {latest.detail}
+              {latest.manual && ` · ${t('dice.manualMark')}`}
+            </span>
           </span>
         ) : (
           t('dice.title')
@@ -39,12 +42,16 @@ export function DicePanel() {
               {t('dice.critical')}
             </button>
           </div>
+          <label className="dice-physical">
+            <input type="checkbox" checked={dice.physical} onChange={(e) => dice.setPhysical(e.target.checked)} />
+            {t('dice.physical')}
+          </label>
           <form
             className="row"
             onSubmit={(event) => {
               event.preventDefault();
               const text = expression.trim();
-              if (text && dice.roll(text, text)) setExpression('');
+              if (text) void dice.roll(text, text).then((result) => result && setExpression(''));
             }}
           >
             <input aria-label={t('dice.expression')} placeholder="2d6+3" value={expression} onChange={(e) => setExpression(e.target.value)} />
@@ -52,7 +59,7 @@ export function DicePanel() {
           </form>
           <div className="row">
             {QUICK_DICE.map((sides) => (
-              <button key={sides} type="button" onClick={() => dice.roll(`d${sides}`, `1d${sides}`)}>
+              <button key={sides} type="button" onClick={() => void dice.roll(`d${sides}`, `1d${sides}`)}>
                 d{sides}
               </button>
             ))}
@@ -60,7 +67,11 @@ export function DicePanel() {
           <ol className="dice-history" aria-label={t('dice.history')}>
             {dice.history.map((entry) => (
               <li key={entry.id}>
-                <strong>{entry.total}</strong> {entry.label} <span className="muted">{entry.detail}</span>
+                <strong>{entry.total}</strong> {entry.label}{' '}
+                <span className="muted">
+                  {entry.detail}
+                  {entry.manual && ` · ${t('dice.manualMark')}`}
+                </span>
               </li>
             ))}
           </ol>

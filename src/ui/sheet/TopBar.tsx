@@ -125,8 +125,9 @@ function DeathSaves({ session }: { session: ReadySession }) {
   if (life === 'alive') return null;
   const { successes, failures } = character.state.deathSaves;
   const dots = (n: number) => `${'●'.repeat(n)}${'○'.repeat(Math.max(0, 3 - n))}`;
-  const roll = () => {
-    const result = dice.rollD20('Death Saving Throw', -sheet.d20Penalty);
+  const roll = async () => {
+    const result = await dice.rollD20('Death Saving Throw', -sheet.d20Penalty);
+    if (!result) return;
     commit(recordDeathSave(character, result.kept, sheet), t('undo.deathSave', { roll: result.kept }));
   };
   return (

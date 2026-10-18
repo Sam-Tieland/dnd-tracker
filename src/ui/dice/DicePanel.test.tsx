@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import type { Rng } from '../../dice/dice';
@@ -64,5 +64,54 @@ describe('dice panel', () => {
     await user.type(screen.getByLabelText('Dice notation'), '2d6 3');
     await user.click(screen.getByRole('button', { name: 'Roll' }));
     expect(await screen.findByText('Cannot roll "2d6 3"')).toBeTruthy();
+  });
+
+  it('with real dice, asks for the d20 the player rolled and adds the bonus', async () => {
+    const user = await openPanel();
+    await user.click(screen.getByLabelText('I roll real dice'));
+    await user.click(screen.getByRole('button', { name: 'attack' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Longsword: attack' });
+    await user.type(within(dialog).getByLabelText('d20'), '17');
+    expect(within(dialog).getByText('22')).toBeTruthy();
+    await user.click(within(dialog).getByRole('button', { name: 'Fill in' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getAllByText('d20 (17) +5 · own roll').length).toBeGreaterThan(0);
+  });
+
+  it('with real dice and Advantage, asks for both d20s and keeps the higher', async () => {
+    const user = await openPanel();
+    await user.click(screen.getByLabelText('I roll real dice'));
+    await user.click(screen.getByRole('button', { name: 'Advantage' }));
+    await user.click(screen.getByRole('button', { name: 'attack' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('d20 (1)'), '4');
+    await user.type(within(dialog).getByLabelText('d20 (2)'), '15{Enter}');
+    expect(screen.getAllByText('d20 Advantage (4, 15) +5 · own roll').length).toBeGreaterThan(0);
+  });
+
+  it('with real dice, a Critical Hit asks for the doubled damage dice and refuses an impossible total', async () => {
+    const user = await openPanel();
+    await user.click(screen.getByLabelText('I roll real dice'));
+    await user.click(screen.getByRole('button', { name: 'Critical' }));
+    await user.click(screen.getByRole('button', { name: 'damage' }));
+    const dialog = await screen.findByRole('dialog');
+    const field = within(dialog).getByLabelText('2d8');
+    await user.type(field, '17');
+    expect(within(dialog).getByText('Can only be 2 to 16')).toBeTruthy();
+    expect(within(dialog).getByRole('button', { name: 'Fill in' })).toHaveProperty('disabled', true);
+    await user.clear(field);
+    await user.type(field, '11{Enter}');
+    expect(screen.getAllByText('1d8+3: 11 + 3 · own roll').length).toBeGreaterThan(0);
+  });
+
+  it('with real dice, the app can still roll one, and Cancel rolls nothing', async () => {
+    const user = await openPanel();
+    await user.click(screen.getByLabelText('I roll real dice'));
+    await user.click(screen.getByRole('button', { name: 'attack' }));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Let the app roll' }));
+    expect(screen.getAllByText('d20 (11) +5').length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'damage' }));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByText(/1d8\+3/)).toBeNull();
   });
 });

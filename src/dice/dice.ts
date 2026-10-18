@@ -96,6 +96,37 @@ export function rollD20(bonus: number, mode: D20Mode = 'normal', rng: Rng = cryp
   return { rolls, kept, bonus, total: kept + bonus, natural20: kept === 20, natural1: kept === 1 };
 }
 
+/** A d20 test from faces the player rolled with real dice: one face, or two with Advantage or Disadvantage. */
+export function d20FromFaces(faces: readonly number[], bonus: number, mode: D20Mode = 'normal'): D20Result {
+  const count = mode === 'normal' ? 1 : 2;
+  if (faces.length !== count || faces.some((face) => !Number.isInteger(face) || face < 1 || face > 20)) {
+    throw new DiceError(`Invalid d20 faces: ${faces.join(', ')}`);
+  }
+  const rolls = [...faces];
+  const kept = mode === 'advantage' ? Math.max(...rolls) : mode === 'disadvantage' ? Math.min(...rolls) : rolls[0];
+  return { rolls, kept, bonus, total: kept + bonus, natural20: kept === 20, natural1: kept === 1 };
+}
+
+/** The dice of one term as rolled at the table: "2d6" in the expression, doubled to "4d6" on a Critical Hit. */
+export function manualTerms(expression: string, critical = false): DiceTerm[] {
+  return parseRoll(expression).terms.map((term) => ({ ...term, count: critical ? term.count * 2 : term.count }));
+}
+
+/** A roll from the totals the player counted per term with real dice; each total must be possible for that term. */
+export function rollFromTotals(expression: string, totals: readonly number[], critical = false): RollResult {
+  const { modifier } = parseRoll(expression);
+  const terms = manualTerms(expression, critical);
+  if (totals.length !== terms.length) throw new DiceError(`Expected ${terms.length} totals for "${expression}"`);
+  const dice: DieRoll[] = terms.map((term, i) => {
+    const value = totals[i];
+    if (!Number.isInteger(value) || value < term.count || value > term.count * term.sides) {
+      throw new DiceError(`${value} is not possible on ${term.count}d${term.sides}`);
+    }
+    return { sides: term.sides, value, sign: term.sign };
+  });
+  return { expression, dice, modifier, total: dice.reduce((total, die) => total + die.sign * die.value, modifier) };
+}
+
 /** SRD Character Creation, Random Generation: roll four d6 and add the highest three. */
 export function rollAbilityScore(rng: Rng = cryptoRng): number {
   const dice = [rollDie(6, rng), rollDie(6, rng), rollDie(6, rng), rollDie(6, rng)].sort((a, b) => a - b);

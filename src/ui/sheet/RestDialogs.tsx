@@ -11,17 +11,18 @@ export function ShortRestDialog({ session, onClose }: { session: ReadySession; o
   const { t } = useI18n();
   const dice = useDice();
   const [spend, setSpend] = useState<Record<number, number>>({});
-  const confirm = () => {
+  // Closes first, so with real dice each Hit Point Die asks for its roll on its own; a cancelled die is not spent.
+  const confirm = async () => {
+    onClose();
     const rolls: HitDieRoll[] = [];
     for (const hd of sheet.hitDice) {
       for (let i = 0; i < (spend[hd.die] ?? 0); i += 1) {
-        const result = dice.roll(`Hit Point Die (d${hd.die})`, `1d${hd.die}`);
+        const result = await dice.roll(`Hit Point Die (d${hd.die})`, `1d${hd.die}`);
         if (result) rolls.push({ die: hd.die, roll: result.total });
       }
     }
     const next = shortRest(character, sheet, { rolls });
     commit(next, t('undo.shortRest', { hp: next.state.hpCurrent - sheet.hp.current }));
-    onClose();
   };
   return (
     <Dialog
