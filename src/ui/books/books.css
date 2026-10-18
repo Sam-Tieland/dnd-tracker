@@ -33,19 +33,19 @@
 .book-toc-row { display: flex; align-items: stretch; }
 .book-toc-toggle { background: transparent; border-color: transparent; padding: 0; flex: none; }
 .book-toc-spacer { width: var(--tap); flex: none; }
-.book-link {
+.book-side .book-link {
   flex: 1; min-width: 0; min-height: var(--tap); display: flex; flex-direction: column; justify-content: center;
   padding: 0.25rem 0.4rem; border-radius: 4px; color: var(--text); text-decoration: none;
 }
-.book-toc .book-link { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem; }
-.book-link small { color: var(--muted); white-space: nowrap; }
-.book-hits .book-link small { white-space: normal; }
-a.book-link:active, a.book-link.on { background: var(--accent-soft); }
+.book-side .book-toc .book-link { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.book-side .book-link small { color: var(--muted); white-space: nowrap; }
+.book-side .book-hits .book-link small { white-space: normal; }
+.book-side a.book-link:active, .book-side a.book-link.on { background: var(--accent-soft); }
 @media (hover: hover) and (pointer: fine) {
-  a.book-link:hover { background: var(--accent-soft); }
+  .book-side a.book-link:hover { background: var(--accent-soft); }
 }
 .book-hit mark { background: var(--parchment-top); color: inherit; box-shadow: 0 -2px 0 var(--gold) inset; }
-.book-hit.unavailable .book-link { opacity: 0.55; }
+.book-side .book-hit.unavailable .book-link { opacity: 0.55; }
 
 .book-view {
   flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain;

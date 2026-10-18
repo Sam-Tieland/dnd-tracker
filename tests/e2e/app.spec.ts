@@ -137,3 +137,64 @@ test('works offline after the first visit', async ({ page, context, browserName 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Characters' })).toBeVisible();
 });
+
+async function fakeBook(pages: number): Promise<Buffer> {
+  const doc = await PDFDocument.create();
+  for (let i = 1; i <= pages; i++) doc.addPage([300, 400]).drawText(`Test page ${i}`, { x: 40, y: 200 });
+  return Buffer.from(await doc.save());
+}
+
+test('read a book from the sheet', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', "Playwright's WebKit cannot store a Blob in IndexedDB (UnknownError); on the iPad the book flow is checked by hand (spec §16).");
+  test.setTimeout(90_000);
+  const index = {
+    format: 'dnd-tracker-book-index',
+    version: 1,
+    books: [
+      {
+        bookId: 'tce',
+        pdfPages: 20,
+        pageMap: [{ fromPdf: 1, toPdf: 20, firstBook: 1, perPdfPage: 1 }],
+        entries: [
+          { id: 'chapter-a', title: 'Chapter A', type: 'chapter', bookPage: 3, contentIds: [] },
+          { id: 'test-spellcasting', title: 'Test Casting', type: 'feature', bookPage: 7, parentId: 'chapter-a', contentIds: ['srd:feature:cleric:1:spellcasting'] },
+        ],
+      },
+    ],
+  };
+
+  await page.goto('./');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+  await page.getByTestId('book-input').setInputFiles({ name: "Tasha's Test.pdf", mimeType: 'application/pdf', buffer: await fakeBook(20) });
+  const dialog = page.getByRole('dialog', { name: 'Which book is this?' });
+  await dialog.getByLabel('Which book is this?').selectOption('tce');
+  await dialog.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText(/Tasha's Test\.pdf/)).toBeVisible();
+  await page.getByTestId('book-index-input').setInputFiles({ name: 'index.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(index)) });
+  await expect(page.getByText(/Table of contents imported/)).toBeVisible();
+
+  await page.getByRole('link', { name: 'Back' }).click();
+  await page.getByRole('link', { name: 'New character' }).click();
+  await page.getByLabel('Name', { exact: true }).fill('Mira');
+  await page.getByLabel('New class', { exact: true }).selectOption('srd:class:cleric');
+  await page.getByRole('button', { name: 'Add class' }).click();
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByRole('heading', { name: 'Mira' })).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Features' }).click();
+  await page.locator('details.feature', { hasText: 'Spellcasting' }).first().locator('summary').click();
+  const inBook = page.getByRole('link', { name: /^Read Spellcasting in Tasha's Cauldron of Everything, p\. 7$/ });
+  await expect(inBook).toBeVisible();
+  await inBook.click();
+
+  await expect(page.getByTestId('page-label')).toHaveText('p. 7');
+  await expect(page.locator('.book-reader canvas').first()).toBeVisible();
+
+  await page.getByRole('link', { name: 'Back' }).click();
+  await expect(page.getByRole('heading', { name: 'Mira' })).toBeVisible();
+
+  await page.goto('./#/books');
+  await page.reload();
+  await expect(page.getByTestId('page-label')).toHaveText('p. 7');
+});
