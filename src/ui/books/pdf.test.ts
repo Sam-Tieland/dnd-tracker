@@ -12,12 +12,9 @@ describe('canvasScale', () => {
   });
 });
 
-// Test only: Node lacks newer built-ins the modern build relies on (Map.prototype.getOrInsertComputed), so use the
-// legacy build here, and, as Node has no Web Worker, let pdf.js run its worker code on the main thread.
-vi.mock('pdfjs-dist', () => import('pdfjs-dist/legacy/build/pdf.mjs'));
-
 describe('openPdf', () => {
   beforeAll(async () => {
+    // Test only: Node has no Web Worker, so pdf.js runs its worker code (the same legacy build) on the main thread.
     (globalThis as { pdfjsWorker?: unknown }).pdfjsWorker = await import('pdfjs-dist/legacy/build/pdf.worker.mjs');
   });
   afterEach(() => vi.restoreAllMocks());
@@ -43,5 +40,12 @@ describe('openPdf', () => {
     } finally {
       await pdf.destroy();
     }
+  });
+
+  it('rejects when a part of the file cannot be read', async () => {
+    const blob = await fakePdf(2);
+    const error = new Error('read failed');
+    vi.spyOn(blob, 'slice').mockImplementation(() => ({ arrayBuffer: () => Promise.reject(error) }) as unknown as Blob);
+    await expect(openPdf(blob)).rejects.toBe(error);
   });
 });
