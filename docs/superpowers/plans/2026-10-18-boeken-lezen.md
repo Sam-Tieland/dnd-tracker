@@ -268,7 +268,7 @@ export function BookReader(props: { bookId?: BookId; bookPage?: number }): JSX.E
 ```
 
 Gedrag (schets versie A met zoekbalk):
-- Bovenbalk: **← Terug** (`href={backHrefFromBooks()}`), boekkeuze (keuzelijst met aanwezige boeken), "blz. 34" of "blz. 34–35" (spread, via `toBookPage`) of "pdf-blz. 12" (geen passende index), vorige/volgende (per pdf-pagina), veld **Ga naar blz.**, zoom − / +.
+- Bovenbalk: **← Terug** (`href={backHrefFromBooks()}`), boekkeuze (keuzelijst met aanwezige boeken), "blz. 14" of "blz. 14–15" (spread, via `toBookPage`) of "pdf-blz. 12" (geen passende index), vorige/volgende (per pdf-pagina), veld **Ga naar blz.**, zoom − / +.
 - Links het zijpaneel: zoekveld (label "Zoeken in je boeken"); leeg → `tocTree` van het huidige boek, ingeklapt per niveau op hoofdstukken, uitklapbaar; met tekst → `searchIndex` over alle boeken (titel, boektitel, soort, "blz. N"); resultaten van boeken die niet op dit apparaat staan grijs met "niet op dit apparaat". Tikken → navigeer naar `#/books/<bookId>/<bookPage>`. Op smal scherm (`NARROW_QUERY`): paneel ingeklapt achter knop **Inhoud / zoeken**, schuift over de pagina, sluit na een keuze.
 - Pagina: `PageView` rendert alleen de huidige pdf-pagina (één canvas; vorige canvas wordt vrijgegeven); breedte = `fitScale × zoom`; bij `half: 'right'` horizontaal scrollen met `scrollForHalf`. Vegen links/rechts (> 60 px, alleen bij zoom 1) bladert; knijpen (twee pointers) zet zoom op de dichtstbijzijnde `ZOOM_STEPS`-waarde bij loslaten.
 - Leesplek: elke paginawissel/zoom → `saveReading` (debounce 500 ms). `#/books` zonder boek → `loadReading().last`, anders het eerste aanwezige boek; zonder `bookPage` → opgeslagen `pdfPage`, anders pdf 1.

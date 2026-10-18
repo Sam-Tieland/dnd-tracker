@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { MAX_CANVAS_PIXELS, canvasScale, openPdf } from './pdf';
+import { MAX_CANVAS_PIXELS, RANGE_CHUNK_SIZE, canvasScale, openPdf } from './pdf';
 import { fakePdf } from './testing/fake-pdf';
 
 describe('canvasScale', () => {
@@ -19,15 +19,22 @@ describe('openPdf', () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it('counts pages without reading the whole file', async () => {
-    const blob = await fakePdf(5);
-    const spy = vi.spyOn(Blob.prototype, 'arrayBuffer');
+  it('counts pages by reading only small ranges of a large file', async () => {
+    const blob = await fakePdf(5, { paddingBytes: 3 * 1024 * 1024 });
+    expect(blob.size).toBeGreaterThan(3 * 1024 * 1024);
+    const slices: number[] = [];
+    const realSlice = blob.slice.bind(blob);
+    vi.spyOn(blob, 'slice').mockImplementation((begin, end, type) => {
+      slices.push((end ?? blob.size) - (begin ?? 0));
+      return realSlice(begin, end, type);
+    });
     const pdf = await openPdf(blob);
     try {
       expect(pdf.pageCount).toBe(5);
-      expect(spy.mock.contexts.some((context) => context === blob)).toBe(false);
-      expect(spy).toHaveBeenCalled();
       expect(await pdf.pageSize(1)).toEqual({ width: 612, height: 792 });
+      expect(slices.length).toBeGreaterThan(0);
+      expect(Math.max(...slices)).toBeLessThanOrEqual(RANGE_CHUNK_SIZE);
+      expect(slices.reduce((a, b) => a + b, 0)).toBeLessThan(blob.size / 2);
     } finally {
       await pdf.destroy();
     }

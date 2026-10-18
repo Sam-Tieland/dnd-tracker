@@ -3,8 +3,11 @@ import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 /** Largest canvas iPad Safari will draw; beyond this, CSS scales the rest. */
 export const MAX_CANVAS_PIXELS = 16_000_000;
 
-/** pdf.js asks for the file in pieces of this size, so a 200 MB scan never sits in memory whole. */
-const RANGE_CHUNK_SIZE = 1024 * 1024;
+/**
+ * pdf.js asks for the file in pieces of this size: we never read the whole file into memory ourselves.
+ * (pdf.js still reserves a buffer the size of the file in its worker, but only the requested ranges are filled.)
+ */
+export const RANGE_CHUNK_SIZE = 1024 * 1024;
 
 export interface PdfHandle {
   pageCount: number;
