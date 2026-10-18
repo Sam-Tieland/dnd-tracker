@@ -1,12 +1,50 @@
 // @vitest-environment jsdom
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { kael } from '../../rules/testing/fixtures';
 import { loadCharacter, loadCharacters, saveCharacter } from '../../storage/characters';
 import { renderApp, testDb } from '../testing/render';
 
+vi.mock('./picture', () => ({ pictureToDataUrl: vi.fn(async () => 'data:image/jpeg;base64,/9j/4AAQ') }));
+
 describe('character form', () => {
+  it('stores the sheet details and a portrait', async () => {
+    const { db } = renderApp('#/new');
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText('Player name'), 'Sam');
+    await user.type(screen.getByLabelText('Experience points'), '300');
+    await user.type(screen.getByLabelText('Eyes'), 'Grey');
+    await user.type(screen.getByLabelText('Ideals'), 'Order');
+    await user.type(screen.getByLabelText('Allies and organizations'), 'The watch');
+    await user.type(screen.getByLabelText('Treasure'), 'A locket');
+    await user.upload(screen.getByTestId('portrait-input'), new File(['x'], 'me.png', { type: 'image/png' }));
+    expect(await screen.findByAltText('Character portrait')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(async () => expect((await loadCharacters(db)).characters).toHaveLength(1));
+    const [saved] = (await loadCharacters(db)).characters;
+    expect(saved.details).toEqual({
+      playerName: 'Sam',
+      xp: '300',
+      eyes: 'Grey',
+      ideals: 'Order',
+      allies: 'The watch',
+      treasure: 'A locket',
+      portrait: 'data:image/jpeg;base64,/9j/4AAQ',
+    });
+  });
+
+  it('removes a portrait', async () => {
+    const db = testDb();
+    await saveCharacter(db, { ...kael(), details: { portrait: 'data:image/jpeg;base64,/9j/4AAQ', eyes: 'Grey' } });
+    renderApp('#/c/test/edit', db);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Remove picture' }));
+    expect(screen.queryByAltText('Character portrait')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(async () => expect((await loadCharacter(db, 'test'))?.details).toEqual({ eyes: 'Grey' }));
+  });
+
   it('creates a Fighter 1 / Wizard 1 at full hit points and opens its sheet', async () => {
     const { db } = renderApp('#/new');
     const user = userEvent.setup();

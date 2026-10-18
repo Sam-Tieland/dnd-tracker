@@ -11,6 +11,10 @@ const anyRecord = z.record(z.string(), z.unknown());
 /** Inventory and override ids end up in bonus targets such as attack:<id>, so they use the same characters. */
 const entryId = z.string().regex(/^[a-z0-9-]+$/);
 
+/** A small picture kept inside the character itself, so it travels along with exports and backups. */
+export const IMAGE_MAX_LENGTH = 400_000;
+const imageData = z.string().regex(/^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/).max(IMAGE_MAX_LENGTH);
+
 export const LevelChoiceSchema = z.strictObject({
   classId: z.string().min(1),
   subclassId: z.string().optional(),
@@ -25,15 +29,32 @@ export const LevelChoiceSchema = z.strictObject({
 
 export const CharacterSchema = z.strictObject({
   id: z.string().min(1),
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
   name: z.string(),
+  /** Everything the official character sheet asks for that the rules do not derive. */
   details: z.strictObject({
+    playerName: z.string().optional(),
+    xp: z.string().optional(),
     alignment: z.string().optional(),
+    age: z.string().optional(),
+    height: z.string().optional(),
+    weight: z.string().optional(),
+    eyes: z.string().optional(),
+    skin: z.string().optional(),
+    hair: z.string().optional(),
     appearance: z.string().optional(),
+    portrait: imageData.optional(),
     personality: z.string().optional(),
+    ideals: z.string().optional(),
+    bonds: z.string().optional(),
+    flaws: z.string().optional(),
     backstory: z.string().optional(),
+    allies: z.string().optional(),
+    factionName: z.string().optional(),
+    factionSymbol: imageData.optional(),
+    treasure: z.string().optional(),
   }),
   choices: z.strictObject({
     abilityMethod: z.enum(['standard', 'pointbuy', 'rolled', 'manual']),
@@ -96,7 +117,7 @@ export function createCharacter(input: NewCharacterInput = {}): Character {
   const now = input.now ?? new Date().toISOString();
   return {
     id: input.id ?? crypto.randomUUID(),
-    schemaVersion: 2,
+    schemaVersion: 3,
     createdAt: now,
     updatedAt: now,
     name: input.name ?? '',

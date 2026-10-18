@@ -3,6 +3,7 @@ import {
   COMBAT_FIELDS,
   DEATH_SAVE_CHECKS,
   HEADER_FIELDS,
+  IMAGE_FIELDS,
   PAGE2_FIELDS,
   REQUIRED_FIELDS,
   SKILL_FIELDS,
@@ -36,7 +37,7 @@ export async function fakeTemplate(): Promise<Uint8Array> {
 }
 
 async function buildTemplate(): Promise<Uint8Array> {
-  const { PDFDocument } = await import('pdf-lib');
+  const { PDFDocument, PDFName } = await import('pdf-lib');
   const doc = await PDFDocument.create();
   const pages = [doc.addPage(), doc.addPage(), doc.addPage()];
   const form = doc.getForm();
@@ -86,11 +87,17 @@ async function buildTemplate(): Promise<Uint8Array> {
   for (const name of texts) {
     const field = form.createTextField(name);
     if (MULTILINE.has(name)) field.enableMultiline();
+    // As on the official sheet, the attacks block has no default appearance of its own.
+    if (name === COMBAT_FIELDS.attacks) field.acroField.dict.delete(PDFName.of('DA'));
     field.addToPage(pageOf(), rect());
   }
   for (const name of checks) {
     const box = form.createCheckBox(name);
     box.addToPage(pageOf(), { ...rect(), width: 12, height: 12 });
+  }
+  for (const name of Object.values(IMAGE_FIELDS)) {
+    const button = form.createButton(name);
+    button.addToPage('', pageOf(), { ...rect(), width: 120, height: 120 });
   }
   return doc.save();
 }

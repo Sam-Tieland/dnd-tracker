@@ -13,3 +13,7 @@ fieldset label, label.option { display: inline-flex; align-items: center; gap: 0
 .gained summary { display: list-item; list-style-position: inside; min-height: var(--tap); padding: 0.6rem 0; cursor: pointer; }
 .gained p { margin: 0 0 0.5rem 1.5rem; }
 .level-block textarea { width: 100%; }
+.details-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 0.75rem; }
+.details-heading { margin: 1rem 0 0.5rem; font-size: 1.05rem; }
+.picture-field .row { margin-top: 0.25rem; }
+.picture-preview { max-width: 180px; max-height: 180px; object-fit: contain; border-radius: 4px; }

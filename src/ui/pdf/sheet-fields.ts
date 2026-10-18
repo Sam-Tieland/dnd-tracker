@@ -238,6 +238,12 @@ export const PAGE2_FIELDS = {
   treasure: 'Treasure',
 } as const;
 
+/** Image buttons on page 2; a picture is drawn into the button. */
+export const IMAGE_FIELDS = {
+  portrait: 'CHARACTER IMAGE',
+  factionSymbol: 'Faction Symbol Image',
+} as const;
+
 export const SPELL_HEADER_FIELDS = {
   spellClass: 'Spellcasting Class 2',
   ability: 'SpellcastingAbility 2',

@@ -9,6 +9,7 @@ import {
   COMBAT_FIELDS,
   DEATH_SAVE_CHECKS,
   HEADER_FIELDS,
+  IMAGE_FIELDS,
   PAGE2_FIELDS,
   SKILL_FIELDS,
   SLOT_FIELDS,
@@ -23,6 +24,8 @@ export interface SheetValues {
   text: Record<string, string>;
   /** Names of the checkboxes that are ticked. */
   checks: string[];
+  /** Picture per image button, as a png or jpeg data URL. */
+  images?: Record<string, string>;
 }
 
 type SpellKey = keyof typeof SPELL_LINES;
@@ -129,20 +132,24 @@ export function sheetValues(character: Character, registry: ContentRegistry): Sh
   put(HEADER_FIELDS.species, speciesName(character, sheet, registry));
   put(HEADER_FIELDS.alignment, character.details.alignment ?? '');
   put(HEADER_FIELDS.inspiration, character.state.heroicInspiration ? 'X' : '');
-  for (const field of [HEADER_FIELDS.player, HEADER_FIELDS.xp, COMBAT_FIELDS.ideals, COMBAT_FIELDS.bonds, COMBAT_FIELDS.flaws]) put(field, '');
-  for (const field of [
-    PAGE2_FIELDS.age,
-    PAGE2_FIELDS.height,
-    PAGE2_FIELDS.weight,
-    PAGE2_FIELDS.eyes,
-    PAGE2_FIELDS.skin,
-    PAGE2_FIELDS.hair,
-    PAGE2_FIELDS.allies,
-    PAGE2_FIELDS.faction,
-    PAGE2_FIELDS.treasure,
-  ]) {
-    put(field, '');
-  }
+  const { details } = character;
+  put(HEADER_FIELDS.player, details.playerName ?? '');
+  put(HEADER_FIELDS.xp, details.xp ?? '');
+  put(COMBAT_FIELDS.ideals, details.ideals ?? '');
+  put(COMBAT_FIELDS.bonds, details.bonds ?? '');
+  put(COMBAT_FIELDS.flaws, details.flaws ?? '');
+  put(PAGE2_FIELDS.age, details.age ?? '');
+  put(PAGE2_FIELDS.height, details.height ?? '');
+  put(PAGE2_FIELDS.weight, details.weight ?? '');
+  put(PAGE2_FIELDS.eyes, details.eyes ?? '');
+  put(PAGE2_FIELDS.skin, details.skin ?? '');
+  put(PAGE2_FIELDS.hair, details.hair ?? '');
+  put(PAGE2_FIELDS.allies, details.allies ?? '');
+  put(PAGE2_FIELDS.faction, details.factionName ?? '');
+  put(PAGE2_FIELDS.treasure, details.treasure ?? '');
+  const images: Record<string, string> = {};
+  if (details.portrait) images[IMAGE_FIELDS.portrait] = details.portrait;
+  if (details.factionSymbol) images[IMAGE_FIELDS.factionSymbol] = details.factionSymbol;
 
   // Abilities, saves, skills
   for (const ability of ABILITIES) {
@@ -233,5 +240,5 @@ export function sheetValues(character: Character, registry: ContentRegistry): Sh
   }
 
   for (const field of Object.keys(text)) text[field] = toWinAnsi(text[field]);
-  return { text, checks };
+  return { text, checks, images };
 }

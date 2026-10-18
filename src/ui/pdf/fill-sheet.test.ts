@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { kael, registry } from '../../rules/testing/fixtures';
-import { checkTemplate, fillSheet, TemplateError } from './fill-sheet';
+import { blockFontSize, checkTemplate, fillSheet, TemplateError } from './fill-sheet';
 import { sheetValues } from './sheet-values';
 import { fakeTemplate } from './testing/fake-template';
 
@@ -8,6 +8,12 @@ async function load(bytes: Uint8Array) {
   const { PDFDocument } = await import('pdf-lib');
   return PDFDocument.load(bytes);
 }
+
+/** A 1x1 red PNG. */
+const TINY_PNG = Uint8Array.from(
+  atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=='),
+  (c) => c.charCodeAt(0),
+);
 
 describe('fillSheet', () => {
   it('fills text fields and checks boxes', async () => {
@@ -31,10 +37,51 @@ describe('fillSheet', () => {
     expect((await load(out)).getForm().getTextField('CharacterName').getText()).toBe('A');
   });
 
+  it('draws a picture into an image button and skips a damaged one', async () => {
+    const { PDFDocument } = await import('pdf-lib');
+    const source = await PDFDocument.create();
+    const png = await source.embedPng(TINY_PNG);
+    expect(png.width).toBe(1);
+    const dataUrl = `data:image/png;base64,${btoa(String.fromCharCode(...TINY_PNG))}`;
+    const out = await fillSheet(await fakeTemplate(), {
+      text: {},
+      checks: [],
+      images: { 'CHARACTER IMAGE': dataUrl, 'Faction Symbol Image': 'data:image/jpeg;base64,AAAA' },
+    });
+    const form = (await load(out)).getForm();
+    const widget = form.getButton('CHARACTER IMAGE').acroField.getWidgets()[0];
+    const appearance = widget.getNormalAppearance();
+    expect(appearance).toBeDefined();
+    expect(form.getButton('Faction Symbol Image')).toBeDefined();
+  });
+
   it('fills a name with characters outside WinAnsi', async () => {
     const named = { ...kael(), name: 'Łukasz Привет ✓', details: { backstory: 'Een ✓ verhaal' } };
     const out = await fillSheet(await fakeTemplate(), sheetValues(named, registry));
     expect((await load(out)).getForm().getTextField('CharacterName').getText()).toContain('ukasz');
+  });
+});
+
+describe('blockFontSize', () => {
+  // Every letter is half the font size wide.
+  const widthOf = (text: string, size: number) => text.length * size * 0.5;
+
+  it('caps a short text at 10 pt', () => {
+    expect(blockFontSize('Order.', 200, 100, widthOf)).toBe(10);
+  });
+
+  it('shrinks until the wrapped text fits', () => {
+    const size = blockFontSize('word '.repeat(60).trim(), 100, 60, widthOf);
+    expect(size).toBeLessThan(10);
+    expect(size).toBeGreaterThanOrEqual(5);
+  });
+
+  it('shrinks until a long word fits the width', () => {
+    expect(blockFontSize('Neverwinter', 40, 100, widthOf)).toBeLessThanOrEqual(40 / (11 * 0.5));
+  });
+
+  it('never goes below 5 pt', () => {
+    expect(blockFontSize('x '.repeat(5000), 50, 20, widthOf)).toBe(5);
   });
 });
 

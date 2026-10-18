@@ -97,10 +97,44 @@ describe('sheetValues', () => {
     expect(values['Backstory']).toBe('Een ? verhaal');
   });
 
+  it('fills the sheet details the player writes', () => {
+    const portrait = 'data:image/png;base64,iVBORw0KGgo=';
+    const details = {
+      playerName: 'Sam',
+      xp: '300',
+      ideals: 'Order',
+      bonds: 'My squad',
+      flaws: 'Stubborn',
+      age: '24',
+      height: '188 cm',
+      weight: '230 lb',
+      eyes: 'Grey',
+      skin: 'Green',
+      hair: 'Black',
+      allies: 'The city watch',
+      factionName: 'Night Guard',
+      treasure: 'A silver locket',
+      portrait,
+    };
+    const { text, images } = sheetValues({ ...kael(), details }, registry);
+    expect(text['PlayerName']).toBe('Sam');
+    expect(text['XP']).toBe('300');
+    expect(text['Ideals']).toBe('Order');
+    expect(text['Bonds']).toBe('My squad');
+    expect(text['Flaws']).toBe('Stubborn');
+    expect([text['Age'], text['Height'], text['Weight'], text['Eyes'], text['Skin'], text['Hair']]).toEqual(['24', '188 cm', '230 lb', 'Grey', 'Green', 'Black']);
+    expect(text['Allies']).toBe('The city watch');
+    expect(text['FactionName']).toBe('Night Guard');
+    expect(text['Treasure']).toBe('A silver locket');
+    expect(images).toEqual({ 'CHARACTER IMAGE': portrait });
+  });
+
   it('handles an empty character', () => {
-    const { text, checks } = sheetValues(createCharacter({ name: 'Nobody' }), registry);
+    const { text, checks, images } = sheetValues(createCharacter({ name: 'Nobody' }), registry);
     expect(text['CharacterName']).toBe('Nobody');
+    expect(text['PlayerName']).toBe('');
     expect(checks).toEqual([]);
+    expect(images).toEqual({});
     expect(makeCharacter().name).toBe('Test');
   });
 });
