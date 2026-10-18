@@ -279,11 +279,13 @@
   "books.no": "nee",
   "books.importIndex": "Inhoudsopgave importeren",
   "books.indexImported": "Inhoudsopgave geïmporteerd: {count} onderdelen",
+  "books.indexImportedOne": "Inhoudsopgave geïmporteerd: 1 onderdeel",
   "books.indexError.not-json": "Dit bestand is geen JSON.",
   "books.indexError.wrong-format": "Dit bestand is geen inhoudsopgave voor deze app.",
   "books.indexError.newer-version": "Deze inhoudsopgave komt van een nieuwere versie van de app.",
   "books.indexError.invalid": "Deze inhoudsopgave is ongeldig.",
   "books.indexFailed": "Importeren mislukt: {reason}",
   "books.unknown": "{count} onderdelen niet gevonden in de app",
+  "books.unknownOne": "1 onderdeel niet gevonden in de app",
   "books.mismatch": "Deze PDF heeft {pdf} pagina's; de inhoudsopgave verwacht {expected}. Je kunt hem lezen, maar zonder inhoudsopgave en zonder knoppen vanaf je sheet."
 }

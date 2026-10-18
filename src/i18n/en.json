@@ -279,11 +279,13 @@
   "books.no": "no",
   "books.importIndex": "Import table of contents",
   "books.indexImported": "Table of contents imported: {count} items",
+  "books.indexImportedOne": "Table of contents imported: 1 item",
   "books.indexError.not-json": "This file is not JSON.",
   "books.indexError.wrong-format": "This file is not a table of contents for this app.",
   "books.indexError.newer-version": "This table of contents is from a newer version of the app.",
   "books.indexError.invalid": "This table of contents is not valid.",
   "books.indexFailed": "Import failed: {reason}",
   "books.unknown": "{count} items not found in the app",
+  "books.unknownOne": "1 item not found in the app",
   "books.mismatch": "This PDF has {pdf} pages; the table of contents expects {expected}. You can read it, but without table of contents and without buttons from your sheet."
 }

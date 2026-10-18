@@ -85,8 +85,9 @@ export function BooksCard() {
         addedAt: new Date().toISOString(),
       });
       setPending(undefined);
-      if (first) await requestPersistence(navigator.storage);
-      await refresh();
+      // The book is stored; what follows is best-effort and never turns this into a failed save.
+      if (first) await requestPersistence(navigator.storage).catch(() => undefined);
+      await refresh().catch(() => undefined);
       changed();
       toast({ message: t('books.saved') });
     } catch (error) {
@@ -125,7 +126,7 @@ export function BooksCard() {
       await refresh();
       changed();
       const count = result.index.books.reduce((sum, b) => sum + b.entries.length, 0);
-      toast({ message: t('books.indexImported', { count }) });
+      toast({ message: count === 1 ? t('books.indexImportedOne') : t('books.indexImported', { count }) });
     } catch (error) {
       toast({ message: t('books.indexFailed', { reason: error instanceof Error ? error.message : String(error) }), error: true });
     }
@@ -181,7 +182,7 @@ export function BooksCard() {
       </button>
       {unknown.length > 0 && (
         <details>
-          <summary>{t('books.unknown', { count: unknown.length })}</summary>
+          <summary>{unknown.length === 1 ? t('books.unknownOne') : t('books.unknown', { count: unknown.length })}</summary>
           <ul className="plain-list">
             {unknown.map((id) => (
               <li key={id}>{id}</li>

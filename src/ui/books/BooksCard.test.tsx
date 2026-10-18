@@ -125,7 +125,7 @@ describe('BooksCard', () => {
     const changed = vi.fn();
     window.addEventListener(BOOKS_CHANGED, changed);
     await user.upload(await screen.findByTestId('book-index-input'), jsonFile(JSON.stringify(indexFor(194))));
-    expect(await screen.findByText('Table of contents imported: 1 items')).toBeTruthy();
+    expect(await screen.findByText('Table of contents imported: 1 item')).toBeTruthy();
     expect((await loadBookIndex(db))?.books[0]?.bookId).toBe('tce');
     expect(changed).toHaveBeenCalled();
     window.removeEventListener(BOOKS_CHANGED, changed);
@@ -138,8 +138,31 @@ describe('BooksCard', () => {
       await screen.findByTestId('book-index-input'),
       jsonFile(JSON.stringify(indexFor(194, ['user:feature:bestaat-niet']))),
     );
-    expect(await screen.findByText(/1 items not found in the app/)).toBeTruthy();
+    expect(await screen.findByText(/^1 item not found in the app$/)).toBeTruthy();
     expect(screen.getByText('user:feature:bestaat-niet')).toBeTruthy();
+  });
+
+  it('keeps a saved book saved when the follow-up work fails', async () => {
+    const { db } = renderApp('#/settings');
+    const user = userEvent.setup();
+    const changed = vi.fn();
+    window.addEventListener(BOOKS_CHANGED, changed);
+    const original = Object.getOwnPropertyDescriptor(navigator, 'storage');
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: { persist: () => Promise.reject(new Error('nope')), estimate: () => Promise.reject(new Error('nope')) },
+    });
+    try {
+      await user.upload(await screen.findByTestId('book-input'), pdfFile("Tasha's Cauldron of Everything.pdf"));
+      await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Save' }));
+      expect(await screen.findByText('Book saved.')).toBeTruthy();
+      expect(changed).toHaveBeenCalled();
+      expect((await listBooks(db)).map((b) => b.bookId)).toEqual(['tce']);
+    } finally {
+      if (original) Object.defineProperty(navigator, 'storage', original);
+      else delete (navigator as unknown as Record<string, unknown>).storage;
+      window.removeEventListener(BOOKS_CHANGED, changed);
+    }
   });
 
   it('rejects a file that is not an index', async () => {
