@@ -157,7 +157,7 @@ label:has(> input[type='checkbox']), label:has(> input[type='radio']) { display:
 }
 /* A modal is not anchored to its trigger, so it grows from the centre; from 0.96, never from nothing. */
 .dialog {
-  background: var(--parchment); color: var(--text); border: 0; border-radius: 4px; padding: 1.25rem; width: min(480px, 100%); max-height: 90vh; overflow: auto; box-shadow: var(--shadow-lg);
+  background: var(--parchment); color: var(--text); border: 0; border-radius: 4px; padding: 1.25rem; width: min(480px, 100%); max-height: 100%; overflow: auto; box-shadow: var(--shadow-lg);
   transition: opacity 200ms var(--ease-out), transform 240ms var(--ease-out);
   @starting-style { opacity: 0; transform: scale(0.96) translateY(6px); }
 }
